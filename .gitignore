@@ -30,3 +30,6 @@ fp-info-cache
 # Exported BOM files
 *.xml
 *.csv
+build/
+compile_commands.json
+.cache/
