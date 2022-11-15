@@ -1,5 +1,5 @@
-#ifndef EMONLIBCM_CORE_H
-#define EMONLIBCM_CORE_H
+#ifndef EMON_CM_H
+#define EMON_CM_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -21,7 +21,7 @@ typedef enum {
     INIT_FAIL_ENABLED,      // Init failed as currently enabled
     ENABLE_SUCCESS,
     ENABLE_FAIL_ENABLED,
-} ELC_STATUS_t;
+} ECM_STATUS_t;
 
 struct ADC_samples {
     /* Voltage samples */
@@ -48,19 +48,19 @@ struct Accumulator {
     uint8_t                 num_samples;
 };
 
-struct ELC_result_CT_float {
+struct ECM_result_CT_float {
     float rmsCT;
     float powerFactor;
     float realPower;
     float wattHour;
 };
 
-struct ELC_result_float {
+struct ECM_result_float {
     float                       rmsV[NUM_CHAN_V];
-    struct ELC_result_CT_float  resultCT[NUM_CHAN_CT];
+    struct ECM_result_CT_float  resultCT[NUM_CHAN_CT];
 };
 
-struct ELC_CONFIG {
+struct ECM_CONFIG {
     /* Number of mains cycles before reporting */
     uint32_t            num_report_cycles;
     /* Depth of sample buffer; must be power of 2 */
@@ -73,33 +73,33 @@ struct ELC_CONFIG {
  * Function prototypes
  *****************************************************************************/
 
-/* emonLibCM_defaults returns a default configuration (50 Hz mains) with:
+/* cm_defaults returns a default configuration (50 Hz mains) with:
  *  - interleaved I/V values
  * - 5 current channels
  * - 1 voltage channel
  * - 10 s reporting period
  */
-struct ELC_CONFIG emonLibCM_defaults();
+struct ECM_CONFIG cm_defaults();
 
-/*! \brief Configure the emonLibCM_core functions. Returns an ELC_STATUS struct
+/*! \brief Configure the cm_core functions. Returns an ECM_STATUS struct
  *
- * @param [in] pCfg Pointer to ELC_CONFIG struct containing the configuration
+ * @param [in] pCfg Pointer to ECM_CONFIG struct containing the configuration
  */
-ELC_STATUS_t emonLibCM_init(const struct ELC_CONFIG * const pCfg);
+ECM_STATUS_t cm_init(const struct ECM_CONFIG * const pCfg);
 
-/*! \brief Enable emonLibCM_core processing
+/*! \brief Enable cm_core processing
  */
-ELC_STATUS_t emonLibCM_enable();
+ECM_STATUS_t cm_enable();
 
 /*! \brief Processes the partial sample set into the collecting accumulator
  */
-void emonLibCM_process_sample();
+void cm_process_sample();
 
 /*! \brief At the end of a cycle, this flips collecting/processing buffers
  *         and clears the new collection buffer. Returns a pointer to the
  *         buffer for processing.
  */
-struct Accumulator *emonLibCM_cycle_complete();
+struct Accumulator *cm_cycle_complete();
 
 
 /*! \brief Process accumulated V/CT values into floating point RMS V/I, real
@@ -107,6 +107,6 @@ struct Accumulator *emonLibCM_cycle_complete();
  * @param [in] pAcc Pointer to the raw accumulated values
  * @param [in] pRes Pointer to the floating point results
  */
-void emonLibCM_process_float(const struct Accumulator *const pAcc, struct ELC_result_float *const pRes);
+void cm_process_float(const struct Accumulator *const pAcc, struct ECM_result_float *const pRes);
 
 #endif

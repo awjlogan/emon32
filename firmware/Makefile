@@ -31,9 +31,14 @@ INCLUDES += \
   -I./src/
 
 SRCS += \
-  ./src/emon32_samd.c \
+  ./src/emon32.c \
+  ./src/startup_samd10.c \
   ./src/driver_CLK.c \
-  ./src/startup_samd10.c
+  ./src/driver_ADC.c \
+  ./src/driver_PORT.c \
+  ./src/driver_TIME.c \
+  ./src/driver_SERCOM.c
+
 
 DEFINES += \
   -D__SAMD10D14AM__ \

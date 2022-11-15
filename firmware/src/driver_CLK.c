@@ -1,7 +1,7 @@
 #include "emon32_samd.h"
 
 void
-clk_setup()
+clkSetup()
 {
     /* 48 MHz DFLL for core
      *  1. Set flash wait state to 1 for 48 MHz core
@@ -16,8 +16,8 @@ clk_setup()
     NVMCTRL->CTRLB.bit.RWS = NVMCTRL_CTRLB_RWS_HALF_Val;
 
     /* 2. OSC32K setup */
-    const uint32_t calOsc32 = (*((uint32_t *) FUSES_OSC32K_CAL_ADDR) & FUSES_OSC32K_CAL_Msk) >> FUSES_OSC32K_CAL_Pos;
-    SYSCTRL->OSC32K.reg =   SYSCTRL_OSC32K_CALIB(calOsc32);
+    const uint32_t calOsc32 = (CAL_REG & CAL_OSC32_Msk) >> CAL_OSC32_Pos;
+    SYSCTRL->OSC32K.reg =   SYSCTRL_OSC32K_CALIB(calOsc32)
                           | SYSCTRL_OSC32K_STARTUP(0x6u)
                           | SYSCTRL_OSC32K_EN32K
                           | SYSCTRL_OSC32K_ENABLE;
@@ -26,10 +26,10 @@ clk_setup()
      * CTRL.SWRST and STATUS.SYNCBUSY will be cleared simultaneously (Section 14.8.1)
      */
     GCLK->CTRL.reg = GCLK_CTRL_SWRST;
-    while ((GCLK->CTRL.reg * GCLK_CTRL_SWRST) && (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY));
+    while ((GCLK->CTRL.reg & GCLK_CTRL_SWRST) && (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY));
 
     /* 3. OSC32K -> generator 1 */
-    GCLK->CLKCTRL.reg =   GCLK_GENCTRL_ID(1u)
+    GCLK->GENCTRL.reg =   GCLK_GENCTRL_ID(1u)
                         | GCLK_GENCTRL_SRC_OSC32K
                         | GCLK_GENCTRL_GENEN;
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
@@ -60,7 +60,7 @@ clk_setup()
     SYSCTRL->DFLLMUL.reg =   SYSCTRL_DFLLMUL_CSTEP(0x1f / 4)
                            | SYSCTRL_DFLLMUL_FSTEP(10)
                            | SYSCTRL_DFLLMUL_MUL(48000);
-    SYSCTRL.DFLLCTRL.reg = 0;
+    SYSCTRL->DFLLCTRL.reg = 0;
     while (0 == (SYSCTRL->PCLKSR.reg & SYSCTRL_PCLKSR_DFLLRDY));
 
     SYSCTRL->DFLLCTRL.reg =   SYSCTRL_DFLLCTRL_MODE
@@ -72,14 +72,14 @@ clk_setup()
     while (0 == (SYSCTRL->PCLKSR.reg & SYSCTRL_PCLKSR_DFLLRDY));
 
     /* 5. DFLL48M -> generator 0 */
-    GCLK->GENDIV.reg = GCLK_GENDIV_ID(0u)
-    while (GCLK->STATUS.reg * GCLK_STATUS_SYNCBUSY);
+    GCLK->GENDIV.reg = GCLK_GENDIV_ID(0u);
+    while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
 
     GCLK->GENCTRL.reg =   GCLK_GENCTRL_ID(0u)
                         | GCLK_GENCTRL_SRC_DFLL48M
                         | GCLK_GENCTRL_IDC
                         | GCLK_GENCTRL_GENEN;
-    while (GCLK->STATUS.reg * GCLK_STATUS_SYNCBUSY);
+    while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY);
 
 
     /* OSC8M -> 8 MHz, connect to generator 3 */

@@ -6,6 +6,6 @@
  *        TODO schematic
  */
 
-void clk_setup();
+void clkSetup();
 
 #endif

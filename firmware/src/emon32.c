@@ -1,15 +1,19 @@
 #include "emon32_samd.h"
 
 static inline void
-setup_samd()
+setup_uc()
 {
-    clk_setup();
-    timer_setup();
+    clkSetup();
+    timerSetup();
+    portSetup();
+    sercomSetup();
 };
 
 int
 main()
 {
-    setup_samd();
-    while(1);
+    setup_uc();
+
+    uartPutcBlocking('a');
+    while(1) uartPutsBlocking("\r\n== Energy Monitor 32 ==\r\n");
 }
