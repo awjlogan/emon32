@@ -16,7 +16,7 @@ clkSetup()
     NVMCTRL->CTRLB.bit.RWS = NVMCTRL_CTRLB_RWS_HALF_Val;
 
     /* 2. OSC32K setup */
-    const uint32_t calOsc32 = (CAL_REG & CAL_OSC32_Msk) >> CAL_OSC32_Pos;
+    const uint32_t calOsc32 = (CAL_REG_HIGH & CAL_OSC32_Msk) >> CAL_OSC32_Pos;
     SYSCTRL->OSC32K.reg =   SYSCTRL_OSC32K_CALIB(calOsc32)
                           | SYSCTRL_OSC32K_STARTUP(0x6u)
                           | SYSCTRL_OSC32K_EN32K

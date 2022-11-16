@@ -33,3 +33,4 @@ fp-info-cache
 build/
 compile_commands.json
 .cache/
+.md.backup

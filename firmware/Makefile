@@ -37,7 +37,9 @@ SRCS += \
   ./src/driver_ADC.c \
   ./src/driver_PORT.c \
   ./src/driver_TIME.c \
-  ./src/driver_SERCOM.c
+  ./src/driver_SERCOM.c \
+  ./src/driver_DMAC.c \
+  ./src/driver_EVSYS.c
 
 
 DEFINES += \

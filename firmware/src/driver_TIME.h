@@ -12,8 +12,7 @@ void timerSetup();
 void timerDelay_ms(uint16_t delay);
 
 /* @brief       Blocking delay. Use with caution.
- * @param [in]  Delay period is us, maximum is (2^32)-1 us
- * TODO Check microsecond resolution
+ * @param [in]  Delay period in us
  */
 void timerDelay_us(uint32_t delay);
 
