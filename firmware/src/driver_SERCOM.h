@@ -22,7 +22,6 @@ void uartPutcBlocking(char c);
 void uartPutsBlocking(const char *s);
 
 /* @brief Configure the DMA for non-blocking transactions
- * @param [in] Pointer to the DMAC configuration struct
  */
 void uartConfigureDMA();
 
@@ -30,6 +29,6 @@ void uartConfigureDMA();
  * @param [in] Pointer to the string
  * @param [in] Length of the string (not including NULL)
  */
-void uartPutsNonBlocking(const char *s, uint8_t len);
+void uartPutsNonBlocking(const char * const s, uint16_t len);
 
 #endif

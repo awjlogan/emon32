@@ -30,8 +30,6 @@ sercomSetup()
 
     SERCOM0->USART.BAUD.reg = (uint16_t)br + 1u;
     SERCOM0->USART.CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;
-
-    /* TODO If RFM69 is used, add SPI configuration on SERCOM1 */
 }
 
 void
@@ -45,4 +43,28 @@ void
 uartPutsBlocking(const char *s)
 {
     while (*s) uartPutcBlocking(*s++);
+}
+
+void
+uartConfigureDMA()
+{
+    volatile DmacDescriptor * dmacDesc = dmacGetDescriptor(DMA_CHAN_UART);
+    dmacDesc->BTCTRL.reg =   DMAC_BTCTRL_VALID
+                           | DMAC_BTCTRL_BLOCKACT_NOACT
+                           | DMAC_BTCTRL_STEPSIZE_X1
+                           | DMAC_BTCTRL_STEPSEL_SRC
+                           | DMAC_BTCTRL_SRCINC
+                           | DMAC_BTCTRL_BEATSIZE_BYTE;
+
+    dmacDesc->DSTADDR.reg = (uint32_t)&SERCOM0->USART.DATA.reg;
+    dmacDesc->DESCADDR.reg = 0u;
+}
+
+void
+uartPutsNonBlocking(const char * const s, uint16_t len)
+{
+    volatile DmacDescriptor * dmacDesc = dmacGetDescriptor(DMA_CHAN_UART);
+    dmacDesc->BTCNT.reg = len;
+    dmacDesc->SRCADDR.reg = (uint32_t)s + len;
+    dmacStartTransfer(DMA_CHAN_UART);
 }
