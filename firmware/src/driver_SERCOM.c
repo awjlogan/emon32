@@ -56,7 +56,7 @@ uartConfigureDMA()
                            | DMAC_BTCTRL_SRCINC
                            | DMAC_BTCTRL_BEATSIZE_BYTE;
 
-    dmacDesc->DSTADDR.reg = (uint32_t)&SERCOM0->USART.DATA.reg;
+    dmacDesc->DSTADDR.reg = (uint32_t)&SERCOM0->USART.DATA;
     dmacDesc->DESCADDR.reg = 0u;
 }
 
@@ -64,6 +64,8 @@ void
 uartPutsNonBlocking(const char * const s, uint16_t len)
 {
     volatile DmacDescriptor * dmacDesc = dmacGetDescriptor(DMA_CHAN_UART);
+    /* Valid bit is cleared when a channel is complete */
+    dmacDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
     dmacDesc->BTCNT.reg = len;
     dmacDesc->SRCADDR.reg = (uint32_t)s + len;
     dmacStartTransfer(DMA_CHAN_UART);

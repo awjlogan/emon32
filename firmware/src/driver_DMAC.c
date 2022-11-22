@@ -14,11 +14,23 @@ dmacSetup()
     DMAC->CTRL.reg =   DMAC_CTRL_DMAENABLE
                      | DMAC_CTRL_LVLEN(0xFu);
 
+    /* TODO Make the init for ADC and DMA independent from the DMAC driver */
     /* UART DMA */
     DMAC->CHID.reg = DMA_CHAN_UART;
     DMAC->CHCTRLB.reg =   DMAC_CHCTRLB_LVL(1u)
                         | DMAC_CHCTRLB_TRIGSRC(SERCOM0_DMAC_ID_TX)
                         | DMAC_CHCTRLB_TRIGACT_BEAT;
+
+
+    /* ADC DMA */
+    DMAC->CHID.reg = DMA_CHAN_ADC;
+    DMAC->CHCTRLB.reg =   DMAC_CHCTRLB_LVL(0u)
+                        | DMAC_CHCTRLB_TRIGSRC(ADC_DMAC_ID_RESRDY)
+                        | DMAC_CHCTRLB_TRIGACT_BEAT;
+
+    /* Enable the DMAC interrupt in the NVIC, but leave the channel interrupt
+     * enable/disable for each channel to the peripheral */
+    NVIC_EnableIRQ(DMAC_IRQn);
 }
 
 volatile DmacDescriptor *
@@ -30,6 +42,49 @@ dmacGetDescriptor(unsigned int ch)
 void
 dmacStartTransfer(unsigned int ch)
 {
-    DMAC->CHID.reg = (uint8_t)ch;
+    DMAC->CHID.reg = ch;
     DMAC->CHCTRLA.reg |= DMAC_CHCTRLA_ENABLE;
+}
+
+void
+dmacEnableChannelInterrupt(unsigned int ch)
+{
+    DMAC->CHID.reg = ch;
+    DMAC->CHINTENSET.reg = DMAC_CHINTENSET_TCMPL;
+}
+
+void
+dmacDisableChannelInterrupt(unsigned int ch)
+{
+    DMAC->CHID.reg = ch;
+    DMAC->CHINTENCLR.reg = DMAC_CHINTENCLR_TCMPL;
+}
+
+void
+dmacClearChannelInterrupt(unsigned int ch)
+{
+    DMAC->CHID.reg = ch;
+    DMAC->CHINTFLAG.reg = DMAC_CHINTFLAG_TCMPL;
+}
+
+void
+irq_handler_dmac()
+{
+    /* Check which channel has triggered the interrupt, set the event, and
+     * clear the interrupt source
+     */
+
+    DMAC->CHID.reg = DMA_CHAN_ADC;
+    if (DMAC->CHINTFLAG.reg & DMAC_CHINTFLAG_TCMPL)
+    {
+        emon32SetEvent(EVT_DMAC_SMP_CMPL);
+        DMAC->CHINTFLAG.reg = DMAC_CHINTFLAG_TCMPL;
+    }
+
+    DMAC->CHID.reg = DMA_CHAN_UART;
+    if (DMAC->CHINTFLAG.reg & DMAC_CHINTFLAG_TCMPL)
+    {
+        emon32SetEvent(EVT_DMAC_UART_CMPL);
+        DMAC->CHINTFLAG.reg = DMAC_CHINTFLAG_TCMPL;
+    }
 }

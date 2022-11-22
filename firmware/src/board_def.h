@@ -5,11 +5,6 @@
  * extend this, the base SAMD10 configuration can be bracketed in IFDEF
  */
 
-/* Voltage and CT setup */
-#define NUM_V               1u
-#define NUM_CT              4u
-#define SAMPLE_RATE         4800u
-
 /* Clock frequencies
  *  - Core is on the 48 MHz DFLL
  *  - Peripherals are on the OSC8M / 8 -> MHz
