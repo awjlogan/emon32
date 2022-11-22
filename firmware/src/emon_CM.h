@@ -1,16 +1,8 @@
 #ifndef EMON_CM_H
 #define EMON_CM_H
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stdbool.h>
-
-/******************************************************************************
- * Device specific defines
- *****************************************************************************/
-
-#define NUM_CHAN_V          1u
-#define NUM_CHAN_CT         7u
+#include "emon32.h"
+#include "board_def.h"
 
 /******************************************************************************
  * Type definitions
@@ -23,12 +15,6 @@ typedef enum {
     ENABLE_FAIL_ENABLED,
 } ECM_STATUS_t;
 
-struct ADC_samples {
-    /* Voltage samples */
-    int16_t     adcV[NUM_CHAN_V];
-    /* CT samples */
-    int16_t     adcCT[NUM_CHAN_CT];
-};
 
 struct VAccumulator {
     uint32_t    sumV_sqr;
@@ -43,8 +29,8 @@ struct CTAccumulator {
 };
 
 struct Accumulator {
-    struct VAccumulator     processV[NUM_CHAN_V];
-    struct CTAccumulator    processI[NUM_CHAN_CT];
+    struct VAccumulator     processV[NUM_V];
+    struct CTAccumulator    processI[NUM_CT];
     uint8_t                 num_samples;
 };
 
@@ -56,8 +42,8 @@ struct ECM_result_CT_float {
 };
 
 struct ECM_result_float {
-    float                       rmsV[NUM_CHAN_V];
-    struct ECM_result_CT_float  resultCT[NUM_CHAN_CT];
+    float                       rmsV[NUM_V];
+    struct ECM_result_CT_float  resultCT[NUM_CT];
 };
 
 struct ECM_CONFIG {
@@ -73,6 +59,14 @@ struct ECM_CONFIG {
  * Function prototypes
  *****************************************************************************/
 
+/*! @brief Configure the power/energy accumulation system */
+
+/*! @brief Injects a raw sample from the ADC into the accumulators.
+ *  @param [in] : pointer to a struct containing the V/CT values with the DC
+ *                bias (roughly) removed
+ */
+void ecmInjectSample(const volatile SampleSet_t *const smp);
+
 /* cm_defaults returns a default configuration (50 Hz mains) with:
  *  - interleaved I/V values
  * - 5 current channels
@@ -82,7 +76,6 @@ struct ECM_CONFIG {
 struct ECM_CONFIG cm_defaults();
 
 /*! \brief Configure the cm_core functions. Returns an ECM_STATUS struct
- *
  * @param [in] pCfg Pointer to ECM_CONFIG struct containing the configuration
  */
 ECM_STATUS_t cm_init(const struct ECM_CONFIG * const pCfg);

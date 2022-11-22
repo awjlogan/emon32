@@ -39,7 +39,9 @@ SRCS += \
   ./src/driver_TIME.c \
   ./src/driver_SERCOM.c \
   ./src/driver_DMAC.c \
-  ./src/driver_EVSYS.c
+  ./src/driver_EVSYS.c \
+  ./src/smp_preprocess.c \
+  ./src/ui.c
 
 
 DEFINES += \

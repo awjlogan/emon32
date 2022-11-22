@@ -75,3 +75,11 @@ portPinDrv(unsigned int pin, PINDRV_t drv)
         PORT->Group[0].OUTTGL.reg = (1u << pin);
     }
 }
+
+unsigned int
+portPinValue(unsigned int pin)
+{
+    unsigned int ret;
+    ret = (0u == (PORT->Group[0].IN.reg & (1u << pin))) ? 0u : 1u;
+    return ret;
+}

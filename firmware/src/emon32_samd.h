@@ -5,6 +5,8 @@
 
 #include "board_def.h"
 #include "emon32.h"
+#include "smp_preprocess.h"
+#include "ui.h"
 
 #include "driver_ADC.h"
 #include "driver_CLK.h"

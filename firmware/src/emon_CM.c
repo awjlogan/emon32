@@ -1,4 +1,4 @@
-#include "emonLibCM_core.h"
+#include "emon_CM.h"
 
 /******************************************************************************
  * Local variables
@@ -110,4 +110,14 @@ emonLibCM_cycle_float(const struct Accumulator *const pAcc, struct ELC_result_fl
         pRes->resultCT[idxCT].realPower = powerNow + 0.5;
         const float energyNow = powerNow * pAcc->num_samples + residualEnergy[idxCT];
     }
+}
+
+
+
+void
+ecmInjectSample(const volatile SampleSet_t *const smp)
+{
+    /* Copy the sample data into the ring buffer */
+    /* Do power calculations */
+    /* When a whole cycle is complete, calculate RMS for V/CT */
 }
