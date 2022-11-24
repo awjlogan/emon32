@@ -8,9 +8,9 @@
  */
 void adcSetup();
 
-/*! @brief Sets the destination address for the DMA transfer from the ADC
+/*! @brief Starts the DMAC transfer from the ADC
  *  @param [in] : address of the "collecting" structure
  */
-void adcSetDestination(uint32_t buf);
+void adcStartDMAC(uint32_t buf);
 
 #endif

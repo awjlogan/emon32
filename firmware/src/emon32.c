@@ -1,5 +1,4 @@
 #include "emon32_samd.h"
-#include "emon_CM.h"
 
 /* Event handlers */
 static uint32_t evtPend;
@@ -39,10 +38,9 @@ evtKiloHertz()
     emon32ClrEvent(EVT_SYSTICK_1KHz);
 }
 
-
-/* @brief This function mustbe called first. An implementation must provide
- *        all the functions that are called; these can be empty if they are
- *        not used.
+/*! @brief This function must be called first. An implementation must provide
+ *         all the functions that are called; these can be empty if they are
+ *         not used.
  */
 static inline void
 setup_uc()
@@ -59,11 +57,9 @@ setup_uc()
 int
 main()
 {
-    /* Sample storage */
-    volatile SampleSetPacked_t samples[SAMPLE_BUF_DEPTH];
-    volatile SampleSetPacked_t *volatile smp_active = &samples[0];
-    volatile SampleSetPacked_t *volatile smp_proc = &samples[1];
-    SampleSet_t smp_inject;
+    /* Processed data */
+    ECMSet_t dataset;
+    ECMSet_t *const pDataset = &dataset;
 
     setup_uc();
 
@@ -71,19 +67,37 @@ main()
     uartConfigureDMA();
     uartPutsBlocking("\r\n== Energy Monitor 32 ==\r\n");
 
-    /* Set ADC DMA destination */
-    adcSetDestination((uint32_t)smp_active);
-
-    while(0 != evtPend)
+    for (;;)
     {
-        if (evtPend & (1u << EVT_SYSTICK_1KHz))
+        /* While there is an event pending (may be set while another is
+         * handled, keep looping. Enter sleep (WFI) when done.
+         */
+        while(0 != evtPend)
         {
-            evtKiloHertz();
+            if (evtPend & (1u << EVT_SYSTICK_1KHz))
+            {
+                evtKiloHertz();
+            }
+            if (evtPend & (1u << EVT_DMAC_SMP_CMPL))
+            {
+                /* TODO Check timings; needs to be serviced within 1/2400 s */
+                ecmInjectSample();
+                emon32ClrEvent(EVT_DMAC_SMP_CMPL);
+            }
+            if (evtPend & (1u << EVT_ECM_CYCLE_CMPL))
+            {
+                ecmProcessCycle();
+                emon32ClrEvent(EVT_ECM_CYCLE_CMPL);
+            }
+            if (evtPend & (1u << EVT_ECM_SET_CMPL))
+            {
+                ecmProcessSet(pDataset);
+                emon32ClrEvent(EVT_ECM_SET_CMPL);
+            }
         }
-        if (evtPend & (1u << EVT_DMAC_SMP_CMPL))
-        {
-            preUnpackSample(smp_active, &smp_inject);
-        }
-        __WFI();
+        /* TODO Enter WFI when done, get working first before
+         * introducing any sleep modes!
+         * __WFI();
+         */
     };
 }

@@ -19,6 +19,9 @@
  * #define DOWNSAMPLE_DSP
  */
 
+/* Number of samples available for power calculation. must be power of 2 */
+#define PROC_DEPTH          4u
+
 /* INTSRC_t contains all the event/interrupts sources. This value is shifted
  * to provide a vector of set events as bits.
  */
@@ -29,7 +32,9 @@ typedef enum {
     EVT_UART            = 3u,
     EVT_ADC             = 4u,
     EVT_DMAC_UART_CMPL  = 5u,
-    EVT_DMAC_SMP_CMPL   = 6u
+    EVT_DMAC_SMP_CMPL   = 6u,
+    EVT_ECM_CYCLE_CMPL  = 7u,
+    EVT_ECM_SET_CMPL    = 8u
 } INTSRC_t;
 
 
@@ -62,5 +67,8 @@ void emon32SetEvent(INTSRC_t evt);
  *  @param [in] Event source in enum
  */
 void emon32ClrEvent(INTSRC_t evt);
+
+/*! @brief Swap two buffers
+ */
 
 #endif

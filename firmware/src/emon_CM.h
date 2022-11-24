@@ -1,8 +1,8 @@
 #ifndef EMON_CM_H
 #define EMON_CM_H
 
-#include "emon32.h"
 #include "board_def.h"
+#include "emon32.h"
 
 /******************************************************************************
  * Type definitions
@@ -15,24 +15,28 @@ typedef enum {
     ENABLE_FAIL_ENABLED,
 } ECM_STATUS_t;
 
+typedef enum {
+    POL_POS,
+    POL_NEG
+} Polarity_t;
 
-struct VAccumulator {
+typedef struct {
     uint32_t    sumV_sqr;
     int32_t     sumV_deltas;
-};
+} VAccumulator_t;
 
-struct CTAccumulator {
+typedef struct {
     uint32_t    sumPA;
     uint32_t    sumPB;
     uint32_t    sumI_sqr;
     int32_t     sumI_deltas;
-};
+} CTAccumulator_t;
 
-struct Accumulator {
-    struct VAccumulator     processV[NUM_V];
-    struct CTAccumulator    processI[NUM_CT];
-    uint8_t                 num_samples;
-};
+typedef struct {
+    VAccumulator_t     processV[NUM_V];
+    CTAccumulator_t    processCT[NUM_CT];
+    unsigned int       num_samples;
+} Accumulator_t;
 
 struct ECM_result_CT_float {
     float rmsCT;
@@ -55,17 +59,37 @@ struct ECM_CONFIG {
     struct ADC_samples  *pADC_raw;
 };
 
+typedef struct {
+    int16_t rmsV[NUM_V];
+    int16_t rmsCT[NUM_CT];
+} ECMSet_t;
+
 /******************************************************************************
  * Function prototypes
  *****************************************************************************/
 
 /*! @brief Configure the power/energy accumulation system */
 
-/*! @brief Injects a raw sample from the ADC into the accumulators.
- *  @param [in] : pointer to a struct containing the V/CT values with the DC
- *                bias (roughly) removed
+/*! @brief Swaps the ADC data buffer pointers
  */
-void ecmInjectSample(const volatile SampleSet_t *const smp);
+void ecmSwapDataBuffer();
+
+/*! @brief Returns a pointer to the ADC data buffer
+ */
+volatile SampleSetPacked_t *ecmDataBuffer();
+
+/*! @brief Injects a raw sample from the ADC into the accumulators.
+ */
+void ecmInjectSample();
+
+/*! @brief Processes a whole cycle
+ */
+void ecmProcessCycle();
+
+/*! @brief Processes a whole data set
+ *  @param [in] pSet : pointer to the processed data structure
+ */
+void ecmProcessSet(ECMSet_t *set);
 
 /* cm_defaults returns a default configuration (50 Hz mains) with:
  *  - interleaved I/V values

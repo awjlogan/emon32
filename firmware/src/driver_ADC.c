@@ -57,8 +57,9 @@ adcSetup()
 }
 
 void
-adcSetDestination(uint32_t buf)
+adcStartDMAC(uint32_t buf)
 {
     volatile DmacDescriptor *dmaDesc = dmacGetDescriptor(DMA_CHAN_ADC);
+    dmaDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
     dmaDesc->DSTADDR.reg = buf;
 }

@@ -1,123 +1,149 @@
-#include "emon_CM.h"
+#include "emon32_samd.h"
+#include <string.h>
+
+/*! @brief Swap pointers to buffers
+ */
+static void
+ecmSwapPtr(void *pIn1, void *pIn2)
+{
+    void *tmp = pIn1;
+    pIn1 = pIn2;
+    pIn2 = tmp;
+}
 
 /******************************************************************************
- * Local variables
+ * Data acquisition
  *****************************************************************************/
 
-static bool libcm_enabled = false;
-static struct ELC_CONFIG elc_config;
+static volatile SampleSetPacked_t adc_samples[SAMPLE_BUF_DEPTH];
+static volatile SampleSetPacked_t *volatile adc_active = adc_samples;
+static volatile SampleSetPacked_t *volatile adc_proc = adc_samples + 1;
 
-static struct Accumulator bufferA;
-static struct Accumulator bufferB;
-static struct Accumulator *pCollect = &bufferA;
-static struct Accumulator *pProcess = &bufferB;
+void
+ecmSwapDataBuffer()
+{
+    ecmSwapPtr((void *)adc_active, (void *)adc_proc);
+}
+
+volatile SampleSetPacked_t *
+ecmDataBuffer()
+{
+    return adc_active;
+}
+
+/******************************************************************************
+ * Pre-processing
+ *****************************************************************************/
+
+static SampleSet_t      samples[PROC_DEPTH];
+
+/******************************************************************************
+ * Power accumulators
+ *****************************************************************************/
+
+static Accumulator_t    accum_buffer[2];
+static Accumulator_t *  accum_collecting = accum_buffer;
+static Accumulator_t *  accum_processing = accum_buffer + 1;
 
 /******************************************************************************
  * Functions
  *****************************************************************************/
 
-struct ELC_CONFIG
-emonLibCM_defaults()
+static void
+ecmUnpackSample(SampleSet_t * pDst)
 {
-    struct ELC_CONFIG default_config;
-    default_config.num_report_cycles  = 500ul;    // (50 Hz * 10 s)
-    default_config.depth_ADC_raw = 4u;
-    default_config.pADC_raw = 0u;
-    return default_config;
-}
-
-ELC_STATUS_t
-emonLibCM_init(const struct ELC_CONFIG * const pCfg)
-{
-    /* Can not initialise while enabled */
-    if (libcm_enabled) return INIT_FAIL_ENABLED;
-
-    /* Revisit : sanitise configuration */
-    elc_config = *pCfg;
-    return INIT_SUCCESS;
-}
-
-ELC_STATUS_t
-emonLibCM_enable()
-{
-    if (libcm_enabled) return ENABLE_FAIL_ENABLED;
-
-    libcm_enabled = true;
-    return ENABLE_SUCCESS;
-}
-
-void
-emonLibCM_process_sample()
-{
-    /* Revisit: currently only handles one voltage channel */
-
-    /* Current sample index */
-    static uint8_t smpIdx;
-    /* Previous sample index - unsigned integer wraps
-     * Revisit: configurable mask
-     */
-    const uint8_t smpIdx_prev = (smpIdx - 1u) & 0x3u;
-
-    const int32_t sampleV = (int32_t)elc_config.pADC_raw[smpIdx].adcV[0];
-    const int32_t sampleV_last = (int32_t)elc_config.pADC_raw[smpIdx_prev].adcV[0];
-
-    pCollect->processV[0].sumV_sqr = sampleV * sampleV;
-    pCollect->processV[0].sumV_deltas += sampleV;
-
-    for (size_t idxCT = 0; idxCT < NUM_CHAN_CT; idxCT++)
+#ifndef DOWNSAMPLE_DSP
+    /* No filtering, discard the second sample in the set */
+    for (unsigned int idxV = 0; idxV < NUM_V; idxV++)
     {
-        const int32_t sampleI = (int32_t)elc_config.pADC_raw[smpIdx_prev].adcCT[idxCT];
-        pCollect->processI[idxCT].sumI_sqr = sampleI * sampleI;
-        pCollect->processI[idxCT].sumI_deltas += sampleI;
+        pDst->smpV[idxV] = adc_proc->samples[0].smpV[idxV];
     }
-    smpIdx++;
-    pCollect->num_samples++;
-}
 
-struct Accumulator *
-emonLibCM_cycle_complete()
-{
-    /* Swap processing and collection buffers */
-    const struct Accumulator accZero = {};
-    struct Accumulator *const accSwap = pCollect;
-    pCollect = pProcess;
-    pProcess = accSwap;
-    /* Clear new collection buffer */
-    *pCollect = accZero;
-    return pProcess;
-}
-
-void
-emonLibCM_cycle_float(const struct Accumulator *const pAcc, struct ELC_result_float *const pRes)
-{
-    /* Roll over any partial Wh from previous cycle */
-    static float residualEnergy[NUM_CHAN_CT];
-
-    /* Voltage channel
-     * Revisit : handle multiple V channels
-     */
-    pRes->rmsV[0] = 0.0;
-
-    /* CT channels */
-    for (uint8_t idxCT = 0; idxCT < NUM_CHAN_CT; idxCT)
+    for (unsigned int idxI = 0; idxI < NUM_CT; idxI++)
     {
-        const float sumRealPower = 0.0;
-        const float powerNow = sumRealPower;
-        pRes->resultCT[idxCT].rmsCT = 0.0;
-
-        const float VA = pRes->resultCT[idxCT].rmsCT * pRes->rmsV[0];
-        pRes->resultCT[idxCT].powerFactor = powerNow / VA;
-        pRes->resultCT[idxCT].realPower = powerNow + 0.5;
-        const float energyNow = powerNow * pAcc->num_samples + residualEnergy[idxCT];
+        pDst->smpCT[idxI] = adc_proc->samples[0].smpCT[idxI];
     }
+#else
+    /* TODO Make half band filter */
+#endif
 }
 
-
-
 void
-ecmInjectSample(const volatile SampleSet_t *const smp)
+ecmInjectSample()
 {
-    /* Copy the sample data into the ring buffer */
+    SampleSet_t smpProc;
+    SampleSet_t *pSmpProc = &smpProc;
+    static unsigned int idxInject;
+
+    /* Zero crossing detection
+     * TODO Should this be a hardware based system, if enough pins? */
+    Polarity_t polarity_now;
+    static Polarity_t polarity_last = POL_POS;
+    static int hystCnt = 0;
+
+    /* Copy the pre-processed sample data into the ring buffer */
+    ecmUnpackSample(pSmpProc);
+    memcpy((void *)(samples + idxInject), (const void *)pSmpProc, sizeof(SampleSet_t));
+
     /* Do power calculations */
-    /* When a whole cycle is complete, calculate RMS for V/CT */
+    accum_collecting->num_samples++;
+
+    /* TODO this is only for single phase currently, loop is there for later */
+    const int32_t thisV = (int32_t)samples[idxInject].smpV[0];
+
+    for (unsigned int idxV = 0; idxV < NUM_V; idxV++)
+    {
+        accum_collecting->processV[idxV].sumV_sqr += thisV * thisV;
+        accum_collecting->processV[idxV].sumV_deltas += thisV;
+    }
+
+    const unsigned int idxLast = (idxInject - 1u) & (PROC_DEPTH - 1u);
+    const int16_t lastV = samples[idxLast].smpV[0];
+
+    for (unsigned int idxCT = 0; idxCT < NUM_CT; idxCT++)
+    {
+        const int32_t lastCT = (int32_t)samples[idxLast].smpCT[idxCT];
+        accum_collecting->processCT[idxCT].sumPA += lastCT * lastV;
+        accum_collecting->processCT[idxCT].sumPB += lastCT * thisV;
+        accum_collecting->processCT[idxCT].sumI_sqr += lastCT * lastCT;
+        accum_collecting->processCT[idxCT].sumI_deltas += lastCT;
+    }
+
+    /* Zero crossing detection. Flag for processing if cycle is complete */
+    polarity_now = thisV >= 0 ? POL_POS : POL_NEG;
+    if (polarity_now != polarity_last)
+    {
+        hystCnt++;
+        if (2u == hystCnt)
+        {
+            polarity_last = polarity_now;
+            hystCnt = 0u;
+            if (POL_POS == polarity_now)
+            {
+                emon32SetEvent(EVT_ECM_CYCLE_CMPL);
+                ecmSwapPtr((void *)accum_collecting, (void *)accum_processing);
+                memset((void *)accum_collecting, 0, sizeof(Accumulator_t));
+            }
+        }
+    }
+    /* Advance injection point, masking for overflow */
+    idxInject = (idxInject + 1u) & (PROC_DEPTH - 1u);
+}
+
+void
+ecmProcessCycle()
+{
+    static unsigned int cycleCount;
+
+    cycleCount++;
+    if (cycleCount >= 500)
+    {
+        cycleCount = 0u;
+        emon32SetEvent(EVT_ECM_SET_CMPL);
+    }
+}
+
+void
+ecmProcessSet(ECMSet_t *set)
+{
 }

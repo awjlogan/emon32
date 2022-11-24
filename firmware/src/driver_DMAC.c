@@ -77,6 +77,9 @@ irq_handler_dmac()
     DMAC->CHID.reg = DMA_CHAN_ADC;
     if (DMAC->CHINTFLAG.reg & DMAC_CHINTFLAG_TCMPL)
     {
+        /* Restart DMA for ADC here, raise flag to handle sample */
+        ecmSwapDataBuffer();
+        adcStartDMAC((uint32_t)ecmDataBuffer());
         emon32SetEvent(EVT_DMAC_SMP_CMPL);
         DMAC->CHINTFLAG.reg = DMAC_CHINTFLAG_TCMPL;
     }
