@@ -54,6 +54,7 @@ adcSetup()
                            | DMAC_BTCTRL_STEPSIZE_X1;
 
     dmacEnableChannelInterrupt(DMA_CHAN_ADC);
+    ADC->CTRLA.reg |= ADC_CTRLA_ENABLE;
 }
 
 void
@@ -62,4 +63,5 @@ adcStartDMAC(uint32_t buf)
     volatile DmacDescriptor *dmaDesc = dmacGetDescriptor(DMA_CHAN_ADC);
     dmaDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
     dmaDesc->DSTADDR.reg = buf;
+    dmacStartTransfer(DMA_CHAN_ADC);
 }

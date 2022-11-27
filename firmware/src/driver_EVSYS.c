@@ -14,8 +14,13 @@ evsysSetup()
     /* Connect TC1 -> ADC (Section 23.6.2.1) - select channel N-1 */
     EVSYS->USER.reg =   EVSYS_USER_USER(EVSYS_ID_USER_ADC_START)
                       | EVSYS_USER_CHANNEL(1u);
-    EVSYS->CHANNEL.reg =   EVSYS_CHANNEL_CHANNEL(1u)
-                         | EVSYS_CHANNEL_EDGSEL(EVSYS_CHANNEL_EDGSEL_RISING_EDGE)
-                         | EVSYS_CHANNEL_PATH_RESYNCHRONIZED
+
+    /* ADC path must be async (Table 23-6)
+     * NB : the channel ID in the CHANNEL register is the channel number; for
+     * the USER register it is (n - 1).
+     */
+
+    EVSYS->CHANNEL.reg =   EVSYS_CHANNEL_CHANNEL(0u)
+                         | EVSYS_CHANNEL_PATH_ASYNCHRONOUS
                          | EVSYS_CHANNEL_EVGEN(EVSYS_ID_GEN_TC1_OVF);
 }

@@ -50,21 +50,21 @@ void
 dmacEnableChannelInterrupt(unsigned int ch)
 {
     DMAC->CHID.reg = ch;
-    DMAC->CHINTENSET.reg = DMAC_CHINTENSET_TCMPL;
+    DMAC->CHINTENSET.reg |= DMAC_CHINTENSET_TCMPL;
 }
 
 void
 dmacDisableChannelInterrupt(unsigned int ch)
 {
     DMAC->CHID.reg = ch;
-    DMAC->CHINTENCLR.reg = DMAC_CHINTENCLR_TCMPL;
+    DMAC->CHINTENCLR.reg |= DMAC_CHINTENCLR_TCMPL;
 }
 
 void
 dmacClearChannelInterrupt(unsigned int ch)
 {
     DMAC->CHID.reg = ch;
-    DMAC->CHINTFLAG.reg = DMAC_CHINTFLAG_TCMPL;
+    DMAC->CHINTFLAG.reg |= DMAC_CHINTFLAG_TCMPL;
 }
 
 void
@@ -73,7 +73,6 @@ irq_handler_dmac()
     /* Check which channel has triggered the interrupt, set the event, and
      * clear the interrupt source
      */
-
     DMAC->CHID.reg = DMA_CHAN_ADC;
     if (DMAC->CHINTFLAG.reg & DMAC_CHINTFLAG_TCMPL)
     {
