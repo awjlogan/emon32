@@ -7,7 +7,7 @@ timerSetup()
      * The tick value is reloaded on underflow
      * SysTick is part of CMSIS so should be portable across Cortex-M cores
      */
-    const uint32_t tickkHz = (F_CPU / 1000u) - 1u;
+    const uint32_t tickkHz = (F_CORE / 1000u) - 1u;
     SysTick_Config(tickkHz);
 
     /* TC1 is used to trigger ADC sampling at constant rate */
