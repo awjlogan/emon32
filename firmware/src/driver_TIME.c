@@ -25,11 +25,16 @@ timerSetup()
     /* TC1 overflow event output to trigger ADC */
     TC1->COUNT8.EVCTRL.reg |= TC_EVCTRL_OVFEO;
 
-    /* TC1 is running at 1 MHz, each tick is 1 us */
+    /* TC1 is running at 1 MHz, each tick is 1 us
+     * PER, COUNT, and Enable require synchronisation (28.6.6)
+     */
     const unsigned int cntPer = F_TC1 / SAMPLE_RATE / (NUM_V + NUM_CT);
     TC1->COUNT8.PER.reg = (uint8_t)cntPer;
+    while (TC1->COUNT8.STATUS.reg & TC_STATUS_SYNCBUSY);
     TC1->COUNT8.COUNT.reg = 0u;
+    while (TC1->COUNT8.STATUS.reg & TC_STATUS_SYNCBUSY);
     TC1->COUNT8.CTRLA.reg |= TC_CTRLA_ENABLE;
+    while (TC1->COUNT8.STATUS.reg & TC_STATUS_SYNCBUSY);
 }
 
 void

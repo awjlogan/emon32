@@ -24,12 +24,17 @@ sercomSetup()
                                | SERCOM_USART_CTRLA_RXPO(UART_PAD_RX)
                                | SERCOM_USART_CTRLA_TXPO(UART_PAD_TX);
 
+    /* TX/RX enable requires synchronisation */
     SERCOM0->USART.CTRLB.reg =   SERCOM_USART_CTRLB_RXEN
                                | SERCOM_USART_CTRLB_TXEN
                                | SERCOM_USART_CTRLB_CHSIZE(0);
+    while (SERCOM0->USART.STATUS.reg & SERCOM_USART_SYNCBUSY_CTRLB);
 
     SERCOM0->USART.BAUD.reg = (uint16_t)br + 1u;
+    /* Enable requires synchronisation (25.6.6) */
     SERCOM0->USART.CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;
+    while (SERCOM0->USART.STATUS.reg & SERCOM_USART_SYNCBUSY_ENABLE);
+
 }
 
 void

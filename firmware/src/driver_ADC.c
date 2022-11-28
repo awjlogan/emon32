@@ -22,7 +22,9 @@ adcSetup()
     ADC->REFCTRL.reg =   ADC_REFCTRL_REFCOMP
                        | ADC_REFCTRL_REFSEL_AREFA;
 
-    /* Differential mode, /8 prescale of F_PERIPH  */
+    /* Differential mode, /8 prescale of F_PERIPH.
+     * Requires synchronisation after write (30.6.13)
+     */
     ADC->CTRLB.reg =   ADC_CTRLB_PRESCALER_DIV8
                      | ADC_CTRLB_DIFFMODE;
     while (ADC->STATUS.reg & ADC_STATUS_SYNCBUSY);
@@ -32,11 +34,12 @@ adcSetup()
      */
     ADC->SAMPCTRL.reg = 0x1Du;
 
-    /* Input control */
+    /* Input control - requires synchronisation (30.6.13) */
     ADC->INPUTCTRL.reg =   ADC_INPUTCTRL_MUXPOS_PIN2
                          | ADC_INPUTCTRL_MUXNEG_PIN0
                          /* INPUTSCAN is number of channels - 1 */
                          | ADC_INPUTCTRL_INPUTSCAN(NUM_V + NUM_CT - 1u);
+    while (ADC->STATUS.reg & ADC_STATUS_SYNCBUSY);
 
     /* ADC is triggered by an event from TC1 with no CPU intervention */
     ADC->EVCTRL.reg = ADC_EVCTRL_STARTEI;
@@ -54,7 +57,10 @@ adcSetup()
                            | DMAC_BTCTRL_STEPSIZE_X1;
 
     dmacEnableChannelInterrupt(DMA_CHAN_ADC);
+
+    /* Enable requires synchronisation (30.6.13) */
     ADC->CTRLA.reg |= ADC_CTRLA_ENABLE;
+    while (ADC->STATUS.reg & ADC_STATUS_SYNCBUSY);
 }
 
 void
