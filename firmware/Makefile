@@ -40,6 +40,7 @@ SRCS += \
   ./src/driver_SERCOM.c \
   ./src/driver_DMAC.c \
   ./src/driver_EVSYS.c \
+  ./src/driver_WDT.c \
   ./src/emon_CM.c \
   ./src/ui.c
 

@@ -15,6 +15,6 @@
 #include "driver_TIME.h"
 #include "driver_DMAC.h"
 #include "driver_EVSYS.h"
-
+#include "driver_WDT.h"
 
 #endif
