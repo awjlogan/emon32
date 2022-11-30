@@ -35,16 +35,87 @@ timerSetup()
     while (TC1->COUNT8.STATUS.reg & TC_STATUS_SYNCBUSY);
     TC1->COUNT8.CTRLA.reg |= TC_CTRLA_ENABLE;
     while (TC1->COUNT8.STATUS.reg & TC_STATUS_SYNCBUSY);
+
+    /* TC2 is used as the delay and elapsed time counter
+     * Enable APB clock, set TC1 to generator 3 @ F_PERIPH
+     * Enable the interrupt for Compare Match, do not route to NVIC
+     */
+    PM->APBCMASK.reg |= PM_APBCMASK_TC2;
+    GCLK->CLKCTRL.reg =   GCLK_CLKCTRL_ID(TC2_GCLK_ID)
+                        | GCLK_CLKCTRL_GEN(3u)
+                        | GCLK_CLKCTRL_CLKEN;
+    TC2->COUNT32.CTRLA.reg =   TC_CTRLA_MODE_COUNT32
+                             | TC_CTRLA_PRESCALER_DIV8
+                             | TC_CTRLA_PRESCSYNC_RESYNC;
 }
 
-void
-irq_handler_tc1()
+int
+timerDelay_us(uint32_t delay)
 {
+    /* Return -1 if timer is already in use */
+    if (TC2->COUNT32.CTRLA.reg & TC_CTRLA_ENABLE)
+    {
+        return -1;
+    }
+
+    /* Unmask match interrrupt, zero counter, set compare value, and start */
+    TC2->COUNT32.INTENSET.reg |= TC_INTENSET_MC0;
+    TC2->COUNT32.COUNT.reg = 0u;
+    while (TC2->COUNT32.STATUS.reg & TC_STATUS_SYNCBUSY);
+    TC2->COUNT32.CC[0].reg = delay;
+    while (TC2->COUNT32.STATUS.reg & TC_STATUS_SYNCBUSY);
+    TC2->COUNT32.CTRLA.reg |= TC_CTRLA_ENABLE;
+    while (TC2->COUNT32.STATUS.reg & TC_STATUS_SYNCBUSY);
+
+    /* Wait for timer to complete, then disable */
+    while (0 == (TC2->COUNT32.INTFLAG.reg & TC_INTFLAG_MC0));
+    TC2->COUNT32.INTFLAG.reg |= TC_INTFLAG_MC0;
+    TC2->COUNT32.CTRLA.reg &= ~TC_CTRLA_ENABLE;
+
+    return 0;
 }
 
+int
+timerDelay_ms(uint16_t delay)
+{
+    return timerDelay_us(delay * 1000u);
+}
+
+int
+timerElapsedStart()
+{
+    /* Return -1 if timer is already in use */
+    if (TC2->COUNT32.CTRLA.reg & TC_CTRLA_ENABLE)
+    {
+        return -1;
+    }
+
+    /* Mask match interrupt, zero counter, and start */
+    TC2->COUNT32.INTENCLR.reg |= TC_INTENCLR_MC0;
+    TC2->COUNT32.COUNT.reg = 0u;
+    while (TC2->COUNT32.STATUS.reg & TC_STATUS_SYNCBUSY);
+    TC2->COUNT32.CTRLA.reg |= TC_CTRLA_ENABLE;
+    while (TC2->COUNT32.STATUS.reg & TC_STATUS_SYNCBUSY);
+    return 0;
+}
+
+uint32_t
+timerElapsedStop()
+{
+    /* Disable timer, and return value of COUNT */
+    __disable_irq();
+    const uint32_t elapsed = TC2->COUNT32.COUNT.reg;
+    __enable_irq();
+    TC2->COUNT32.CTRLA.reg &= ~TC_CTRLA_ENABLE;
+    while (TC2->COUNT32.STATUS.reg & TC_STATUS_SYNCBUSY);
+    return elapsed;
+}
+
+
+/*! @brief On SysTick overflow, set the event in the main loop
+ */
 void
 irq_handler_sys_tick()
 {
     emon32SetEvent(EVT_SYSTICK_1KHz);
-    /* TODO add watchdog timer */
 }
