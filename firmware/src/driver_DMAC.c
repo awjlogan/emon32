@@ -18,7 +18,7 @@ dmacSetup()
     /* UART DMA */
     DMAC->CHID.reg = DMA_CHAN_UART;
     DMAC->CHCTRLB.reg =   DMAC_CHCTRLB_LVL(1u)
-                        | DMAC_CHCTRLB_TRIGSRC(SERCOM0_DMAC_ID_TX)
+                        | DMAC_CHCTRLB_TRIGSRC(SERCOM_UART_DBG_DMAC_ID_TX)
                         | DMAC_CHCTRLB_TRIGACT_BEAT;
 
 

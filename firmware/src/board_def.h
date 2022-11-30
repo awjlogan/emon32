@@ -5,6 +5,7 @@
  * extend this, the base SAMD10 configuration can be bracketed in IFDEF
  */
 
+
 /* Clock frequencies
  *  - Core is on the 48 MHz DFLL
  *  - Peripherals are on the OSC8M / 8 -> MHz
@@ -14,6 +15,25 @@
 #define F_TC1               F_PERIPH / 8
 #define F_TC2               F_PERIPH / 8
 
+/* EEPROM
+ * Uncomment EEPROM_EMULATED to use the software EEPROM mode.
+ * This is not yet implemented.
+ * #define EEPROM_EMULATED
+ */
+
+/* SERCOM peripheral defines */
+#define SERCOM_UART_DBG     SERCOM0
+#define SERCOM_I2CM         SERCOM1
+#define SERCOM_UART_DATA    SERCOM2
+
+#define SERCOM_UART_APBCMASK        PM_APBCMASK_SERCOM0
+#define SERCOM_I2CM_APBCMASK        PM_APBCMASK_SERCOM1
+
+#define SERCOM_UART_DBG_GCLK_ID     SERCOM0_GCLK_ID_CORE
+#define SERCOM_I2CM_GCLK_ID         SERCOM1_GCLK_ID_CORE
+
+#define SERCOM_UART_DBG_DMAC_ID_TX  SERCOM0_DMAC_ID_TX
+
 /* Pin assignments (nb. logical, not physical) */
 #define PIN_EXTINT          24u
 #define PIN_GEN_STATUS      25u
@@ -21,9 +41,10 @@
 #define PIN_SW              15u
 #define PIN_UART_RX         9u
 #define PIN_UART_TX         8u
+#define PIN_I2C_SDA         22u
+#define PIN_I2C_SCL         23u
 
 /* UART related defines */
-#define SERCOM_UART         SERCOM0
 #define UART_PAD_RX         3u
 #define UART_PAD_TX         1u
 #define UART_BAUD           38400u
