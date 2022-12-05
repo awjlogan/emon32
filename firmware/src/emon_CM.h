@@ -15,6 +15,10 @@ typedef enum {
     ENABLE_FAIL_ENABLED,
 } ECM_STATUS_t;
 
+typedef struct {
+    unsigned int reportCycles;  /* Number of cycles before reporting */
+} ECMConfig_t;
+
 typedef enum {
     POL_POS,
     POL_NEG
@@ -38,37 +42,40 @@ typedef struct {
     unsigned int       num_samples;
 } Accumulator_t;
 
-struct ECM_result_CT_float {
-    float rmsCT;
-    float powerFactor;
-    float realPower;
-    float wattHour;
-};
+/* This struct matches emonLibCM's calculations */
+typedef struct {
+    int16_t rmsCT;
+    int16_t realPower;
+    int16_t apparentPower;
+    int16_t powerNow;
+    int16_t powerFactor;
+    int16_t wattHours;
+    int16_t residualEnergy;
+} CycleCT_t;
 
-struct ECM_result_float {
-    float                       rmsV[NUM_V];
-    struct ECM_result_CT_float  resultCT[NUM_CT];
-};
-
-struct ECM_CONFIG {
-    /* Number of mains cycles before reporting */
-    uint32_t            num_report_cycles;
-    /* Depth of sample buffer; must be power of 2 */
-    uint8_t             depth_ADC_raw;
-    /* Pointer to circular array of raw (signed) ADC values */
-    struct ADC_samples  *pADC_raw;
-};
 
 typedef struct {
-    int16_t rmsV[NUM_V];
-    int16_t rmsCT[NUM_CT];
+    int16_t     rmsV[NUM_V];
+    CycleCT_t   valCT[NUM_CT];
+} ECMCycle_t;
+
+/* KEY:VALUE pair to match EmonESP and EmonTx3eInterfacer */
+typedef struct {
+    uint32_t    msgNum;
+    int16_t     rmsV[NUM_V];
+    int16_t     realPowerCT[NUM_CT];
+    uint16_t    wattHourCT[NUM_CT];
 } ECMSet_t;
 
 /******************************************************************************
  * Function prototypes
  *****************************************************************************/
 
+/*! @brief Return a pointer to the configuration structure */
+ECMConfig_t *ecmGetConfig();
+
 /*! @brief Configure the power/energy accumulation system */
+void ecmInit();
 
 /*! @brief Swaps the ADC data buffer pointers
  */
@@ -76,7 +83,7 @@ void ecmSwapDataBuffer();
 
 /*! @brief Returns a pointer to the ADC data buffer
  */
-volatile SampleSetPacked_t *ecmDataBuffer();
+volatile RawSampleSetPacked_t *ecmDataBuffer();
 
 /*! @brief Injects a raw sample from the ADC into the accumulators.
  */
@@ -90,40 +97,5 @@ void ecmProcessCycle();
  *  @param [in] pSet : pointer to the processed data structure
  */
 void ecmProcessSet(ECMSet_t *set);
-
-/* cm_defaults returns a default configuration (50 Hz mains) with:
- *  - interleaved I/V values
- * - 5 current channels
- * - 1 voltage channel
- * - 10 s reporting period
- */
-struct ECM_CONFIG cm_defaults();
-
-/*! \brief Configure the cm_core functions. Returns an ECM_STATUS struct
- * @param [in] pCfg Pointer to ECM_CONFIG struct containing the configuration
- */
-ECM_STATUS_t cm_init(const struct ECM_CONFIG * const pCfg);
-
-/*! \brief Enable cm_core processing
- */
-ECM_STATUS_t cm_enable();
-
-/*! \brief Processes the partial sample set into the collecting accumulator
- */
-void cm_process_sample();
-
-/*! \brief At the end of a cycle, this flips collecting/processing buffers
- *         and clears the new collection buffer. Returns a pointer to the
- *         buffer for processing.
- */
-struct Accumulator *cm_cycle_complete();
-
-
-/*! \brief Process accumulated V/CT values into floating point RMS V/I, real
- *         power and energy
- * @param [in] pAcc Pointer to the raw accumulated values
- * @param [in] pRes Pointer to the floating point results
- */
-void cm_process_float(const struct Accumulator *const pAcc, struct ECM_result_float *const pRes);
 
 #endif

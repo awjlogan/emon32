@@ -15,12 +15,17 @@
 
 /* Uncomment to downsample the sample rate by low pass filter
  * Otherwise, the second sample from each set will be discarded
- *
- * #define DOWNSAMPLE_DSP
  */
+#define DOWNSAMPLE_DSP
+#define DOWNSAMPLE_TAPS     32u
 
 /* Number of samples available for power calculation. must be power of 2 */
 #define PROC_DEPTH          4u
+
+typedef struct Emon32Config {
+    unsigned int mainsFreq;
+    unsigned int reportCycles;
+} Emon32Config_t;
 
 /* INTSRC_t contains all the event/interrupts sources. This value is shifted
  * to provide a vector of set events as bits.
@@ -37,19 +42,21 @@ typedef enum {
     EVT_ECM_SET_CMPL    = 8u
 } INTSRC_t;
 
-
 /* SingleSampleSet_t contains a single set of V + CT ADC samples */
 typedef struct __attribute__((__packed__)) SingleSampleSet {
-    int16_t smpV[NUM_V];
-    int16_t smpCT[NUM_CT];
-} SingleSampleSet_t;
+    int16_t smp[NUM_V + NUM_CT];
+} SingleRawSampleSet_t;
 
 /* SampleSetPacked_t contains a set of single sample sets. This allows the DMAC
  * to blit samples across multiple sample sets, depending on processing needs
  */
 typedef struct __attribute__((__packed__)) SampleSetPacked {
-    SingleSampleSet_t samples[SAMPLES_IN_SET];
-} SampleSetPacked_t;
+    SingleRawSampleSet_t samples[SAMPLES_IN_SET];
+} RawSampleSetPacked_t;
+
+typedef struct RawSampleSetUnpacked {
+    int16_t smp[NUM_V + NUM_CT];
+} RawSampleSetUnpacked_t;
 
 /* SampleSet_t contains an unpacked set of single sample sets */
 typedef struct SampleSet {

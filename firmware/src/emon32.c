@@ -1,8 +1,24 @@
 #include "emon32_samd.h"
 
-/* Event handlers */
-static uint32_t evtPend;
+/*! @brief Package the processed data to be sent to EmonESP or EmonHubTx3e
+ *         Returns the length of the packet, with no NULL terminator
+ *  @param [in] pData : pointer to the processed data to be sent
+ *  @param [in] pDst : pointer to the TX buffer
+ */
+unsigned int
+emon32PackageData(const ECMSet_t *pData, char *pDst)
+{
+    /* TODO make this active */
 
+    /* uartPutsNonBlocking(pDst, 48); */
+}
+
+/* Event handlers */
+static volatile uint32_t evtPend;
+
+/*! @brief Indicate a pending event. Interrupts are disabled briefly to allow
+ *         the RMW update to complete safely.
+ */
 void
 emon32SetEvent(INTSRC_t evt)
 {
@@ -13,6 +29,10 @@ emon32SetEvent(INTSRC_t evt)
     __enable_irq();
 }
 
+
+/*! @brief Clear a pending event. Interrupts are disabled briefly to allow the
+ *         RMW update to complete safely.
+ */
 void
 emon32ClrEvent(INTSRC_t evt)
 {
@@ -23,17 +43,27 @@ emon32ClrEvent(INTSRC_t evt)
     __enable_irq();
 }
 
+/*! @brief This function is called when the 1 ms timer overflows (SYSTICK).
+ *         Latency is not guaranteed, so only non-timing critical things
+ *         should be done here (UI update, watchdog etc)
+ */
 void
 evtKiloHertz()
 {
     static unsigned int khz_ticks;
     khz_ticks++;
-    (void)uiUpdateSW();
+    (void)uiSWUpdate();
     uiUpdateLED(EMON_IDLE);
+
+    /* Kick watchdog - placed in the event handler to allow reset of stuck
+     * processing rather than entering the interrupt reliably
+     */
+    wdtKick();
+
     if (500 == khz_ticks)
     {
+        uartPutcBlocking(SERCOM_UART_DBG, '*');
         khz_ticks = 0u;
-        uartPutcBlocking('.');
     }
     emon32ClrEvent(EVT_SYSTICK_1KHz);
 }
@@ -52,20 +82,53 @@ setup_uc()
     adcSetup();
     dmacSetup();
     evsysSetup();
+    wdtSetup(WDT_PER_4K);
 };
 
 int
 main()
 {
+    /* Configuration */
+    Emon32Config_t e32Config;
+
     /* Processed data */
     ECMSet_t dataset;
-    ECMSet_t *const pDataset = &dataset;
+
+    /* TODO check size of buffer */
+    char txBuffer[48];
 
     setup_uc();
 
     /* Setup DMAC for non-blocking UART (this is optional, unlike ADC) */
     uartConfigureDMA();
-    uartPutsBlocking("\r\n== Energy Monitor 32 ==\r\n");
+    uartPutsBlocking(SERCOM_UART_DBG, "\r\n== Energy Monitor 32 ==\r\n");
+    adcStartDMAC((uint32_t)ecmDataBuffer());
+
+    /* Indicate if the reset syndrome was from the watchdog */
+    if (PM->RCAUSE.reg & PM_RCAUSE_WDT)
+    {
+        uartPutsNonBlocking(DMA_CHAN_UART_DBG, "\r\n> Reset by WDT\r\n", 18u);
+    }
+
+    /* If the button is pressed at reset, enter configuration mode
+     * Allow 50 ms roll overs to ensure the button has been debounced.
+     * The configuration is saved to EEPROM, and the uc is then reset.
+     */
+    unsigned int systickCnt = 0u;
+    while (systickCnt < 50)
+    {
+        if (evtPend & (1u << EVT_SYSTICK_1KHz))
+        {
+            evtKiloHertz();
+            systickCnt++;
+        }
+    }
+    if (SW_PRESSED == uiSWState())
+    {
+//         configEnter(&e32Config);
+    }
+
+    /* TODO Load configuration from EEPROM */
 
     for (;;)
     {
@@ -91,13 +154,14 @@ main()
             }
             if (evtPend & (1u << EVT_ECM_SET_CMPL))
             {
-                ecmProcessSet(pDataset);
+                /* Generate the report, pack, and send */
+                unsigned int pktLength;
+                ecmProcessSet(&dataset);
+                pktLength = emon32PackageData(&dataset, txBuffer);
+                uartPutsNonBlocking(DMA_CHAN_UART_DBG, txBuffer, pktLength);
                 emon32ClrEvent(EVT_ECM_SET_CMPL);
             }
         }
-        /* TODO Enter WFI when done, get working first before
-         * introducing any sleep modes!
-         * __WFI();
-         */
+        __WFI();
     };
 }

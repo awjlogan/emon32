@@ -7,6 +7,8 @@
 #include "emon32.h"
 #include "emon_CM.h"
 #include "ui.h"
+#include "util.h"
+#include "configuration.h"
 
 #include "driver_ADC.h"
 #include "driver_CLK.h"

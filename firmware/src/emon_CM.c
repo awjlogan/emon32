@@ -12,12 +12,29 @@ ecmSwapPtr(void *pIn1, void *pIn2)
 }
 
 /******************************************************************************
+ * Configuration
+ *****************************************************************************/
+
+static ECMConfig_t ecmConfig = {.reportCycles = 50u};
+
+ECMConfig_t *
+ecmGetConfig()
+{
+    return &ecmConfig;
+}
+
+void
+ecmInit()
+{
+}
+
+/******************************************************************************
  * Data acquisition
  *****************************************************************************/
 
-static volatile SampleSetPacked_t adc_samples[SAMPLE_BUF_DEPTH];
-static volatile SampleSetPacked_t *volatile adc_active = adc_samples;
-static volatile SampleSetPacked_t *volatile adc_proc = adc_samples + 1;
+static volatile RawSampleSetPacked_t adc_samples[SAMPLE_BUF_DEPTH];
+static volatile RawSampleSetPacked_t *volatile adc_active = adc_samples;
+static volatile RawSampleSetPacked_t *volatile adc_proc = adc_samples + 1;
 
 void
 ecmSwapDataBuffer()
@@ -25,7 +42,7 @@ ecmSwapDataBuffer()
     ecmSwapPtr((void *)adc_active, (void *)adc_proc);
 }
 
-volatile SampleSetPacked_t *
+volatile RawSampleSetPacked_t *
 ecmDataBuffer()
 {
     return adc_active;
@@ -49,22 +66,107 @@ static Accumulator_t *  accum_processing = accum_buffer + 1;
  * Functions
  *****************************************************************************/
 
+/*! @brief Unpack and optionally low pass filter the raw sample
+ *         The struct from the DMA has no partition into V/CT channels, so
+ *         alter this function to move data from the implementation specific
+ *         DMA addressess to the defined SampleSet_t fields
+ * @param [in] pDst : pointer to the SampleSet_t destination
+ */
+
 static void
-ecmUnpackSample(SampleSet_t * pDst)
+ecmUnpackSample(SampleSet_t *pDst)
 {
 #ifndef DOWNSAMPLE_DSP
+
     /* No filtering, discard the second sample in the set */
     for (unsigned int idxV = 0; idxV < NUM_V; idxV++)
     {
-        pDst->smpV[idxV] = adc_proc->samples[0].smpV[idxV];
+        pDst->smpV[idxV] = adc_proc->samples[0].smp[idxV];
     }
 
-    for (unsigned int idxI = 0; idxI < NUM_CT; idxI++)
+    for (unsigned int idxCT = NUM_V; idxCT < (NUM_CT + NUM_V); idxCT++)
     {
-        pDst->smpCT[idxI] = adc_proc->samples[0].smpCT[idxI];
+        pDst->smpCT[idxCT] = adc_proc->samples[0].smp[idxCT];
     }
+
 #else
-    /* TODO Make half band filter */
+
+    /* The FIR half band filter is symmetric, so the coefficients are folded.
+     * Alternating coefficients are 0, so are not included in any outputs.
+     * The MLA instruction is present in all ARM Cortex-M architecture (v6, v7
+     * v8) so there is no advantage to summing samples before multiplication
+     * For an ODD number of taps, the centre coefficent is handled
+     * individually, then the other taps in a loop.
+     *
+     * b_0 | b_2 | .. | b_X | .. | b_2 | b_0
+     *
+     * For an EVEN number of taps, loop across all the coefficients:
+     *
+     * b_0 | b_2 | .. | b_2 | b_0
+     *
+     * As the indices are reused in all V/CT channels, the indices are also
+     * precalculated rather than repeating each time.
+     */
+
+    static unsigned int idxInj = 0u;
+    const unsigned int idxInjPrev =   (0 == idxInj)
+                                    ? (idxInj - 1u)
+                                    : (DOWNSAMPLE_TAPS - 1u);
+    static RawSampleSetUnpacked_t smpBuffer[DOWNSAMPLE_TAPS];
+    unsigned int idxsCoeff[DOWNSAMPLE_TAPS / 2];
+
+
+    /* Copy the packed raw ADC value into the unpacked buffer */
+    /* TODO This may not be necessary, depending on the packing */
+    for (unsigned int idxSmp = 0; idxSmp < (NUM_V + NUM_CT); idxSmp++)
+    {
+        smpBuffer[idxInj].smp[idxSmp] = adc_proc->samples[1].smp[idxSmp];
+        smpBuffer[idxInjPrev].smp[idxSmp] = adc_proc->samples[0].smp[idxSmp];
+    }
+
+    /* Apply the FIR filter to each sample */
+    /* TODO if performance constrained, unroll this so the FIR coefficients are
+     * reused in registers rather than loaded each time
+     */
+    for (unsigned int idxChannel = 0; idxChannel < (NUM_V + NUM_CT); idxChannel++)
+    {
+        const int16_t firCoeffs[DOWNSAMPLE_TAPS / 2] = {
+            0x0001, 0x0010, 0x0011, 0x0100, 0x0101, 0x0110, 0x0111, 0x1000,
+            0x1001, 0x1010, 0x1011, 0x1100, 0x1101, 0x1110, 0x1111, 0x2000
+        };
+        int32_t intRes = 0;
+        unsigned int roundUp = 0;
+        for (unsigned int idxCoeff = 0; idxCoeff < (DOWNSAMPLE_TAPS / 2); idxCoeff++)
+        {
+            unsigned int idxSmp = (idxInjPrev - (2 * idxCoeff)) & idxMsk;
+            intRes += (int32_t)smpBuffer[idxSmp].smp[idxChannel] * firCoeffs[idxCoeff];
+        }
+
+        /* Truncate with rounding to nearest LSB and place into field */
+        /* TODO This may not be a good way to separate V/CT channels */
+        if (0 != (intRes & (1u << 15)))
+        {
+            roundUp = 1u;
+        }
+        intRes = (intRes >> 16) + roundUp;
+        if (idxChannel < NUM_V)
+        {
+            pDst->smpV[idxChannel] = (uint16_t)intRes;
+        }
+        else
+        {
+            pDst->smpCT[idxChannel - NUM_V] = (int16_t)intRes;
+        }
+
+    }
+
+    /* Each injection is 2 samples */
+    idxInj += 2u;
+    if (idxInj > (DOWNSAMPLE_TAPS - 1))
+    {
+        idxInj = 0u;
+    }
+
 #endif
 }
 
@@ -110,22 +212,32 @@ ecmInjectSample()
     }
 
     /* Zero crossing detection. Flag for processing if cycle is complete */
-    polarity_now = thisV >= 0 ? POL_POS : POL_NEG;
-    if (polarity_now != polarity_last)
+//     polarity_now = thisV >= 0 ? POL_POS : POL_NEG;
+//     if (polarity_now != polarity_last)
+//     {
+//         hystCnt++;
+//         if (2u == hystCnt)
+//         {
+//             polarity_last = polarity_now;
+//             hystCnt = 0u;
+//             if (POL_POS == polarity_now)
+//             {
+//                 emon32SetEvent(EVT_ECM_CYCLE_CMPL);
+//                 ecmSwapPtr((void *)accum_collecting, (void *)accum_processing);
+//                 memset((void *)accum_collecting, 0, sizeof(Accumulator_t));
+//             }
+//         }
+//     }
+    static uint8_t count = 0;
+    count++;
+    if (32 == count)
     {
-        hystCnt++;
-        if (2u == hystCnt)
-        {
-            polarity_last = polarity_now;
-            hystCnt = 0u;
-            if (POL_POS == polarity_now)
-            {
-                emon32SetEvent(EVT_ECM_CYCLE_CMPL);
-                ecmSwapPtr((void *)accum_collecting, (void *)accum_processing);
-                memset((void *)accum_collecting, 0, sizeof(Accumulator_t));
-            }
-        }
+        count = 0;
+        emon32SetEvent(EVT_ECM_CYCLE_CMPL);
+        ecmSwapPtr((void *)accum_collecting, (void *)accum_processing);
+        memset((void *)accum_collecting, 0, sizeof(Accumulator_t));
     }
+
     /* Advance injection point, masking for overflow */
     idxInject = (idxInject + 1u) & (PROC_DEPTH - 1u);
 }
@@ -134,9 +246,27 @@ void
 ecmProcessCycle()
 {
     static unsigned int cycleCount;
+    static volatile ECMCycle_t   ecmCycle;
 
     cycleCount++;
-    if (cycleCount >= 500)
+    /* Reused constants */
+    const uint32_t numSamples = accum_processing->num_samples;
+    const uint32_t numSamplesSqr = numSamples * numSamples;
+
+    /* RMS for V channels */
+    for (unsigned int idxV = 0; idxV < NUM_V; idxV++)
+    {
+        ecmCycle.rmsV[idxV] =   ((accum_processing->processV[idxV].sumV_sqr / numSamples)
+                              - ((accum_processing->processV[idxV].sumV_deltas * accum_processing->processV[idxV].sumV_deltas) / (numSamplesSqr)));
+    }
+
+    /* RMS for CT channels */
+    for (unsigned int idxCT = 0; idxCT < NUM_CT; idxCT++)
+    {
+        ecmCycle.valCT[idxCT].rmsCT =   ((accum_processing->processCT[idxCT].sumI_sqr / numSamples)
+                                      - ((accum_processing->processCT[idxCT].sumI_deltas * accum_processing->processCT[idxCT].sumI_deltas) / numSamplesSqr));
+    }
+    if (cycleCount >= ecmConfig.reportCycles)
     {
         cycleCount = 0u;
         emon32SetEvent(EVT_ECM_SET_CMPL);
@@ -146,4 +276,5 @@ ecmProcessCycle()
 void
 ecmProcessSet(ECMSet_t *set)
 {
+    set->msgNum++;
 }

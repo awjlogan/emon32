@@ -18,9 +18,13 @@ typedef enum {
     EMON_ERROR      /* An error has occured */
 } EmonState_t;
 
-/*! @brief Returns the current state of the button, called every millisecond
+/*! @brief Updates the current state of the button, called every millisecond
  */
-SwitchState_t uiUpdateSW();
+SwitchState_t uiSWUpdate();
+
+/*! @brief Returns the current state of the button
+ */
+SwitchState_t uiSWState();
 
 /*! @brief Update the LED state, called every millisecond
  *  @param [in] : State of the energy monitor

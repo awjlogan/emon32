@@ -1,10 +1,11 @@
 #include "emon32_samd.h"
 
+static SwitchState_t sw_last = SW_OPEN;
+
 SwitchState_t
-uiUpdateSW()
+uiSWUpdate()
 {
     static uint32_t sw_in;
-    static SwitchState_t sw_last = SW_OPEN;
 
     /* On each 1 kHz tick, shift the current button state in. When all
      * bits are set or cleared, the button is in a stable state.
@@ -35,6 +36,12 @@ uiUpdateSW()
             sw_last = SW_OPEN;
         }
     }
+    return sw_last;
+}
+
+SwitchState_t
+uiSWState()
+{
     return sw_last;
 }
 
