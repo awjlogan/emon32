@@ -42,6 +42,7 @@ SRCS += \
   ./src/driver_EVSYS.c \
   ./src/driver_WDT.c \
   ./src/emon_CM.c \
+  ./src/util.c \
   ./src/ui.c
 
 
