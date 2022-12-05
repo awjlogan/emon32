@@ -17,3 +17,7 @@ This will generate `firmware/build/emon32.elf` which can then be flashed to micr
 ## Structure and modifications
 
  - All peripheral drivers are in header/source pairs named **driver_<PERIPHERAL>**. For example, the ADC driver is in **driver_ADC.\***.
+
+## Half band filter design
+
+You will need to install **scipy** and **matplotlib**
