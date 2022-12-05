@@ -1,34 +1,56 @@
 #ifndef DRIVER_SERCOM_H
 #define DRIVER_SERCOM_H
 
+#include "samd10.h"
 #include <stdint.h>
-
-typedef struct SERCOM_CFG {
-    // TODO Config details
-} SERCOM_t;
 
 /* @brief configure the serial communication modules */
 void sercomSetup();
 
-/* @brief Send a single character (blocking) on UART
- * @param [in] Single character
+/*! @brief Send a single character (blocking) on UART
+ *  @param [in] sercom : pointer to the SERCOM instance
+ *  @param [in] c : Single character
  */
+void uartPutcBlocking(Sercom *sercom, char c);
 
-void uartPutcBlocking(char c);
-
-/* @brief Send a string (blocking) on UART
- * @param [in] Pointer to null terminated string
+/*! @brief Send a string (blocking) on UART
+ *  @param [in] sercom : pointer to the SERCOM instance
+ *  @param [in] s : Pointer to null terminated string
  */
-void uartPutsBlocking(const char *s);
+void uartPutsBlocking(Sercom *sercom, const char *s);
 
-/* @brief Configure the DMA for non-blocking transactions
+/*! @brief Configure the DMA for non-blocking transactions
  */
 void uartConfigureDMA();
 
-/* @brief Send a string (non-blocking) on UART by DMA
- * @param [in] Pointer to the string
- * @param [in] Length of the string (not including NULL)
+/*! @brief Send a string (non-blocking) on UART by DMA
+ *  @param [in] dma_chan : DMA channel to send on
+ *  @param [in] s : Pointer to the string
+ *  @param [in] len : Length of the string (not including NULL)
  */
-void uartPutsNonBlocking(const char * const s, uint16_t len);
+void uartPutsNonBlocking(unsigned int dma_chan, const char * const s, uint16_t len);
+
+/*! @brief Enable the an interrupt for the UART instance
+ *  @param [in] sercom : SERCOM instance
+ *  @param [in] interrupt : interrupt to enable
+ */
+void uartInterruptEnable(Sercom *sercom, uint32_t interrupt);
+
+/*! @brief Disable the an interrupt for the UART instance
+ *  @param [in] sercom : SERCOM instance
+ *  @param [in] interrupt : interrupt to disable
+ */
+void uartInterruptDisable(Sercom *sercom, uint32_t interrupt);
+
+/*! @brief Return the interrupt status for the UART instance
+ *  @param [in] sercom : SERCOM instance
+ */
+uint32_t uartInterruptStatus(Sercom *sercom);
+
+/*! @brief Clear the interrupt status for the UART instance
+ *  @param [in] sercom : SERCOM instance
+ *  @param [in] interrupt : interrupt to clear
+ */
+void uartInterruptClear(Sercom *sercom, uint32_t interrupt);
 
 #endif

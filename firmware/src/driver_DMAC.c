@@ -16,7 +16,7 @@ dmacSetup()
 
     /* TODO Make the init for ADC and DMA independent from the DMAC driver */
     /* UART DMA */
-    DMAC->CHID.reg = DMA_CHAN_UART;
+    DMAC->CHID.reg = DMA_CHAN_UART_DBG;
     DMAC->CHCTRLB.reg =   DMAC_CHCTRLB_LVL(1u)
                         | DMAC_CHCTRLB_TRIGSRC(SERCOM_UART_DBG_DMAC_ID_TX)
                         | DMAC_CHCTRLB_TRIGACT_BEAT;
@@ -83,7 +83,7 @@ irq_handler_dmac()
         DMAC->CHINTFLAG.reg = DMAC_CHINTFLAG_TCMPL;
     }
 
-    DMAC->CHID.reg = DMA_CHAN_UART;
+    DMAC->CHID.reg = DMA_CHAN_UART_DBG;
     if (DMAC->CHINTFLAG.reg & DMAC_CHINTFLAG_TCMPL)
     {
         emon32SetEvent(EVT_DMAC_UART_CMPL);

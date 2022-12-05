@@ -34,6 +34,8 @@
 
 #define SERCOM_UART_DBG_DMAC_ID_TX  SERCOM0_DMAC_ID_TX
 
+#define SERCOM_UART_DBG_NVIC_IRQn   SERCOM0_IRQn
+
 /* Pin assignments (nb. logical, not physical) */
 #define PIN_EXTINT          24u
 #define PIN_GEN_STATUS      25u
@@ -51,7 +53,7 @@
 
 /* DMA defines */
 #define NUM_CHAN_DMA        2u  /* ADC and UART */
-#define DMA_CHAN_UART       1u
+#define DMA_CHAN_UART_DBG   1u
 #define DMA_CHAN_ADC        0u
 
 /* SAMD10 calibration values */

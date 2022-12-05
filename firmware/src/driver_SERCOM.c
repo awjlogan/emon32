@@ -57,22 +57,23 @@ sercomSetup()
 }
 
 void
-uartPutcBlocking(char c)
+uartPutcBlocking(Sercom *sercom, char c)
 {
-    while (!(SERCOM_UART_DBG->USART.INTFLAG.reg & SERCOM_USART_INTFLAG_DRE));
-    SERCOM_UART_DBG->USART.DATA.reg = c;
+    while (!(sercom->USART.INTFLAG.reg & SERCOM_USART_INTFLAG_DRE));
+    sercom->USART.DATA.reg = c;
+    sercom->USART.INTFLAG.reg = 0;
 }
 
 void
-uartPutsBlocking(const char *s)
+uartPutsBlocking(Sercom *sercom, const char *s)
 {
-    while (*s) uartPutcBlocking(*s++);
+    while (*s) uartPutcBlocking(sercom, *s++);
 }
 
 void
 uartConfigureDMA()
 {
-    volatile DmacDescriptor * dmacDesc = dmacGetDescriptor(DMA_CHAN_UART);
+    volatile DmacDescriptor * dmacDesc = dmacGetDescriptor(DMA_CHAN_UART_DBG);
     dmacDesc->BTCTRL.reg =   DMAC_BTCTRL_VALID
                            | DMAC_BTCTRL_BLOCKACT_NOACT
                            | DMAC_BTCTRL_STEPSIZE_X1
@@ -85,12 +86,36 @@ uartConfigureDMA()
 }
 
 void
-uartPutsNonBlocking(const char * const s, uint16_t len)
+uartPutsNonBlocking(unsigned int dma_chan, const char * const s, uint16_t len)
 {
-    volatile DmacDescriptor * dmacDesc = dmacGetDescriptor(DMA_CHAN_UART);
+    volatile DmacDescriptor * dmacDesc = dmacGetDescriptor(dma_chan);
     /* Valid bit is cleared when a channel is complete */
     dmacDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
     dmacDesc->BTCNT.reg = len;
     dmacDesc->SRCADDR.reg = (uint32_t)s + len;
-    dmacStartTransfer(DMA_CHAN_UART);
+    dmacStartTransfer(dma_chan);
+}
+
+void
+uartInterruptEnable(Sercom *sercom, uint32_t interrupt)
+{
+    sercom->USART.INTENSET.reg |= interrupt;
+}
+
+void
+uartInterruptDisable(Sercom *sercom, uint32_t interrupt)
+{
+    sercom->USART.INTENCLR.reg |= interrupt;
+}
+
+uint32_t
+uartInterruptStatus(Sercom *sercom)
+{
+    return sercom->USART.INTFLAG.reg;
+}
+
+void
+uartInterruptClear(Sercom *sercom, uint32_t interrupt)
+{
+    sercom->USART.INTFLAG.reg |= interrupt;
 }
