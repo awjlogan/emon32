@@ -1,7 +1,7 @@
 #include "util.h"
 
 unsigned int
-utilStrlen(char *pBuf)
+utilStrlen(const char *pBuf)
 {
     unsigned int charCnt = 0;
     while (*pBuf++)
@@ -16,7 +16,7 @@ utilStrReverse(char *pBuf, unsigned int len)
 {
     char tmp;
     unsigned int idxEnd = len - 1u;
-    for (unsigned int idx = 0; idx < ((len - 1) / 2); idx++)
+    for (unsigned int idx = 0; idx < (len / 2); idx++)
     {
         tmp = pBuf[idx];
         pBuf[idx] = pBuf[idxEnd];
@@ -26,10 +26,11 @@ utilStrReverse(char *pBuf, unsigned int len)
 }
 
 unsigned int
-utilItoa(char *pBuf, int32_t val)
+utilItoa(char *pBuf, int32_t val, ITOA_BASE_t base)
 {
     unsigned int charCnt = 0;
-    unsigned int isNegative;
+    unsigned int isNegative = 0;
+    char * const pBase = pBuf;
 
     /* Handle 0 explicitly */
     if (0 == val)
@@ -39,35 +40,56 @@ utilItoa(char *pBuf, int32_t val)
         return 2u;
     }
 
-    if (val < 0)
+    /* Base 10 can be signed, and has a divide in */
+    if (ITOA_BASE10 == base)
     {
-        isNegative = 1u;
-        val = -val;
-    }
+        if (val < 0)
+        {
+            isNegative = 1u;
+            val = -val;
+        }
 
-    while (0 != val)
-    {
-        *pBuf++ = (val % 10u) + '0';
-        val = val / 10u;
-        charCnt++;
-    }
+        while (0 != val)
+        {
+            *pBuf++ = (val % 10u) + '0';
+            val = val / 10u;
+            charCnt++;
+        }
 
-    /* Append negative sign */
-    if (isNegative)
+        if (0 != isNegative)
+        {
+            *pBuf++ = '-';
+            charCnt++;
+        }
+    }
+    else
     {
-        *pBuf++ = '-';
-        charCnt++;
+        const char itohex[] = "0123456789abcdef";
+        uint32_t val_u = (uint32_t)val;
+
+        while (0 != val_u)
+        {
+            *pBuf++ = itohex[(val_u & 0xFu)];
+            val_u >>= 4;
+            charCnt++;
+        }
     }
 
     /* Terminate and return */
     *pBuf = '\0';
     charCnt++;
 
-    utilStrReverse(pBuf, charCnt - 1u);
+    utilStrReverse(pBase, charCnt - 1u);
     return charCnt;
 }
 
-void
-utilStrInsert(char *pBuf, const char *pIns, unsigned int pos, unsigned int len)
+unsigned int
+utilStrInsert(char *pDst, const char *pIns, unsigned int pos, unsigned int len)
 {
+    char *pOffset = pDst + pos;
+    for (unsigned int cntIns = 0; cntIns < len; cntIns++)
+    {
+        *pOffset++ = *pIns++;
+    }
+    return (pos + len);
 }
