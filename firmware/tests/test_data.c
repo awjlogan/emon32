@@ -18,9 +18,9 @@ main(int argc, char *argv[])
     printf("  Num V:  %d\n", NUM_V);
     printf("  Num CT: %d\n\n", NUM_CT);
 
-    printf("  dataPackage ... ");
+    printf("  dataPackage_n ... ");
 
-    dataCnt = dataPackage(&dataset, txBuffer, 1024);
+    dataCnt = dataPackage_n(&dataset, txBuffer, 1024);
     goldCnt = snprintf(goldBuffer, 1024, "MSG:%d,Vrms:%d,P1:%d,E1:%d,P2:%d,E2:%d,P3:%d,E3:%d,P4:%d,E4:%d",
                    dataset.msgNum, dataset.rmsV[0], dataset.CT[0].realPower, dataset.CT[0].wattHour, dataset.CT[1].realPower, dataset.CT[1].wattHour, dataset.CT[2].realPower, dataset.CT[2].wattHour, dataset.CT[3].realPower, dataset.CT[3].wattHour);
     if (0 != strcmp(txBuffer, goldBuffer) || dataCnt != goldCnt)
@@ -32,7 +32,7 @@ main(int argc, char *argv[])
     }
 
     memset(&dataset, 'F', sizeof(ECMSet_t));
-    dataCnt = dataPackage(&dataset, txBuffer, 1024);
+    dataCnt = dataPackage_n(&dataset, txBuffer, 1024);
     goldCnt = snprintf(goldBuffer, 1024, "MSG:%d,Vrms:%d,P1:%d,E1:%d,P2:%d,E2:%d,P3:%d,E3:%d,P4:%d,E4:%d",
                    dataset.msgNum, dataset.rmsV[0], dataset.CT[0].realPower, dataset.CT[0].wattHour, dataset.CT[1].realPower, dataset.CT[1].wattHour, dataset.CT[2].realPower, dataset.CT[2].wattHour, dataset.CT[3].realPower, dataset.CT[3].wattHour);
     if (0 != strcmp(txBuffer, goldBuffer) || dataCnt != goldCnt)
