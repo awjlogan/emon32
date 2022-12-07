@@ -1,4 +1,5 @@
-#include "emon32_samd.h"
+// #include "emon32_samd.h"
+#include "emon_CM.h"
 #include <string.h>
 
 /*! @brief Swap pointers to buffers
@@ -72,7 +73,6 @@ static Accumulator_t *  accum_processing = accum_buffer + 1;
  *         DMA addressess to the defined SampleSet_t fields
  * @param [in] pDst : pointer to the SampleSet_t destination
  */
-
 static void
 ecmUnpackSample(SampleSet_t *pDst)
 {
@@ -93,8 +93,6 @@ ecmUnpackSample(SampleSet_t *pDst)
 
     /* The FIR half band filter is symmetric, so the coefficients are folded.
      * Alternating coefficients are 0, so are not included in any outputs.
-     * The MLA instruction is present in all ARM Cortex-M architecture (v6, v7
-     * v8) so there is no advantage to summing samples before multiplication
      * For an ODD number of taps, the centre coefficent is handled
      * individually, then the other taps in a loop.
      *
@@ -103,59 +101,93 @@ ecmUnpackSample(SampleSet_t *pDst)
      * For an EVEN number of taps, loop across all the coefficients:
      *
      * b_0 | b_2 | .. | b_2 | b_0
-     *
-     * As the indices are reused in all V/CT channels, the indices are also
-     * precalculated rather than repeating each time.
      */
 
     static unsigned int idxInj = 0u;
-    const unsigned int idxInjPrev =   (0 == idxInj)
-                                    ? (idxInj - 1u)
-                                    : (DOWNSAMPLE_TAPS - 1u);
     static RawSampleSetUnpacked_t smpBuffer[DOWNSAMPLE_TAPS];
-    unsigned int idxsCoeff[DOWNSAMPLE_TAPS / 2];
+    int32_t intRes[VCT_TOTAL] = {0};
+    const int16_t firCoeffs[DOWNSAMPLE_TAPS / 2] =
+    {
+            0x0001, 0x0010, 0x0011, 0x0100, 0x0101, 0x0110, 0x0111, 0x1000,
+            0x1001, 0x1010, 0x1011, 0x1100, 0x1101, 0x1110, 0x1111, 0x2000
+    };
 
+
+    const unsigned int idxInjPrev =   (0 == idxInj)
+                                    ? (DOWNSAMPLE_TAPS - 1u)
+                                    : (idxInj - 1u);
 
     /* Copy the packed raw ADC value into the unpacked buffer */
-    /* TODO This may not be necessary, depending on the packing */
     for (unsigned int idxSmp = 0; idxSmp < (NUM_V + NUM_CT); idxSmp++)
     {
         smpBuffer[idxInj].smp[idxSmp] = adc_proc->samples[1].smp[idxSmp];
         smpBuffer[idxInjPrev].smp[idxSmp] = adc_proc->samples[0].smp[idxSmp];
     }
 
-    /* Apply the FIR filter to each sample */
-    /* TODO if performance constrained, unroll this so the FIR coefficients are
-     * reused in registers rather than loaded each time
-     */
-    for (unsigned int idxChannel = 0; idxChannel < (NUM_V + NUM_CT); idxChannel++)
+    /* For an ODD number of taps, take the unique middle value to start */
+    if (0 != DOWNSAMPLE_TAPS % 2)
     {
-        const int16_t firCoeffs[DOWNSAMPLE_TAPS / 2] = {
-            0x0001, 0x0010, 0x0011, 0x0100, 0x0101, 0x0110, 0x0111, 0x1000,
-            0x1001, 0x1010, 0x1011, 0x1100, 0x1101, 0x1110, 0x1111, 0x2000
-        };
-        int32_t intRes = 0;
-        unsigned int roundUp = 0;
-        for (unsigned int idxCoeff = 0; idxCoeff < (DOWNSAMPLE_TAPS / 2); idxCoeff++)
+        const unsigned int idxSub = (DOWNSAMPLE_TAPS / 2) - 1;
+        const int16_t coeff = firCoeffs[idxSub];
+        int idxSmp = idxInj - (DOWNSAMPLE_TAPS / 2);
+        if (idxSmp < 0)
         {
-            unsigned int idxSmp = (idxInjPrev - (2 * idxCoeff)) & idxMsk;
-            intRes += (int32_t)smpBuffer[idxSmp].smp[idxChannel] * firCoeffs[idxCoeff];
+            idxSmp = DOWNSAMPLE_TAPS - (DOWNSAMPLE_TAPS / 2) + idxInj;
         }
 
-        /* Truncate with rounding to nearest LSB and place into field */
-        /* TODO This may not be a good way to separate V/CT channels */
-        if (0 != (intRes & (1u << 15)))
+        for (unsigned int idxChannel = 0; idxChannel < VCT_TOTAL; idxChannel++)
+        {
+            intRes[idxChannel] += coeff * smpBuffer[idxSmp].smp[idxChannel];
+        }
+    }
+
+    /* Loop over the FIR coefficients, sub loop through channels. The filter
+     * is folded so the symmetric FIR coefficients are used for both samples.
+     */
+    unsigned int idxSmpStart = idxInj;
+    int idxSmpEnd = idxInj - (DOWNSAMPLE_TAPS / 2);
+    if (idxSmpEnd < 0)
+    {
+        idxSmpEnd = DOWNSAMPLE_TAPS - (DOWNSAMPLE_TAPS / 2) + idxInj;
+    }
+
+    for (unsigned int idxCoeff = 0; idxCoeff < DOWNSAMPLE_TAPS / 2; idxCoeff++)
+    {
+        const int16_t coeff = firCoeffs[idxCoeff];
+        for (unsigned int idxChannel = 0; idxChannel < VCT_TOTAL; idxChannel++)
+        {
+            intRes[idxChannel] +=   coeff
+                                  * (  smpBuffer[idxSmpStart].smp[idxChannel]
+                                     + smpBuffer[idxSmpEnd].smp[idxChannel]);
+        }
+
+        /* Converge toward the middle, check for over/underflow */
+        idxSmpStart =   ((DOWNSAMPLE_TAPS - 1) == idxSmpStart)
+                       ? 0
+                       : idxSmpStart + 1u;
+        idxSmpEnd =   (0 == idxSmpEnd)
+                    ? (DOWNSAMPLE_TAPS - 1)
+                    : idxSmpEnd - 1u;
+    }
+
+    /* Truncate with rounding to nearest LSB and place into field */
+    /* TODO This may not be a good way to separate V/CT channels */
+    for (unsigned int idxChannel = 0; idxChannel < VCT_TOTAL; idxChannel++)
+    {
+        unsigned int roundUp = 0;
+        if (0 != (intRes[idxChannel] & (1u << 15)))
         {
             roundUp = 1u;
         }
-        intRes = (intRes >> 16) + roundUp;
+        intRes[idxChannel] = (intRes[idxChannel] >> 16) + roundUp;
+
         if (idxChannel < NUM_V)
         {
-            pDst->smpV[idxChannel] = (uint16_t)intRes;
+            pDst->smpV[idxChannel] = (uint16_t)intRes[idxChannel];
         }
         else
         {
-            pDst->smpCT[idxChannel - NUM_V] = (int16_t)intRes;
+            pDst->smpCT[idxChannel - NUM_V] = (int16_t)intRes[idxChannel];
         }
 
     }
@@ -164,7 +196,7 @@ ecmUnpackSample(SampleSet_t *pDst)
     idxInj += 2u;
     if (idxInj > (DOWNSAMPLE_TAPS - 1))
     {
-        idxInj = 0u;
+        idxInj -= (DOWNSAMPLE_TAPS - 1);
     }
 
 #endif
@@ -233,7 +265,7 @@ ecmInjectSample()
     if (32 == count)
     {
         count = 0;
-        emon32SetEvent(EVT_ECM_CYCLE_CMPL);
+        // emon32SetEvent(EVT_ECM_CYCLE_CMPL);
         ecmSwapPtr((void *)accum_collecting, (void *)accum_processing);
         memset((void *)accum_collecting, 0, sizeof(Accumulator_t));
     }
@@ -269,7 +301,7 @@ ecmProcessCycle()
     if (cycleCount >= ecmConfig.reportCycles)
     {
         cycleCount = 0u;
-        emon32SetEvent(EVT_ECM_SET_CMPL);
+        // emon32SetEvent(EVT_ECM_SET_CMPL);
     }
 }
 

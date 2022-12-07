@@ -9,6 +9,7 @@
  */
 #define NUM_V               1u
 #define NUM_CT              4u
+#define VCT_TOTAL           NUM_V + NUM_CT
 #define SAMPLE_RATE         4800u
 #define SAMPLES_IN_SET      2u
 #define SAMPLE_BUF_DEPTH    2u
@@ -44,7 +45,7 @@ typedef enum {
 
 /* SingleSampleSet_t contains a single set of V + CT ADC samples */
 typedef struct __attribute__((__packed__)) SingleSampleSet {
-    int16_t smp[NUM_V + NUM_CT];
+    int16_t smp[VCT_TOTAL];
 } SingleRawSampleSet_t;
 
 /* SampleSetPacked_t contains a set of single sample sets. This allows the DMAC
@@ -74,8 +75,5 @@ void emon32SetEvent(INTSRC_t evt);
  *  @param [in] Event source in enum
  */
 void emon32ClrEvent(INTSRC_t evt);
-
-/*! @brief Swap two buffers
- */
 
 #endif

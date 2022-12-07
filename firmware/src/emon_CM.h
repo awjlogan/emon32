@@ -59,12 +59,16 @@ typedef struct {
     CycleCT_t   valCT[NUM_CT];
 } ECMCycle_t;
 
+typedef struct {
+    int16_t realPower;
+    uint16_t wattHour;
+} DataCT_t;
+
 /* KEY:VALUE pair to match EmonESP and EmonTx3eInterfacer */
 typedef struct {
     uint32_t    msgNum;
     int16_t     rmsV[NUM_V];
-    int16_t     realPowerCT[NUM_CT];
-    uint16_t    wattHourCT[NUM_CT];
+    DataCT_t    CT[NUM_CT];
 } ECMSet_t;
 
 /******************************************************************************

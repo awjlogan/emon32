@@ -1,18 +1,5 @@
 #include "emon32_samd.h"
 
-/*! @brief Package the processed data to be sent to EmonESP or EmonHubTx3e
- *         Returns the length of the packet, with no NULL terminator
- *  @param [in] pData : pointer to the processed data to be sent
- *  @param [in] pDst : pointer to the TX buffer
- */
-unsigned int
-emon32PackageData(const ECMSet_t *pData, char *pDst)
-{
-    /* TODO make this active */
-
-    /* uartPutsNonBlocking(pDst, 48); */
-}
-
 /* Event handlers */
 static volatile uint32_t evtPend;
 
@@ -95,7 +82,7 @@ main()
     ECMSet_t dataset;
 
     /* TODO check size of buffer */
-    char txBuffer[48];
+    char txBuffer[64];
 
     setup_uc();
 
