@@ -9,6 +9,7 @@
 #include "ui.h"
 #include "util.h"
 #include "configuration.h"
+#include "data.h"
 
 #include "driver_ADC.h"
 #include "driver_CLK.h"
