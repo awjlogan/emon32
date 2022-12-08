@@ -91,16 +91,19 @@ dataPackage_n(const ECMSet_t *pData, char *pDst, unsigned int n)
     return charCnt;
 }
 
-void
+unsigned int
 dataPackage(const ECMSet_t *pData, char *pDst)
 {
+    unsigned int charCnt;
     char tmpBuf[16];
     unsigned int cursor;
     unsigned int insLen;
 
     /* Message number */
     cursor = utilStrInsert(pDst, "MSG:", 0, 4);
+    charCnt = 4u;
     insLen = utilItoa(tmpBuf, pData->msgNum, ITOA_BASE10) - 1u;
+    charCnt += insLen;
     cursor = utilStrInsert(pDst, tmpBuf, cursor, insLen);
 
     /* V RMS for each channel.
@@ -108,25 +111,36 @@ dataPackage(const ECMSet_t *pData, char *pDst)
      * TODO : how should this look for multiple V channels?
      */
     cursor = utilStrInsert(pDst, ",Vrms:", cursor, 6);
+    charCnt += 6u;
     insLen = utilItoa(tmpBuf, pData->rmsV[0], ITOA_BASE10) - 1u;
+    charCnt += insLen;
     cursor = utilStrInsert(pDst, tmpBuf, cursor, insLen);
 
     /* CT channels */
     for (unsigned int idxCT = 0; idxCT < NUM_CT; idxCT++)
     {
         cursor = utilStrInsert(pDst, ",P", cursor, 2);
+        charCnt += 2u;
         insLen = utilItoa(tmpBuf, (idxCT + 1u), ITOA_BASE10) - 1u;
+        charCnt += insLen;
         cursor = utilStrInsert(pDst, tmpBuf, cursor, insLen);
         cursor = utilStrInsert(pDst, ":", cursor, 1);
+        charCnt += 1u;
         insLen = utilItoa(tmpBuf, pData->CT[idxCT].realPower, ITOA_BASE10) - 1u;
+        charCnt += insLen;
         cursor = utilStrInsert(pDst, tmpBuf, cursor, insLen);
         cursor = utilStrInsert(pDst, ",E", cursor, 2);
+        charCnt += 2u;
         insLen = utilItoa(tmpBuf, (idxCT + 1u), ITOA_BASE10) - 1u;
+        charCnt += insLen;
         cursor = utilStrInsert(pDst, tmpBuf, cursor, insLen);
         cursor = utilStrInsert(pDst, ":", cursor, 1);
+        charCnt += 1u;
         insLen = utilItoa(tmpBuf, pData->CT[idxCT].wattHour, ITOA_BASE10) - 1u;
+        charCnt += insLen;
         cursor = utilStrInsert(pDst, tmpBuf, cursor, insLen);
     }
 
     /* TODO : temperature and pulse count are not implemented */
+    return charCnt;
 }

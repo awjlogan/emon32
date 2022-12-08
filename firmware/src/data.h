@@ -15,10 +15,10 @@
 unsigned int dataPackage_n(const ECMSet_t *pData, char *pDst, unsigned int n);
 
 /*! @brief Packs the emon_CM into EmonESP format with no buffer size. Use when
- *         the maximum output width is known.
+ *         the maximum output width is known. Returns the number of characters
  *  @param [in] pData : pointer to the raw data
  *  @param [in] pDst : pointer to the destination buffer
  */
-void dataPackage(const ECMSet_t *pData, char *pDst);
+unsigned int dataPackage(const ECMSet_t *pData, char *pDst);
 
 #endif

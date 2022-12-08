@@ -36,3 +36,4 @@ compile_commands.json
 .md.backup
 *.backup
 hb*.png
+venv/
