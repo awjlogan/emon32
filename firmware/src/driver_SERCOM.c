@@ -96,6 +96,12 @@ uartPutsNonBlocking(unsigned int dma_chan, const char * const s, uint16_t len)
     dmacStartTransfer(dma_chan);
 }
 
+char
+uartGetc(const Sercom *sercom)
+{
+    return sercom->USART.DATA.reg;
+}
+
 void
 uartInterruptEnable(Sercom *sercom, uint32_t interrupt)
 {
@@ -109,7 +115,7 @@ uartInterruptDisable(Sercom *sercom, uint32_t interrupt)
 }
 
 uint32_t
-uartInterruptStatus(Sercom *sercom)
+uartInterruptStatus(const Sercom *sercom)
 {
     return sercom->USART.INTFLAG.reg;
 }

@@ -30,6 +30,12 @@ void uartConfigureDMA();
  */
 void uartPutsNonBlocking(unsigned int dma_chan, const char * const s, uint16_t len);
 
+/*! @brief Get a character from the USART data buffer. Only valid when the
+ *         INTFLAG.RXC bit it set.
+ *  @param [in] sercom : SERCOM instance
+ */
+char uartGetc(const Sercom *sercom);
+
 /*! @brief Enable the an interrupt for the UART instance
  *  @param [in] sercom : SERCOM instance
  *  @param [in] interrupt : interrupt to enable
@@ -45,7 +51,7 @@ void uartInterruptDisable(Sercom *sercom, uint32_t interrupt);
 /*! @brief Return the interrupt status for the UART instance
  *  @param [in] sercom : SERCOM instance
  */
-uint32_t uartInterruptStatus(Sercom *sercom);
+uint32_t uartInterruptStatus(const Sercom *sercom);
 
 /*! @brief Clear the interrupt status for the UART instance
  *  @param [in] sercom : SERCOM instance

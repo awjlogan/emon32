@@ -1,15 +1,5 @@
 #include "util.h"
-
-unsigned int
-utilStrlen(const char *pBuf)
-{
-    unsigned int charCnt = 0;
-    while (*pBuf++)
-    {
-        charCnt++;
-    }
-    return charCnt;
-}
+#include <stdio.h>
 
 void
 utilStrReverse(char *pBuf, unsigned int len)
@@ -23,6 +13,28 @@ utilStrReverse(char *pBuf, unsigned int len)
         pBuf[idxEnd] = tmp;
         idxEnd--;
     }
+}
+
+unsigned int
+utilStrlen(const char *pBuf)
+{
+    unsigned int charCnt = 0;
+    while (*pBuf++)
+    {
+        charCnt++;
+    }
+    return charCnt;
+}
+
+unsigned int
+utilStrInsert(char *pDst, const char *pIns, unsigned int pos, unsigned int len)
+{
+    char *pOffset = pDst + pos;
+    for (unsigned int cntIns = 0; cntIns < len; cntIns++)
+    {
+        *pOffset++ = *pIns++;
+    }
+    return (pos + len);
 }
 
 unsigned int
@@ -83,13 +95,52 @@ utilItoa(char *pBuf, int32_t val, ITOA_BASE_t base)
     return charCnt;
 }
 
-unsigned int
-utilStrInsert(char *pDst, const char *pIns, unsigned int pos, unsigned int len)
+int32_t
+utilAtoi(char *pBuf, ITOA_BASE_t base)
 {
-    char *pOffset = pDst + pos;
-    for (unsigned int cntIns = 0; cntIns < len; cntIns++)
+    unsigned int isNegative;
+    unsigned int len;
+    unsigned int mulCnt = 1;
+    int32_t val = 0;
+
+    if ('-' == *pBuf)
     {
-        *pOffset++ = *pIns++;
+        isNegative = 1u;
+        pBuf++;
     }
-    return (pos + len);
+
+    /* Reverse string and convert */
+    len = utilStrlen(pBuf);
+    utilStrReverse(pBuf, len);
+
+    if (ITOA_BASE10 == base)
+    {
+        while (*pBuf)
+        {
+            val += ((*pBuf++) - '0') * mulCnt;
+            mulCnt *= 10;
+        }
+        if (1u == isNegative)
+        {
+            val = -val;
+        }
+    }
+    else
+    {
+        while (*pBuf)
+        {
+            if ('a' <= *pBuf)
+            {
+                val += ((*pBuf) - 'a' + 10u) * mulCnt;
+            }
+            else
+            {
+                val += ((*pBuf) - '0') * mulCnt;
+            }
+            pBuf++;
+            mulCnt *= 16;
+        }
+    }
+
+    return val;
 }

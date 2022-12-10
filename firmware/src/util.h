@@ -8,11 +8,6 @@ typedef enum {
     ITOA_BASE16
 } ITOA_BASE_t;
 
-/*! @brief Returns the number of characters up to, but not including, NULL
- *  @param [in] pBuf : pointer to the string buffer
- */
-unsigned int utilStrlen(const char *pBuf);
-
 /*! @brief Convert integer to null terminated base 10 string. Returns the
  *         number of characters (including NULL).
  *  @param [in] pBuf : pointer to string buffer, at least 11 characters
@@ -21,6 +16,22 @@ unsigned int utilStrlen(const char *pBuf);
  */
 unsigned int utilItoa(char *pBuf, int32_t val, ITOA_BASE_t base);
 
+/*! @brief Convert null terminated string to integer, returns the value.
+ *  @param [in] pBuf : pointer to string buffer
+ *  @param [in] base : select base 10 or base 16 conversion
+ */
+int32_t utilAtoi(char *pBuf, ITOA_BASE_t base);
+
+/*! @brief Reverse an array (typically string)
+ *  @param [in] pBuf : pointer to the buffer
+ *  @param [in] len : length of buffer to reverse
+ */
+void utilStrReverse(char *pBuf, unsigned int len);
+
+/*! @brief Returns the number of characters up to, but not including, NULL
+ *  @param [in] pBuf : pointer to the string buffer
+ */
+unsigned int utilStrlen(const char *pBuf);
 
 /*! @brief Insert a string into an existing buffer. Returns the end position
  *         of the "cursor" in the destination buffer.

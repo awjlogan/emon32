@@ -94,6 +94,56 @@ util_itoa()
 }
 
 void
+atoiTest10(char *pBuf)
+{
+    int gold = atoi(pBuf);
+    int test = utilAtoi(pBuf, ITOA_BASE10);
+    if (gold != test)
+    {
+        printf("  %s : %d\n", pBuf, test);
+        assert(0);
+    }
+}
+
+void
+atoiTest16(char *pBuf)
+{
+    int gold = strtoul(pBuf, NULL, 16);
+    int test = utilAtoi(pBuf, ITOA_BASE16);
+    if (gold != test)
+    {
+        printf("  %s : %d (%d)\n", pBuf, test, gold);
+        assert(0);
+    }
+}
+
+void
+util_atoi()
+{
+    char txt0[] = "0";
+    char txt1[] = "1";
+    char txt_1[] = "-1";
+    char txt1000[] = "1000";
+    char txt_1000[] = "-1000";
+
+    printf("    base 10 ... ");
+    atoiTest10(txt0);
+    atoiTest10(txt1);
+    atoiTest10(txt_1);
+    atoiTest10(txt1000);
+    atoiTest10(txt_1000);
+    printf(" PASSED \n");
+
+    printf("    base 16 ... ");
+    char txtxFF[] = "ff";
+    atoiTest10(txt0);
+    atoiTest16(txt1);
+    atoiTest16(txtxFF);
+
+    printf(" PASSED \n");
+}
+
+void
 util_insert(const char *ins, const char *gold, unsigned int pos, unsigned int len, unsigned int gold_cursor)
 {
     char base_str[] = "This is an existing string to insert into";
@@ -109,6 +159,8 @@ util_insert(const char *ins, const char *gold, unsigned int pos, unsigned int le
 int
 main(int argc, char *argv[])
 {
+    srand(time(0));
+
     printf("---- emon32 util test ----\n\n");
 
     /* Returns the length of a NULL terminated string excluding termination */
@@ -121,16 +173,19 @@ main(int argc, char *argv[])
     util_strlen(str32);
     printf("PASSED\n\n");
 
-    /* Convert an up to 32 bit value to string */
-    srand(time(0));
-    printf("  utilItoa:\n");
-    util_itoa();
-
     /* Insert a string into an existing buffer */
     printf("  utilStrInsert ...");
     util_insert("MSG", "MSGs is an existing string to insert into", 0, 3, 3);
     util_insert("012345", "This is an existing 012345 to insert into", 20, 6, 26);
     util_insert("IS", "This IS an existing string to insert into", 5, 2, 7);
-
     printf("PASSED\n\n");
+
+    /* Convert an up to 32 bit value to string */
+    printf("  utilItoa:\n");
+    util_itoa();
+
+    /* Convert a string to 32 bit value */
+    printf("  utilAtoi:\n");
+    util_atoi();
+
 }
