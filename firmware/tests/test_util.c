@@ -174,7 +174,7 @@ main(int argc, char *argv[])
     printf("PASSED\n\n");
 
     /* Insert a string into an existing buffer */
-    printf("  utilStrInsert ...");
+    printf("  utilStrInsert ... ");
     util_insert("MSG", "MSGs is an existing string to insert into", 0, 3, 3);
     util_insert("012345", "This is an existing 012345 to insert into", 20, 6, 26);
     util_insert("IS", "This IS an existing string to insert into", 5, 2, 7);

@@ -23,12 +23,11 @@ main(int argc, char *argv[])
     smpRaw = ecmDataBuffer();
     ecmSwapDataBuffer();
 
-    int16_t sinewave[SMP_PER_CYCLE];
-
     for (unsigned int idx = 0; idx < SMP_PER_CYCLE; idx++)
     {
-        sinewave[idx] = sin((double)idx * 2*M_PI / SMP_PER_CYCLE) * 2048.0;
+        printf("%f ", ((double)idx * 2 * M_PI) / 96.0);
     }
+    printf("\n");
 
     /* Half band tests : https://dspguru.com/dsp/faqs/fir/implementation/ */
     /* IMPULSE TEST */
