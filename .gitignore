@@ -37,3 +37,4 @@ compile_commands.json
 *.backup
 hb*.png
 venv/
+*.test

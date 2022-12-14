@@ -75,11 +75,10 @@ typedef struct {
  * Function prototypes
  *****************************************************************************/
 
-/*! @brief Return a pointer to the configuration structure */
-ECMConfig_t *ecmGetConfig();
-
-/*! @brief Configure the power/energy accumulation system */
-void ecmInit();
+/*! @brief Configure the power/energy accumulation system
+ *  @param [in] pConfig : pointer to configuration
+ */
+void ecmInit(Emon32Config_t * const pConfig);
 
 /*! @brief Swaps the ADC data buffer pointers
  */
@@ -88,6 +87,12 @@ void ecmSwapDataBuffer();
 /*! @brief Returns a pointer to the ADC data buffer
  */
 volatile RawSampleSetPacked_t *ecmDataBuffer();
+
+/*! @brief For testing only, this function halves the incoming data rate with
+ *         optional low pass filtering.
+ *  @param [in] pDst : pointer to the SampleSet struct
+ */
+void ecmFilterSample(SampleSet_t *pDst);
 
 /*! @brief Injects a raw sample from the ADC into the accumulators.
  */

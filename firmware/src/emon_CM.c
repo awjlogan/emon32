@@ -16,17 +16,12 @@ ecmSwapPtr(void *pIn1, void *pIn2)
  * Configuration
  *****************************************************************************/
 
-static ECMConfig_t ecmConfig = {.reportCycles = 50u};
-
-ECMConfig_t *
-ecmGetConfig()
-{
-    return &ecmConfig;
-}
+static Emon32Config_t *pCfg;
 
 void
-ecmInit()
+ecmInit(Emon32Config_t * const pConfig)
 {
+    pCfg = pConfig;
 }
 
 /******************************************************************************
@@ -73,8 +68,8 @@ static Accumulator_t *  accum_processing = accum_buffer + 1;
  *         DMA addressess to the defined SampleSet_t fields
  * @param [in] pDst : pointer to the SampleSet_t destination
  */
-static void
-ecmUnpackSample(SampleSet_t *pDst)
+void
+ecmFilterSample(SampleSet_t *pDst)
 {
 #ifndef DOWNSAMPLE_DSP
 
@@ -106,34 +101,36 @@ ecmUnpackSample(SampleSet_t *pDst)
     static unsigned int idxInj = 0u;
     static RawSampleSetUnpacked_t smpBuffer[DOWNSAMPLE_TAPS];
     int32_t intRes[VCT_TOTAL] = {0};
-    const int16_t firCoeffs[DOWNSAMPLE_TAPS / 2] =
-    {
-            0x0001, 0x0010, 0x0011, 0x0100, 0x0101, 0x0110, 0x0111, 0x1000,
-            0x1001, 0x1010, 0x1011, 0x1100, 0x1101, 0x1110, 0x1111, 0x2000
+    const unsigned int numCoeffUnique = 6u;
+    const int16_t firCoeffs[numCoeffUnique] = {
+        92,
+        -279,
+        957,
+        -2670,
+        10113,
+        16339
     };
 
-
+    const unsigned int downsample_taps = DOWNSAMPLE_TAPS;
     const unsigned int idxInjPrev =   (0 == idxInj)
-                                    ? (DOWNSAMPLE_TAPS - 1u)
+                                    ? (downsample_taps - 1u)
                                     : (idxInj - 1u);
-
-    /* Copy the packed raw ADC value into the unpacked buffer */
+    /* Copy the packed raw ADC value into the unpacked buffer; index 1 is the
+     * most recent sample.
+     */
     for (unsigned int idxSmp = 0; idxSmp < (NUM_V + NUM_CT); idxSmp++)
     {
-        smpBuffer[idxInj].smp[idxSmp] = adc_proc->samples[1].smp[idxSmp];
-        smpBuffer[idxInjPrev].smp[idxSmp] = adc_proc->samples[0].smp[idxSmp];
+        smpBuffer[idxInj].smp[idxSmp] = adc_active->samples[1].smp[idxSmp];
+        smpBuffer[idxInjPrev].smp[idxSmp] = adc_active->samples[0].smp[idxSmp];
     }
 
-    /* For an ODD number of taps, take the unique middle value to start */
-    if (0 != DOWNSAMPLE_TAPS % 2)
+    /* For an ODD number of taps, take the unique middle value to start. As
+     * the filter is symmetric, this is the final element in the array */
+    if (0 != downsample_taps % 2)
     {
-        const unsigned int idxSub = (DOWNSAMPLE_TAPS / 2) - 1;
-        const int16_t coeff = firCoeffs[idxSub];
-        int idxSmp = idxInj - (DOWNSAMPLE_TAPS / 2);
-        if (idxSmp < 0)
-        {
-            idxSmp = DOWNSAMPLE_TAPS - (DOWNSAMPLE_TAPS / 2) + idxInj;
-        }
+        const int16_t coeff = firCoeffs[numCoeffUnique - 1u];
+        unsigned int idxSmp = idxInj + (downsample_taps / 2);
+        if (idxSmp >= downsample_taps) idxSmp -= downsample_taps;
 
         for (unsigned int idxChannel = 0; idxChannel < VCT_TOTAL; idxChannel++)
         {
@@ -145,13 +142,10 @@ ecmUnpackSample(SampleSet_t *pDst)
      * is folded so the symmetric FIR coefficients are used for both samples.
      */
     unsigned int idxSmpStart = idxInj;
-    int idxSmpEnd = idxInj - (DOWNSAMPLE_TAPS / 2);
-    if (idxSmpEnd < 0)
-    {
-        idxSmpEnd = DOWNSAMPLE_TAPS - (DOWNSAMPLE_TAPS / 2) + idxInj;
-    }
+    unsigned int idxSmpEnd = ((downsample_taps - 1u) == idxInj) ? 0 : idxInj + 1u;
+    if (idxSmpEnd >= downsample_taps) idxSmpEnd -= downsample_taps;
 
-    for (unsigned int idxCoeff = 0; idxCoeff < DOWNSAMPLE_TAPS / 2; idxCoeff++)
+    for (unsigned int idxCoeff = 0; idxCoeff < (numCoeffUnique - 1u); idxCoeff++)
     {
         const int16_t coeff = firCoeffs[idxCoeff];
         for (unsigned int idxChannel = 0; idxChannel < VCT_TOTAL; idxChannel++)
@@ -162,12 +156,11 @@ ecmUnpackSample(SampleSet_t *pDst)
         }
 
         /* Converge toward the middle, check for over/underflow */
-        idxSmpStart =   ((DOWNSAMPLE_TAPS - 1) == idxSmpStart)
-                       ? 0
-                       : idxSmpStart + 1u;
-        idxSmpEnd =   (0 == idxSmpEnd)
-                    ? (DOWNSAMPLE_TAPS - 1)
-                    : idxSmpEnd - 1u;
+        idxSmpStart -= 2u;
+        if (idxSmpStart > downsample_taps) idxSmpStart += downsample_taps;
+
+        idxSmpEnd += 2u;
+        if (idxSmpEnd >= downsample_taps) idxSmpEnd -= downsample_taps;
     }
 
     /* Truncate with rounding to nearest LSB and place into field */
@@ -175,15 +168,15 @@ ecmUnpackSample(SampleSet_t *pDst)
     for (unsigned int idxChannel = 0; idxChannel < VCT_TOTAL; idxChannel++)
     {
         unsigned int roundUp = 0;
-        if (0 != (intRes[idxChannel] & (1u << 15)))
+        if (0 != (intRes[idxChannel] & (1u << 14)))
         {
             roundUp = 1u;
         }
-        intRes[idxChannel] = (intRes[idxChannel] >> 16) + roundUp;
+        intRes[idxChannel] = (intRes[idxChannel] >> 15) + roundUp;
 
         if (idxChannel < NUM_V)
         {
-            pDst->smpV[idxChannel] = (uint16_t)intRes[idxChannel];
+            pDst->smpV[idxChannel] = (int16_t)intRes[idxChannel];
         }
         else
         {
@@ -194,9 +187,9 @@ ecmUnpackSample(SampleSet_t *pDst)
 
     /* Each injection is 2 samples */
     idxInj += 2u;
-    if (idxInj > (DOWNSAMPLE_TAPS - 1))
+    if (idxInj > (downsample_taps - 1))
     {
-        idxInj -= (DOWNSAMPLE_TAPS - 1);
+        idxInj -= (downsample_taps - 1);
     }
 
 #endif
@@ -216,7 +209,7 @@ ecmInjectSample()
     static int hystCnt = 0;
 
     /* Copy the pre-processed sample data into the ring buffer */
-    ecmUnpackSample(pSmpProc);
+    ecmFilterSample(pSmpProc);
     memcpy((void *)(samples + idxInject), (const void *)pSmpProc, sizeof(SampleSet_t));
 
     /* Do power calculations */
@@ -277,10 +270,11 @@ ecmInjectSample()
 void
 ecmProcessCycle()
 {
-    static unsigned int cycleCount;
+    static unsigned int         cycleCount;
     static volatile ECMCycle_t   ecmCycle;
 
     cycleCount++;
+
     /* Reused constants */
     const uint32_t numSamples = accum_processing->num_samples;
     const uint32_t numSamplesSqr = numSamples * numSamples;
@@ -292,17 +286,21 @@ ecmProcessCycle()
                               - ((accum_processing->processV[idxV].sumV_deltas * accum_processing->processV[idxV].sumV_deltas) / (numSamplesSqr)));
     }
 
-    /* RMS for CT channels */
+    /* CT channels */
     for (unsigned int idxCT = 0; idxCT < NUM_CT; idxCT++)
     {
+        /* Apply phase calibration for CT interpolated between V samples */
+        /* TODO check fixed point accumulation here, probably truncate */
+        int32_t sumRealPower =   accum_processing->processCT[idxCT].sumPA * pCfg->ctCfg[idxCT].phaseX
+                               + accum_processing->processCT[idxCT].sumPB * pCfg->ctCfg[idxCT].phaseY;
         ecmCycle.valCT[idxCT].rmsCT =   ((accum_processing->processCT[idxCT].sumI_sqr / numSamples)
                                       - ((accum_processing->processCT[idxCT].sumI_deltas * accum_processing->processCT[idxCT].sumI_deltas) / numSamplesSqr));
     }
-    if (cycleCount >= ecmConfig.reportCycles)
-    {
-        cycleCount = 0u;
-        // emon32SetEvent(EVT_ECM_SET_CMPL);
-    }
+    // if (cycleCount >= ecmConfig.reportCycles)
+    // {
+    //     cycleCount = 0u;
+    //     // emon32SetEvent(EVT_ECM_SET_CMPL);
+    // }
 }
 
 void
