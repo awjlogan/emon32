@@ -8,7 +8,7 @@
 int
 main(int argc, char *argv[])
 {
-    ECMSet_t dataset = {};
+    ECMSet_t dataset = {0};
     char txBuffer[1024];
     char goldBuffer[1024];
     unsigned int dataCnt;

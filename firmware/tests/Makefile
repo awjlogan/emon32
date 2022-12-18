@@ -1,21 +1,26 @@
 CC = cc
 CFLAGS = -Wall -Wpedantic
-INCLUDES = ../src/
+INCLUDES = ../src/ -I./
+DEFINES = HOSTED
 
 util: OBJS = test_util.c ../src/util.c
 cm: OBJS = test_cm.c ../src/emon_CM.c
 data: OBJS = test_data.c ../src/data.c ../src/util.c
+configuration: OBJS = test_configuration.c ../src/configuration.c ../src/util.c
 
-all: util cm data
+all: util cm data configuration
+
+configuration:
+	${CC} ${CFLAGS} -D$(DEFINES) -I$(INCLUDES) -o $@.test $(OBJS) ${LIBS}
 
 util:
-	${CC} ${CFLAGS} -I${INCLUDES} -o $@.test $(OBJS) ${LIBS}
+	${CC} ${CFLAGS} -D$(DEFINES) -I$(INCLUDES) -o $@.test $(OBJS) ${LIBS}
 	./util.test
 cm:
-	${CC} ${CFLAGS} -I${INCLUDES} -o $@.test $(OBJS) ${LIBS}
+	${CC} ${CFLAGS} -D$(DEFINES) -I$(INCLUDES) -o $@.test $(OBJS) ${LIBS}
 	./cm.test
 data:
-	${CC} ${CFLAGS} -I${INCLUDES} -o $@.test $(OBJS) ${LIBS}
+	${CC} ${CFLAGS} -D$(DEFINES) -I$(INCLUDES) -o $@.test $(OBJS) ${LIBS}
 	./data.test
 clean:
 	rm *.test

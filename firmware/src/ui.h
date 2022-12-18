@@ -11,13 +11,6 @@ typedef enum {
     SW_RELEASED /* Last state was OPEN, now confirmed open */
 } SwitchState_t;
 
-/* Contains the states that are available to the energy monitor */
-typedef enum {
-    EMON_IDLE,      /* Ready to start */
-    EMON_ACTIVE,    /* Collecting data */
-    EMON_ERROR      /* An error has occured */
-} EmonState_t;
-
 /*! @brief Updates the current state of the button, called every millisecond
  */
 SwitchState_t uiSWUpdate();

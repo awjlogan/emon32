@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+/* Firmware version */
+#define VERSION_FW_MAJ      0u
+#define VERSION_FW_MIN      1u
+
 /* Voltage and CT setup - this is configurable, but constrained per board. For
  * example, NUM_CT can't be greater than the number of physical channels, but
  * can be less.
@@ -18,15 +22,43 @@
  * Otherwise, the second sample from each set will be discarded
  */
 #define DOWNSAMPLE_DSP
-#define DOWNSAMPLE_TAPS     32u
+#define DOWNSAMPLE_TAPS     19u
 
 /* Number of samples available for power calculation. must be power of 2 */
 #define PROC_DEPTH          4u
 
-typedef struct Emon32Config {
-    unsigned int mainsFreq;
-    unsigned int reportCycles;
+/* Configurable options. All the structs are packed to allow simple write to
+ * EEPROM as a contiguous set.
+ */
+typedef struct __attribute__((__packed__)) {
+    uint8_t         mainsFreq;      /* Mains frequency */
+    uint8_t         equilCycles;    /* "Warm up" cycles to discard */
+    unsigned int    reportCycles;   /* Cycle count before reporting */
+} BaseCfg_t;
+
+typedef struct __attribute__((__packed__)) {
+   float           voltageCal;
+} VoltageCfg_t;
+
+typedef struct __attribute__((__packed__)) {
+    float           ctCal;
+    int16_t         phaseX;
+    int16_t         phaseY;
+} CTCfg_t;
+
+typedef struct __attribute__((__packed__)) {
+    BaseCfg_t       baseCfg;
+    VoltageCfg_t    voltageCfg[NUM_V];
+    CTCfg_t         ctCfg[NUM_CT];
 } Emon32Config_t;
+
+/* Contains the states that are available to emon32 */
+typedef enum {
+    EMON_STATE_IDLE,    /* Ready to start */
+    EMON_STATE_ACTIVE,  /* Collecting data */
+    EMON_STATE_ERROR,   /* An error has occured */
+    EMON_STATE_CONFIG   /* If configuration state */
+} EmonState_t;
 
 /* INTSRC_t contains all the event/interrupts sources. This value is shifted
  * to provide a vector of set events as bits.
@@ -66,8 +98,8 @@ typedef struct SampleSet {
 } SampleSet_t;
 
 /*! @brief Set the pending event/interrupt flag for tasks that are not handled
- *        within an ISR
- *  @param [in] Event source in enum
+ *         within an ISR
+ *  @param [in] evt : Event source in enum
  */
 void emon32SetEvent(INTSRC_t evt);
 
@@ -75,5 +107,14 @@ void emon32SetEvent(INTSRC_t evt);
  *  @param [in] Event source in enum
  */
 void emon32ClrEvent(INTSRC_t evt);
+
+/*! @brief Set the state of the emon32 system
+ *  @param [in] state : state to set
+ */
+void emon32StateSet(EmonState_t state);
+
+/*! @brief Returns the state of the emon32 system
+ */
+EmonState_t emon32StateGet();
 
 #endif

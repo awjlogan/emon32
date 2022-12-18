@@ -140,7 +140,28 @@ util_atoi()
     atoiTest16(txt1);
     atoiTest16(txtxFF);
 
-    printf(" PASSED \n");
+    printf(" PASSED \n\n");
+}
+
+void
+atofTest(char *pBuf)
+{
+    float gold = strtof(pBuf, NULL);
+    float test = utilAtof(pBuf);
+    if (gold != test)
+    {
+        printf("  %s : %.6f (%.6f)\n", pBuf, test, gold);
+        assert(0);
+    }
+}
+
+void
+util_atof()
+{
+    char txt0[] = "0";
+    char txt1[] = "1";
+    char txt2[] = "240.64";
+    atofTest(txt2);
 }
 
 void
@@ -188,4 +209,8 @@ main(int argc, char *argv[])
     printf("  utilAtoi:\n");
     util_atoi();
 
+    /* Convert strings to float */
+    printf("  utilAtof ... ");
+    util_atof();
+    printf("PASSED\n\n");
 }

@@ -98,7 +98,7 @@ utilItoa(char *pBuf, int32_t val, ITOA_BASE_t base)
 int32_t
 utilAtoi(char *pBuf, ITOA_BASE_t base)
 {
-    unsigned int isNegative;
+    unsigned int isNegative = 0u;
     unsigned int len;
     unsigned int mulCnt = 1;
     int32_t val = 0;
@@ -142,5 +142,85 @@ utilAtoi(char *pBuf, ITOA_BASE_t base)
         }
     }
 
+    return val;
+}
+
+unsigned int
+utilFtoa(char *pBuf, float val)
+{
+    unsigned int charCnt = 0;
+    unsigned int isNegative = 0;
+    char * const pBase = pBuf;
+
+    uint16_t    decimals;
+    int         units;
+
+    if (val < 0.0)
+    {
+        isNegative = 1u;
+        val = -val;
+    }
+    decimals = (int)(val * 100) % 100;
+    units = (int)val;
+
+    charCnt += 3u;
+    *pBuf++ = (decimals % 10) + '0';
+    decimals = decimals / 10;
+    *pBuf++ = (decimals % 10) + '0';
+    *pBuf++ = '.';
+
+    while (0 != units)
+    {
+        *pBuf++ = (units % 10) + '0';
+        units = units / 10;
+        charCnt++;
+    }
+
+    if (0 != isNegative)
+    {
+        *pBuf++ = '-';
+        charCnt++;
+    }
+    utilStrReverse(pBase, charCnt);
+    return charCnt;
+}
+
+float
+utilAtof(char *pBuf)
+{
+    unsigned int isNegative = 0u;
+    unsigned int len = 0;
+    unsigned int mulCnt = 1u;
+    unsigned int fraction = 0u;
+    float val = 0.0f;
+
+    if ('-' == *pBuf)
+    {
+        isNegative = 1u;
+        pBuf++;
+    }
+    len = utilStrlen(pBuf);
+    utilStrReverse(pBuf, len);
+
+    while (*pBuf)
+    {
+        const char c = *pBuf++;
+        /* Allow period/comma delimit, divide down if found */
+        if ('.' != c && ',' != c)
+        {
+            const float toAdd = (float)(c - '0') * mulCnt;
+            val += toAdd;
+            mulCnt *= 10;
+        }
+        else
+        {
+            fraction = mulCnt;
+        }
+    }
+    val = val / fraction;
+    if (isNegative)
+    {
+        val = -val;
+    }
     return val;
 }
