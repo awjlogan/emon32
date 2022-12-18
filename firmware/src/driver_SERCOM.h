@@ -59,4 +59,13 @@ uint32_t uartInterruptStatus(const Sercom *sercom);
  */
 void uartInterruptClear(Sercom *sercom, uint32_t interrupt);
 
+/*! @brief Set I2C address. If dma is 1, then a packet of len bytes is sent
+ *         or received.
+ *  @param [in] sercom : SERCOM instance
+ *  @param [in] addr : address and RW bit
+ *  @param [in] dma  : send packet by DMA
+ *  @param [in] len  : number of bytes to send
+ */
+void i2cActivate(Sercom *sercom, unsigned int addr, unsigned int dma, unsigned int len);
+
 #endif

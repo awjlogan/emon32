@@ -8,11 +8,11 @@ sercomSetup()
     portPinDir(PIN_UART_RX, PIN_DIR_IN);
     portPinMux(PIN_UART_RX, PORT_PMUX_PMUXO_D);
 
-    const uint32_t baud = UART_BAUD;
+    const uint32_t baud = UART_DBG_BAUD;
     const uint64_t br = (uint64_t)65536 * (F_PERIPH - 16 * baud) / F_PERIPH;
 
     /* Configure clocks - runs from the OSC8M clock on gen 3 */
-    PM->APBCMASK.reg |= SERCOM_UART_APBCMASK;
+    PM->APBCMASK.reg |= SERCOM_UART_DBG_APBCMASK;
     GCLK->CLKCTRL.reg =   GCLK_CLKCTRL_ID(SERCOM_UART_DBG_GCLK_ID)
                         | GCLK_CLKCTRL_GEN(3u)
                         | GCLK_CLKCTRL_CLKEN;
@@ -20,8 +20,8 @@ sercomSetup()
     /* Configure the USART */
     SERCOM_UART_DBG->USART.CTRLA.reg =   SERCOM_USART_CTRLA_DORD
                                        | SERCOM_USART_CTRLA_MODE_USART_INT_CLK
-                                       | SERCOM_USART_CTRLA_RXPO(UART_PAD_RX)
-                                       | SERCOM_USART_CTRLA_TXPO(UART_PAD_TX);
+                                       | SERCOM_USART_CTRLA_RXPO(UART_DBG_PAD_RX)
+                                       | SERCOM_USART_CTRLA_TXPO(UART_DBG_PAD_TX);
 
     /* TX/RX enable requires synchronisation */
     SERCOM_UART_DBG->USART.CTRLB.reg =   SERCOM_USART_CTRLB_RXEN
@@ -47,12 +47,27 @@ sercomSetup()
 
     /* TODO configure baud rate */
     /* Configure the master I2C SERCOM for external EEPROM */
-    SERCOM_I2CM->I2CM.CTRLA.reg = SERCOM_I2CM_CTRLA_MODE_I2C_MASTER;
+    SERCOM_I2CM->I2CM.CTRLA.reg =   SERCOM_I2CM_CTRLA_MODE_I2C_MASTER
+                                  /* Table 27.11 : 300-600 ns SDA hold */
+                                  | SERCOM_I2CM_CTRLA_SDAHOLD(0x2u);
 
-    /* Enable Smart Mode to issue (N)ACK automatically (27.6.3.2) */
+    /* Enable Smart Mode to issue (N)ACK automatically (27.6.3.2)
+     * Wait for synchronisation on write to CTRLB (27.8.2.8)
+     */
     SERCOM_I2CM->I2CM.CTRLB.reg |= SERCOM_I2CM_CTRLB_SMEN;
+    while (SERCOM_I2CM->I2CM.SYNCBUSY.reg & SERCOM_I2CM_SYNCBUSY_SYSOP);
 
-    #endif
+    /* Enable SERCOM, with sync */
+    SERCOM_I2CM->I2CM.CTRLA.reg |= SERCOM_I2CM_CTRLA_ENABLE;
+    while (SERCOM_I2CM->I2CM.SYNCBUSY.reg & SERCOM_I2CM_SYNCBUSY_SYSOP);
+
+    /* After enabling the I2C SERCOM, the bus state is UNKNOWN (Table 27.13)
+     * Force into IDLE state, with sync
+     */
+    SERCOM_I2CM->I2CM.STATUS.reg |= SERCOM_I2CM_STATUS_BUSSTATE(0x1u);
+    while (SERCOM_I2CM->I2CM.SYNCBUSY.reg & SERCOM_I2CM_SYNCBUSY_SYSOP);
+
+#endif
 
 }
 
@@ -124,4 +139,19 @@ void
 uartInterruptClear(Sercom *sercom, uint32_t interrupt)
 {
     sercom->USART.INTFLAG.reg |= interrupt;
+}
+
+void
+i2cActivate(Sercom *sercom, unsigned int addr, unsigned int dma, unsigned int len)
+{
+    if (0 == dma)
+    {
+        sercom->I2CM.ADDR.reg = SERCOM_I2CM_ADDR_ADDR(addr);
+    }
+    else
+    {
+        sercom->I2CM.ADDR.reg =   SERCOM_I2CM_ADDR_ADDR(addr)
+                                | SERCOM_I2CM_ADDR_LEN(len)
+                                | SERCOM_I2CM_ADDR_LENEN;
+    }
 }

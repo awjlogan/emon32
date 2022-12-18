@@ -15,11 +15,13 @@ main(int argc, char *argv[])
 
     volatile RawSampleSetPacked_t *volatile smpRaw;
     SampleSet_t smpProc;
+    int16_t sine_q11[SMP_PER_CYCLE];
 
     memset(&smpProc, 0, sizeof(SampleSet_t));
 
-    /* Generate sine waves into data buffer (as Q11 fixed point)
-     * ecmDataBuffer returns a pointer to the buffer which the DMA is putting
+
+    printf("  Half band filter tests:\n");
+    /* ecmDataBuffer returns a pointer to the buffer which the DMA is putting
      * data into. Acquire the buffer, then swap so the test has access to the
      * processing buffer
      */
@@ -28,12 +30,11 @@ main(int argc, char *argv[])
 
     /* Half band tests : https://dspguru.com/dsp/faqs/fir/implementation/ */
 
-
     /* IMPULSE TEST
      * Inject an implulse, should get all the coefficients (except middle) out
      * TODO parameterise this for any size of filter
      */
-    printf("  Impulse test:\n\n");
+    printf("    - Impulse:\n\n");
     for (unsigned int i = 0; i < VCT_TOTAL; i++)
     {
         smpRaw->samples[0].smp[i] = 0;
@@ -75,4 +76,30 @@ main(int argc, char *argv[])
     /* STEP TEST */
     /* SINE TEST */
 
+
+    /* Generate a Q1.11 sine wave and use the smpRaw buffer to inject this
+     * into the ecmInjectSample routine.
+     */
+    printf("  Inject sample test:\n");
+    printf("    - Number of samples per cycle: %d\n", SMP_PER_CYCLE);
+    for (unsigned int i = 0; i < SMP_PER_CYCLE; i++)
+    {
+        double i_fp = (double)i;
+        double phi = 2 * M_PI * i_fp / 96.0;
+        double sine = sin(phi);
+        sine_q11[i] = (int16_t)(sine * 2048.0);
+    }
+
+    unsigned int smpCnt = 0;
+    do
+    {
+        for (unsigned int j = 0; j < VCT_TOTAL; j++)
+        {
+            smpRaw->samples[0].smp[j] = sine_q11[2 * smpCnt];
+            smpRaw->samples[1].smp[j] = sine_q11[(2 * smpCnt) + 1];
+        }
+        /* Two physical samples are injected each time */
+        smpCnt += 2u;
+    } while (!ecmInjectSample());
+    printf("%d Cycles done!\n", smpCnt / 2);
 }

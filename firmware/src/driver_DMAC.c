@@ -21,7 +21,6 @@ dmacSetup()
                         | DMAC_CHCTRLB_TRIGSRC(SERCOM_UART_DBG_DMAC_ID_TX)
                         | DMAC_CHCTRLB_TRIGACT_BEAT;
 
-
     /* ADC DMA */
     DMAC->CHID.reg = DMA_CHAN_ADC;
     DMAC->CHCTRLB.reg =   DMAC_CHCTRLB_LVL(0u)
@@ -65,6 +64,13 @@ dmacClearChannelInterrupt(unsigned int ch)
 {
     DMAC->CHID.reg = ch;
     DMAC->CHINTFLAG.reg |= DMAC_CHINTFLAG_TCMPL;
+}
+
+void
+dmacChannelConfigure(unsigned int ch, const DMACCfgCh_t *pCfg)
+{
+    DMAC->CHID.reg = ch;
+    DMAC->CHCTRLB.reg = pCfg->ctrlb;
 }
 
 void

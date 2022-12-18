@@ -3,6 +3,10 @@
 
 #include "samd10.h"
 
+typedef struct {
+    uint32_t    ctrlb;
+} DMACCfgCh_t;
+
 /*! @brief Setup the DMAC peripheral */
 void dmacSetup();
 
@@ -30,5 +34,11 @@ void dmacDisableChannelInterrupt(unsigned int ch);
  *  @param [in] ch : channel to clear interrupt flag for
  */
 void dmacClearChannelInterrupt(unsigned int ch);
+
+/*! @brief Configure a DMA channel
+ *  @param [in] ch : channel to configure
+ *  @param [in] pCfg : pointer to configuration details
+ */
+void dmacChannelConfigure(unsigned int ch, const DMACCfgCh_t *pCfg);
 
 #endif

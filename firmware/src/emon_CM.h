@@ -53,7 +53,6 @@ typedef struct {
     int16_t residualEnergy;
 } CycleCT_t;
 
-
 typedef struct {
     int16_t     rmsV[NUM_V];
     CycleCT_t   valCT[NUM_CT];
@@ -96,7 +95,11 @@ void ecmFilterSample(SampleSet_t *pDst);
 
 /*! @brief Injects a raw sample from the ADC into the accumulators.
  */
-void ecmInjectSample();
+#ifndef HOSTED
+    void ecmInjectSample();
+#else
+    uint32_t ecmInjectSample();
+#endif
 
 /*! @brief Processes a whole cycle
  */

@@ -164,7 +164,7 @@ ecmFilterSample(SampleSet_t *pDst)
     }
 
     /* Truncate with rounding to nearest LSB and place into field */
-    /* TODO This may not be a good way to separate V/CT channels */
+    /* TODO This is a fixed implementation for V/CT unpacking; abstract this */
     for (unsigned int idxChannel = 0; idxChannel < VCT_TOTAL; idxChannel++)
     {
         unsigned int roundUp = 0;
@@ -195,12 +195,17 @@ ecmFilterSample(SampleSet_t *pDst)
 #endif
 }
 
-void
+#ifndef HOSTED
+    void
+#else
+    uint32_t
+#endif
 ecmInjectSample()
 {
     SampleSet_t smpProc;
     SampleSet_t *pSmpProc = &smpProc;
     static unsigned int idxInject;
+    static unsigned int discardCycles;
 
     /* Zero crossing detection
      * TODO Should this be a hardware based system, if enough pins? */
@@ -216,16 +221,15 @@ ecmInjectSample()
     accum_collecting->num_samples++;
 
     /* TODO this is only for single phase currently, loop is there for later */
+    const unsigned int idxLast = (idxInject - 1u) & (PROC_DEPTH - 1u);
     const int32_t thisV = (int32_t)samples[idxInject].smpV[0];
+    const int16_t lastV = samples[idxLast].smpV[0];
 
     for (unsigned int idxV = 0; idxV < NUM_V; idxV++)
     {
         accum_collecting->processV[idxV].sumV_sqr += thisV * thisV;
         accum_collecting->processV[idxV].sumV_deltas += thisV;
     }
-
-    const unsigned int idxLast = (idxInject - 1u) & (PROC_DEPTH - 1u);
-    const int16_t lastV = samples[idxLast].smpV[0];
 
     for (unsigned int idxCT = 0; idxCT < NUM_CT; idxCT++)
     {
@@ -255,23 +259,40 @@ ecmInjectSample()
 //     }
     static uint8_t count = 0;
     count++;
-    if (32 == count)
+    if (48 == count)
     {
         count = 0;
-        // emon32SetEvent(EVT_ECM_CYCLE_CMPL);
         ecmSwapPtr((void *)accum_collecting, (void *)accum_processing);
         memset((void *)accum_collecting, 0, sizeof(Accumulator_t));
+
+        if (pCfg->baseCfg.equilCycles == discardCycles)
+        {
+            #ifndef HOSTED
+                emon32SetEvent(EVT_ECM_CYCLE_CMPL);
+            #else
+                idxInject = (idxInject + 1u) & (PROC_DEPTH - 1u);
+                return 1;
+            #endif
+        }
+        else
+        {
+            discardCycles++;
+        }
     }
 
     /* Advance injection point, masking for overflow */
     idxInject = (idxInject + 1u) & (PROC_DEPTH - 1u);
+
+    #ifdef HOSTED
+        return 0;
+    #endif
 }
 
 void
 ecmProcessCycle()
 {
     static unsigned int         cycleCount;
-    static volatile ECMCycle_t   ecmCycle;
+    static volatile ECMCycle_t  ecmCycle;
 
     cycleCount++;
 
@@ -296,11 +317,11 @@ ecmProcessCycle()
         ecmCycle.valCT[idxCT].rmsCT =   ((accum_processing->processCT[idxCT].sumI_sqr / numSamples)
                                       - ((accum_processing->processCT[idxCT].sumI_deltas * accum_processing->processCT[idxCT].sumI_deltas) / numSamplesSqr));
     }
-    // if (cycleCount >= ecmConfig.reportCycles)
-    // {
-    //     cycleCount = 0u;
-    //     // emon32SetEvent(EVT_ECM_SET_CMPL);
-    // }
+    if (cycleCount >= pCfg->baseCfg.reportCycles)
+    {
+        cycleCount = 0u;
+        // emon32SetEvent(EVT_ECM_SET_CMPL);
+    }
 }
 
 void

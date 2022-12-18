@@ -118,4 +118,12 @@ void
 irq_handler_sys_tick()
 {
     emon32SetEvent(EVT_SYSTICK_1KHz);
+
+    /* Clear the watchdog if in the configuration state, as the normal 1 kHz
+     * tick event will not be serviced.
+     */
+    if (EMON_STATE_CONFIG == emon32StateGet())
+    {
+        wdtKick();
+    }
 }
