@@ -22,10 +22,11 @@ adcSetup()
     ADC->REFCTRL.reg =   ADC_REFCTRL_REFCOMP
                        | ADC_REFCTRL_REFSEL_AREFA;
 
-    /* Differential mode, /8 prescale of F_PERIPH.
+    /* Differential mode, /8 prescale of F_PERIPH, left adjust
      * Requires synchronisation after write (30.6.13)
      */
     ADC->CTRLB.reg =   ADC_CTRLB_PRESCALER_DIV8
+                     | ADC_CTRLB_LEFTADJ
                      | ADC_CTRLB_DIFFMODE;
     while (ADC->STATUS.reg & ADC_STATUS_SYNCBUSY);
 

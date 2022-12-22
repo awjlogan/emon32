@@ -49,12 +49,12 @@ void
 uiUpdateLED(EmonState_t estate)
 {
     static unsigned int ticks;
-    if (EMON_IDLE == estate)
+    if (EMON_STATE_IDLE == estate)
     {
         /* TODO LED to pulse */
         portPinDrv(PIN_LED, PIN_DRV_CLR);
     }
-    else if (EMON_ACTIVE == estate)
+    else if (EMON_STATE_ACTIVE == estate)
     {
         portPinDrv(PIN_LED, PIN_DRV_SET);
     }

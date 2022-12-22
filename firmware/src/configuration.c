@@ -24,41 +24,27 @@
     #include "emon32_samd.h"
 #endif
 
-static unsigned int valChanged;
-static Emon32Config_t *pCfg;
-static char genBuf[12];
+#define GENBUF_W        16u
+
+static unsigned int     valChanged;
+static Emon32Config_t   *pCfg;
+static char             genBuf[GENBUF_W];
 
 /*! @brief Fetch the board's unique ID, and place in genBuf
  *         For SAMD series, there is a unique value in the IC
  */
-static void
+static inline uint32_t
 getUniqueID(unsigned int idx)
 {
-    uint32_t val;
     #ifdef HOSTED
-        val = 1 << (idx * 2);
+        return 1 << (idx * 2);
     #else
-        /* Section 9.6 Serial Nuber */
-        switch (idx)
-        {
-            case 0:
-                val = *(volatile uint32_t *)(0x0080A00C);
-                break;
-            case 1:
-                val = *(volatile uint32_t *)(0x0080A040);
-                break;
-            case 2:
-                val = *(volatile uint32_t *)(0x0080A040);
-                break;
-            case 3:
-                val = *(volatile uint32_t *)(0x0080A040);
-                break;
-            default:
-                val = 0u;
-                uartPutsBlocking(SERCOM_UART_DBG, "Panic!\n");
-        }
+        /* Section 9.6 Serial Number */
+        const uint32_t id_addr_lut[4] = {
+            0x0080A00C, 0x0080A40, 0x0080A044, 0x0080A048
+        };
+        return *(volatile uint32_t *)id_addr_lut[idx];
     #endif
-    utilItoa(genBuf, val, ITOA_BASE16);
 }
 
 static void
@@ -69,7 +55,7 @@ getInputStr()
     char c = 0;
 
     /* Buffer will fill in reverse order, done when # is received */
-    while ('#' != c)
+    while ('#' != c && (charCnt < GENBUF_W))
     {
         #ifdef HOSTED
             c = getchar();
@@ -79,7 +65,7 @@ getInputStr()
             while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
             c = uartGetc(SERCOM_UART_DBG);
         #endif
-        if ('#' != c && '\n' != c)
+        if ('#' != c)
         {
             *pBuf++ = c;
             charCnt++;
@@ -109,19 +95,24 @@ infoEdit()
 }
 
 static void
+putValueEnd()
+{
+    uartPutsBlocking(SERCOM_UART_DBG, genBuf);
+    uartPutcBlocking(SERCOM_UART_DBG, '\n');
+}
+
+static void
 putValueEnd_10(unsigned int val)
 {
     (void)utilItoa(genBuf, val, ITOA_BASE10);
-    uartPutsBlocking(SERCOM_UART_DBG, genBuf);
-    uartPutcBlocking(SERCOM_UART_DBG, '\n');
+    putValueEnd();
 }
 
 static void
 putValueEnd_Float(float val)
 {
     (void)utilFtoa(genBuf, val);
-    uartPutsBlocking(SERCOM_UART_DBG, genBuf);
-    uartPutcBlocking(SERCOM_UART_DBG, '\n');
+    putValueEnd();
 }
 
 static inline void
@@ -314,11 +305,11 @@ menuConfiguration()
     {
         clearTerm();
         uartPutsBlocking(SERCOM_UART_DBG, "---- CONFIGURATION ----\n\n");
-        uartPutsBlocking(SERCOM_UART_DBG, "0: Cycles to report:        ");
+        uartPutsBlocking(SERCOM_UART_DBG, "0: Cycles to report:       ");
         putValueEnd_10(pCfg->baseCfg.reportCycles);
-        uartPutsBlocking(SERCOM_UART_DBG, "1: Mains frequency (Hz):    ");
+        uartPutsBlocking(SERCOM_UART_DBG, "1: Mains frequency (Hz):   ");
         putValueEnd_10(pCfg->baseCfg.mainsFreq);
-        uartPutsBlocking(SERCOM_UART_DBG, "2: Discard initial samples: ");
+        uartPutsBlocking(SERCOM_UART_DBG, "2: Discard initial cycles: ");
         putValueEnd_10(pCfg->baseCfg.equilCycles);
         infoEdit();
 
@@ -375,7 +366,7 @@ menuAbout()
     uartPutsBlocking(SERCOM_UART_DBG, "Serial number:    ");
     for (unsigned int i = 0; i < 4; i++)
     {
-        getUniqueID(i);
+        utilItoa(genBuf, getUniqueID(i), ITOA_BASE16);
         uartPutsBlocking(SERCOM_UART_DBG, genBuf);
     }
     uartPutsBlocking(SERCOM_UART_DBG, "\n\n");

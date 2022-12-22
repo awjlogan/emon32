@@ -41,9 +41,12 @@ SRCS += \
   ./src/driver_DMAC.c \
   ./src/driver_EVSYS.c \
   ./src/driver_WDT.c \
+  ./src/eeprom.c \
   ./src/emon_CM.c \
   ./src/util.c \
-  ./src/ui.c
+  ./src/ui.c \
+  ./src/data.c \
+  ./src/configuration.c
 
 
 DEFINES += \

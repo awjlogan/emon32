@@ -5,7 +5,7 @@ dataPackage_n(const ECMSet_t *pData, char *pDst, unsigned int n)
 {
     unsigned int charCnt = 0;
     char tmpBuf[16];
-    unsigned int cursor;
+    unsigned int cursor = 0u;
     unsigned int insLen;
 
     /* Message number */
