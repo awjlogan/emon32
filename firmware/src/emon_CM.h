@@ -44,22 +44,22 @@ typedef struct {
 
 /* This struct matches emonLibCM's calculations */
 typedef struct {
-    int16_t rmsCT;
-    int16_t realPower;
-    int16_t apparentPower;
-    int16_t powerNow;
-    int16_t powerFactor;
-    int16_t wattHours;
-    int16_t residualEnergy;
+    q15_t rmsCT;
+    q15_t realPower;
+    q15_t apparentPower;
+    q15_t powerNow;
+    q15_t powerFactor;
+    q15_t wattHours;
+    q15_t residualEnergy;
 } CycleCT_t;
 
 typedef struct {
-    int16_t     rmsV[NUM_V];
+    q15_t       rmsV[NUM_V];
     CycleCT_t   valCT[NUM_CT];
 } ECMCycle_t;
 
 typedef struct {
-    int16_t realPower;
+    q15_t realPower;
     uint16_t wattHour;
 } DataCT_t;
 

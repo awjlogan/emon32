@@ -27,6 +27,10 @@
 /* Number of samples available for power calculation. must be power of 2 */
 #define PROC_DEPTH          4u
 
+/* Alias integer types for fixed point calculation */
+typedef int16_t     q15_t;
+typedef int32_t     q31_t;
+
 /* Configurable options. All the structs are packed to allow simple write to
  * EEPROM as a contiguous set.
  */
@@ -42,8 +46,8 @@ typedef struct __attribute__((__packed__)) {
 
 typedef struct __attribute__((__packed__)) {
     float           ctCal;
-    int16_t         phaseX;
-    int16_t         phaseY;
+    q15_t           phaseX;
+    q15_t           phaseY;
 } CTCfg_t;
 
 typedef struct __attribute__((__packed__)) {
@@ -77,7 +81,7 @@ typedef enum {
 
 /* SingleSampleSet_t contains a single set of V + CT ADC samples */
 typedef struct __attribute__((__packed__)) SingleSampleSet {
-    int16_t smp[VCT_TOTAL];
+    q15_t smp[VCT_TOTAL];
 } SingleRawSampleSet_t;
 
 /* SampleSetPacked_t contains a set of single sample sets. This allows the DMAC
@@ -88,13 +92,13 @@ typedef struct __attribute__((__packed__)) SampleSetPacked {
 } RawSampleSetPacked_t;
 
 typedef struct RawSampleSetUnpacked {
-    int16_t smp[NUM_V + NUM_CT];
+    q15_t smp[NUM_V + NUM_CT];
 } RawSampleSetUnpacked_t;
 
 /* SampleSet_t contains an unpacked set of single sample sets */
 typedef struct SampleSet {
-    int16_t smpV[NUM_V];
-    int16_t smpCT[NUM_CT];
+    q15_t smpV[NUM_V];
+    q15_t smpCT[NUM_CT];
 } SampleSet_t;
 
 /*! @brief Set the pending event/interrupt flag for tasks that are not handled

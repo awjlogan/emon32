@@ -2,6 +2,135 @@
 #include "emon_CM.h"
 #include <string.h>
 
+/******** FIXED POINT MATHS FUNCTIONS ********
+ *
+ * Adapted from Arm CMSIS-DSP: https://arm-software.github.io/CMSIS-DSP/
+ */
+
+#define Q12QUARTER  0x2000
+/* Source/CommonTables/arm_common_tables.c:70534 */
+const q15_t sqrt_initial_lut[16] = {
+    8192, 7327, 6689, 6193,
+    5793, 5461, 5181, 4940,
+    4730, 4544, 4379, 4230,
+    4096, 3974, 3862, 3759
+};
+
+/*! @brief Truncate Q31 to a Q15 fixed point, round to nearest LSB
+ *  @param [in] val value to truncate
+ *  @return Q15 truncated val
+ */
+static inline q15_t
+__STRUNCATE(int32_t val)
+{
+    unsigned int roundUp = 0;
+    if (0 != (val & (1u << 14)))
+    {
+        roundUp = 1u;
+    }
+    return (q15_t) ((val >> 15) + roundUp);
+}
+
+/*! @brief Saturate to Q15 fixed point number
+ *  @details Modified CMSIS-DSP: Include/dsp/none.h:78, sat is always 16
+ *  @param [in] val : input value
+ */
+static inline int32_t
+__SSAT(int32_t val)
+{
+    const int32_t max = (int32_t)((1U << (15u)) - 1U);
+    const int32_t min = -1 - max ;
+    if (val > max)
+    {
+        return max;
+    }
+    else if (val < min)
+    {
+        return min;
+    }
+}
+
+/*! @brief Count the number of leading 0s
+ *  @param[in] data : input value
+ *  @return Number of leading 0s in data
+ */
+
+/* TODO ARMv7-M has a CLZ instruction, use intrinsic */
+static inline uint8_t
+__CLZ(uint32_t data)
+{
+    uint32_t count = 0u;
+    uint32_t mask = 0x80000000u;
+
+    if (0 == data)
+    {
+        return 32u;
+    }
+
+    while ((data & mask) == 0U)
+    {
+        count += 1U;
+        mask = mask >> 1U;
+    }
+    return count;
+}
+
+/*! @brief Square root of Q15 number
+ *  @details Modified CMSIS-DSP: Source/FastMathFunctions/arm_sqrt_q15.c
+ *  @param [in] in : input vaue in range [0 +1)
+ *  @return square root of the input value
+ */
+
+q15_t
+sqrt_q15(q15_t in)
+{
+    q15_t number, var1, signBits1, temp;
+    number = in;
+
+    signBits1 = __CLZ(number) - 17;
+    if (0 == (signBits1 % 2))
+    {
+        number = number << signBits1;
+    }
+    else
+    {
+        number = number << (signBits1 - 1);
+    }
+
+    /* Start value for 1/sqrt(x) for Newton-Raphson */
+    var1 = sqrt_initial_lut[(number >> 11) - (Q12QUARTER >> 11)];
+
+    /* TODO Loop is unrolled, can compact if needed */
+    temp = ((q31_t) var1 * var1) >> 12;
+    temp = ((q31_t) number * temp) >> 15;
+    temp = 0x3000 - temp;
+    var1 = ((q31_t) var1 * temp) >> 13;
+
+    temp = ((q31_t) var1 * var1) >> 12;
+    temp = ((q31_t) number * temp) >> 15;
+    temp = 0x3000 - temp;
+    var1 = ((q31_t) var1 * temp) >> 13;
+
+    temp = ((q31_t) var1 * var1) >> 12;
+    temp = ((q31_t) number * temp) >> 15;
+    temp = 0x3000 - temp;
+    var1 = ((q31_t) var1 * temp) >> 13;
+
+    /* Multiply the inverse sqrt with the original, and shift down */
+    var1 = ((q15_t) (((q31_t) number * var1) >> 12));
+    if (0 == (signBits1 % 2))
+    {
+        var1 = var1 >> (signBits1 / 2);
+    }
+    else
+    {
+        var1 = var1 >> ((signBits1 - 1) / 2);
+    }
+    return var1;
+}
+
+/***** END FIXED POINT FUNCIONS *****/
+
 /*! @brief Swap pointers to buffers
  */
 static void
@@ -102,7 +231,7 @@ ecmFilterSample(SampleSet_t *pDst)
     static RawSampleSetUnpacked_t smpBuffer[DOWNSAMPLE_TAPS];
     int32_t intRes[VCT_TOTAL] = {0};
     const unsigned int numCoeffUnique = 6u;
-    const int16_t firCoeffs[numCoeffUnique] = {
+    const int16_t firCoeffs[6] = {
         92,
         -279,
         957,
@@ -128,7 +257,7 @@ ecmFilterSample(SampleSet_t *pDst)
      * the filter is symmetric, this is the final element in the array */
     if (0 != downsample_taps % 2)
     {
-        const int16_t coeff = firCoeffs[numCoeffUnique - 1u];
+        const q15_t coeff = firCoeffs[numCoeffUnique - 1u];
         unsigned int idxSmp = idxInj + (downsample_taps / 2);
         if (idxSmp >= downsample_taps) idxSmp -= downsample_taps;
 
@@ -147,7 +276,7 @@ ecmFilterSample(SampleSet_t *pDst)
 
     for (unsigned int idxCoeff = 0; idxCoeff < (numCoeffUnique - 1u); idxCoeff++)
     {
-        const int16_t coeff = firCoeffs[idxCoeff];
+        const q15_t coeff = firCoeffs[idxCoeff];
         for (unsigned int idxChannel = 0; idxChannel < VCT_TOTAL; idxChannel++)
         {
             intRes[idxChannel] +=   coeff
@@ -167,22 +296,15 @@ ecmFilterSample(SampleSet_t *pDst)
     /* TODO This is a fixed implementation for V/CT unpacking; abstract this */
     for (unsigned int idxChannel = 0; idxChannel < VCT_TOTAL; idxChannel++)
     {
-        unsigned int roundUp = 0;
-        if (0 != (intRes[idxChannel] & (1u << 14)))
-        {
-            roundUp = 1u;
-        }
-        intRes[idxChannel] = (intRes[idxChannel] >> 15) + roundUp;
-
+        const q15_t resTrunc = __STRUNCATE(intRes[idxChannel]);
         if (idxChannel < NUM_V)
         {
-            pDst->smpV[idxChannel] = (int16_t)intRes[idxChannel];
+            pDst->smpV[idxChannel] = resTrunc;
         }
         else
         {
-            pDst->smpCT[idxChannel - NUM_V] = (int16_t)intRes[idxChannel];
+            pDst->smpCT[idxChannel - NUM_V] = resTrunc;
         }
-
     }
 
     /* Each injection is 2 samples */
@@ -222,22 +344,22 @@ ecmInjectSample()
 
     /* TODO this is only for single phase currently, loop is there for later */
     const unsigned int idxLast = (idxInject - 1u) & (PROC_DEPTH - 1u);
-    const int32_t thisV = (int32_t)samples[idxInject].smpV[0];
-    const int16_t lastV = samples[idxLast].smpV[0];
+    const q15_t thisV = samples[idxInject].smpV[0];
+    const q15_t lastV = samples[idxLast].smpV[0];
 
     for (unsigned int idxV = 0; idxV < NUM_V; idxV++)
     {
-        accum_collecting->processV[idxV].sumV_sqr += thisV * thisV;
-        accum_collecting->processV[idxV].sumV_deltas += thisV;
+        accum_collecting->processV[idxV].sumV_sqr += (q31_t) thisV * thisV;
+        accum_collecting->processV[idxV].sumV_deltas += (q31_t) thisV;
     }
 
     for (unsigned int idxCT = 0; idxCT < NUM_CT; idxCT++)
     {
-        const int32_t lastCT = (int32_t)samples[idxLast].smpCT[idxCT];
-        accum_collecting->processCT[idxCT].sumPA += lastCT * lastV;
-        accum_collecting->processCT[idxCT].sumPB += lastCT * thisV;
-        accum_collecting->processCT[idxCT].sumI_sqr += lastCT * lastCT;
-        accum_collecting->processCT[idxCT].sumI_deltas += lastCT;
+        const q15_t lastCT = samples[idxLast].smpCT[idxCT];
+        accum_collecting->processCT[idxCT].sumPA += (q31_t) lastCT * lastV;
+        accum_collecting->processCT[idxCT].sumPB += (q31_t) lastCT * thisV;
+        accum_collecting->processCT[idxCT].sumI_sqr += (q31_t) lastCT * lastCT;
+        accum_collecting->processCT[idxCT].sumI_deltas += (q31_t) lastCT;
     }
 
     /* Zero crossing detection. Flag for processing if cycle is complete */
@@ -303,8 +425,8 @@ ecmProcessCycle()
     /* RMS for V channels */
     for (unsigned int idxV = 0; idxV < NUM_V; idxV++)
     {
-        ecmCycle.rmsV[idxV] =   ((accum_processing->processV[idxV].sumV_sqr / numSamples)
-                              - ((accum_processing->processV[idxV].sumV_deltas * accum_processing->processV[idxV].sumV_deltas) / (numSamplesSqr)));
+        ecmCycle.rmsV[idxV] =   sqrt_q15(((accum_processing->processV[idxV].sumV_sqr / numSamples)
+                              - ((accum_processing->processV[idxV].sumV_deltas * accum_processing->processV[idxV].sumV_deltas) / (numSamplesSqr))));
     }
 
     /* CT channels */
@@ -314,9 +436,10 @@ ecmProcessCycle()
         /* TODO check fixed point accumulation here, probably truncate */
         int32_t sumRealPower =   accum_processing->processCT[idxCT].sumPA * pCfg->ctCfg[idxCT].phaseX
                                + accum_processing->processCT[idxCT].sumPB * pCfg->ctCfg[idxCT].phaseY;
-        ecmCycle.valCT[idxCT].rmsCT =   ((accum_processing->processCT[idxCT].sumI_sqr / numSamples)
-                                      - ((accum_processing->processCT[idxCT].sumI_deltas * accum_processing->processCT[idxCT].sumI_deltas) / numSamplesSqr));
+        ecmCycle.valCT[idxCT].rmsCT =   sqrt_q15(((accum_processing->processCT[idxCT].sumI_sqr / numSamples)
+                                      - ((accum_processing->processCT[idxCT].sumI_deltas * accum_processing->processCT[idxCT].sumI_deltas) / numSamplesSqr)));
     }
+
     if (cycleCount >= pCfg->baseCfg.reportCycles)
     {
         cycleCount = 0u;

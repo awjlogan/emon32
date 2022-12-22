@@ -70,25 +70,25 @@ loadConfiguration(Emon32Config_t *pCfg)
     /* Load first byte from EEPROM - if 0, the EEPROM has been programmed and
      * the configuration data should be loaded from that.
      */
-    eepromRead(EEPROM_BASE_ADDR, (void *)&eepromByte, 1u);
-    if (0 == eepromByte)
-    {
-        eepromRead((EEPROM_BASE_ADDR + EEPROM_PAGE_SIZE), (void *)pCfg, sizeof(Emon32Config_t));
-    }
-    else
-    {
-        defaultConfiguration(pCfg);
-    }
+//     eepromRead(EEPROM_BASE_ADDR, (void *)&eepromByte, 1u);
+//     if (0 == eepromByte)
+//     {
+//         eepromRead((EEPROM_BASE_ADDR + EEPROM_PAGE_SIZE), (void *)pCfg, sizeof(Emon32Config_t));
+//     }
+//     else
+//     {
+//         defaultConfiguration(pCfg);
+//     }
 
     /* Wait for 3 s, if a key is pressed then enter configuration */
-    uartInterruptEnable(UART_SERCOM_DBG, SERCOM_USART_INTENSET_RXC);
+    uartInterruptEnable(SERCOM_UART_DBG, SERCOM_USART_INTENSET_RXC);
     uartPutsBlocking(SERCOM_UART_DBG, "Hit any key to enter configuration menu\n\n");
     while (systickCnt < 4097)
     {
-        if (uartInterruptStatus(UART_SERCOM_DBG, SERCOM_USART_INTFLAG_RXC))
+        if (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC)
         {
             emon32StateSet(EMON_STATE_CONFIG);
-            (void)uartGetc(UART_SERCOM_DBG);
+            (void)uartGetc(SERCOM_UART_DBG);
             configEnter(pCfg);
             break;
         }
@@ -101,14 +101,14 @@ loadConfiguration(Emon32Config_t *pCfg)
         }
 
         /* Countdown every second, tick every 1/4 second to debug UART */
-        if (0 == systickCnt && 0x3FF)
+        if (0 == (systickCnt & 0x3FF))
         {
             uartPutcBlocking(SERCOM_UART_DBG, '0' + seconds);
             seconds--;
         }
-        else if (0 == systickCnt && 0xFF )
+        else if (0 == (systickCnt & 0xFF))
         {
-            uartPutcBlocking('.');
+            uartPutcBlocking(SERCOM_UART_DBG, '.');
         }
     }
 }
@@ -121,7 +121,7 @@ static void
 evtKiloHertz()
 {
     (void)uiSWUpdate();
-    uiUpdateLED(EMON_IDLE);
+    uiUpdateLED(EMON_STATE_IDLE);
 
     /* Kick watchdog - placed in the event handler to allow reset of stuck
      * processing rather than entering the interrupt reliably
