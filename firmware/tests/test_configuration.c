@@ -7,6 +7,7 @@ int
 main(int argc, char *argv[])
 {
     Emon32Config_t config;
+    config.baseCfg.nodeID = 15u;
     config.baseCfg.reportCycles = 500u;
     config.baseCfg.mainsFreq = 50u;
     config.baseCfg.equilCycles = 5u;

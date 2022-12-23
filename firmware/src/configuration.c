@@ -54,7 +54,7 @@ getInputStr()
     unsigned int charCnt = 0;
     char c = 0;
 
-    /* Buffer will fill in reverse order, done when # is received */
+    /* Exit when # is received, or out of bounds */
     while ('#' != c && (charCnt < GENBUF_W))
     {
         #ifdef HOSTED
@@ -71,7 +71,6 @@ getInputStr()
             charCnt++;
         }
     }
-    utilStrReverse(genBuf, charCnt);
 }
 
 static unsigned int
@@ -305,11 +304,13 @@ menuConfiguration()
     {
         clearTerm();
         uartPutsBlocking(SERCOM_UART_DBG, "---- CONFIGURATION ----\n\n");
-        uartPutsBlocking(SERCOM_UART_DBG, "0: Cycles to report:       ");
+        uartPutsBlocking(SERCOM_UART_DBG, "0: Node ID:                ");
+        putValueEnd_10(pCfg->baseCfg.nodeID);
+        uartPutsBlocking(SERCOM_UART_DBG, "1: Cycles to report:       ");
         putValueEnd_10(pCfg->baseCfg.reportCycles);
-        uartPutsBlocking(SERCOM_UART_DBG, "1: Mains frequency (Hz):   ");
+        uartPutsBlocking(SERCOM_UART_DBG, "2: Mains frequency (Hz):   ");
         putValueEnd_10(pCfg->baseCfg.mainsFreq);
-        uartPutsBlocking(SERCOM_UART_DBG, "2: Discard initial cycles: ");
+        uartPutsBlocking(SERCOM_UART_DBG, "3: Discard initial cycles: ");
         putValueEnd_10(pCfg->baseCfg.equilCycles);
         infoEdit();
 
@@ -322,7 +323,7 @@ menuConfiguration()
             c = uartGetc(SERCOM_UART_DBG);
         #endif
 
-        if ('0' == c || '1' == c || '2' == c)
+        if ((c >= '0') && (c <= '3'))
         {
             uint32_t val;
             idxChange = c - '0';
@@ -331,14 +332,18 @@ menuConfiguration()
             switch (idxChange)
             {
                 case 0:
-                    pCfg->baseCfg.reportCycles = val;
+                    pCfg->baseCfg.nodeID = val;
                     valChanged = 1u;
                     break;
                 case 1:
-                    pCfg->baseCfg.mainsFreq = val;
+                    pCfg->baseCfg.reportCycles = val;
                     valChanged = 1u;
                     break;
                 case 2:
+                    pCfg->baseCfg.mainsFreq = val;
+                    valChanged = 1u;
+                    break;
+                case 3:
                     pCfg->baseCfg.equilCycles = val;
                     valChanged = 1u;
                     break;

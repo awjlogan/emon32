@@ -35,6 +35,7 @@ typedef int32_t     q31_t;
  * EEPROM as a contiguous set.
  */
 typedef struct __attribute__((__packed__)) {
+    uint8_t         nodeID;         /* ID for report*/
     uint8_t         mainsFreq;      /* Mains frequency */
     uint8_t         equilCycles;    /* "Warm up" cycles to discard */
     unsigned int    reportCycles;   /* Cycle count before reporting */
