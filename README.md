@@ -66,6 +66,10 @@ If you would like to use a different microcontroller, the following features are
 
 Functions in the main loop are abstacted from the underlying hardware. Implementation specific configuration (for example, configuring the ADC) must be provided.
 
+## License
+
+This project is licensed under [GPL v3.0](https://www.gnu.org/licenses/gpl-3.0-standalone.html) or later. Any alterations must be made available immediately, or upon request.
+
 ## Acknowledgements
 
   - The SAMD10 bare metal environment was taken from the excellent collection of [microcontroller starter projects](https://github.com/ataradov/mcu-starter-projects) by Alex Taradov
