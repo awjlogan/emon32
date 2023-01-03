@@ -12,15 +12,23 @@ The emonTx energy monitors are currently based around the ATMega328, as made pop
 
 ## Getting started
 
+### Hardware design (Low Cost)
+
+A _Low Cost_ reference design is included. This is a simple 3 CT channel system. It includes the following improvements over the original emonTx implementation:
+
+  - Virtual ground is buffered, and shared across all V/CT channels
+  - Differential ADC with precision reference
+  - Oversampling with anti aliasing filter
+
 ### Compiling and uploading the firmware
 
-The firmware can be compiled from the `firmware` directory by running `make`. You will need the toolchain corresponding to your target microcontroller. Further details are given in XX.
+The firmware can be compiled from the `firmware` directory by running `make`. You will need the toolchain corresponding to your target microcontroller. Further details are given in the [firmware readme](firmware/README.md).
 
 The firmware is then flashed to the microcontoller using, for example, openOCD. This step is specific to the microcontroller and board used.
 
 ### Configuring the system
 
-The default settings provide a viable system compatible with the emonTx system. Details regarding _compile time_ configurable options is given in XX. To configure _run time_ options:
+The default settings provide a viable system compatible with the emonTx system. Details regarding _compile time_ configurable options is given in the [firmware readme](firmware/README.md). To configure _run time_ options:
 
   1. Power off the emon32
   2. Connect the debug UART to a host
@@ -53,7 +61,15 @@ The firmware uses an event driven system to gather voltage and current data in r
 
 ### Microcontroller Selection
 
-The firmware is agnostic to the microcontoller used, although a modern 32 bit core is preferred. This implementation targets the [Microchip SAMD series](https://www.microchip.com/en-us/products/microcontrollers-and-microprocessors/32-bit-mcus/sam-32-bit-mcus/sam-d) - this allows easy porting from small and cheap (SAMD1x) to higher performance and capability microcontrollers, such as the SAMD2x and SAMD5x.
+The firmware is agnostic to the microcontoller used, although a modern 32 bit core is preferred. This implementation targets the [Microchip SAMD series](https://www.microchip.com/en-us/products/microcontrollers-and-microprocessors/32-bit-mcus/sam-32-bit-mcus/sam-d) - this allows easy porting from small and cheap (SAMD1x) to higher performance and capability microcontrollers, such as the SAMD2x and SAMD5x. The SAMD family has the following useful functions
+
+  - Differential ADC (dual channel for SAMD5x)
+  - Asynchronous event system
+    - This allows precise sample timing without any interrupt overhead
+  - Generic serial communication modules
+  - Flexible clocking system
+    - A 48 MHz PLL is used for the core, and peripherals are clocked from an RC oscillator
+  - USB virtual serial port (SAMD21 and SAMD51 only)
 
 If you would like to use a different microcontroller, the following features are recommended:
 
