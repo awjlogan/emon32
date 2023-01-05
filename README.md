@@ -43,7 +43,7 @@ The following settings are configurable at run time:
   - Report time
   - Per channel calibration values
     - (V/CT) Scaling factor
-    - (CT) Phase correction
+    - (CT only) Phase correction
 
 The following information is also provided:
 

@@ -25,6 +25,10 @@ This will generate `firmware/build/emon32.elf` which can then be flashed to the 
 
 ## Modifications 🔧
 
+### Changing CT calibration
+
+Fixed point (Q15) calibration values for a given CT phase shift can be generated using the **phasecal.py** script (*./helpers/phasecal.py*). The usage of this is: `phasecal.py <MAINS FREQENCY> <EFFECTIVE SAMPLE RATE> <PHI_0> .. <PHI_N>` where `PHI_N` is the phase shift of each CT, *N*. Note that *EFFECTIVE SAMPLE RATE* is the final *f* after downsampling.
+
 ### Designing a new board
 
 The file `firmware/src/board_def.h` contains options for configuring the microcontroller for a given board. For example, different pin mappings may be required.
