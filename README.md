@@ -2,7 +2,7 @@
 
 ## Introduction
 
-_Energy Monitor 32_ (emon32) is a system for measuring power consumption using _current transfomers_ (CTs). It is based heavily on the work done by [OpenEngergyMonitor](https://openenergymonitor.org), particularly the [emonTx](https://github.com/openenergymonitor/emontx4). It is designed to be compatible with the downstream data requirements of that system.
+_Energy Monitor 32_ (emon32) is a system for measuring power consumption using _current transfomers_ (CTs). It is based heavily on the work done by [OpenEnergyMonitor](https://openenergymonitor.org), particularly the [emonTx](https://github.com/openenergymonitor/emontx4). It is designed to be compatible with the downstream data requirements of that system.
 
 The emonTx energy monitors are currently based around the ATMega328, as made popular by Arduino, and an extended version. These chips are expensive, have few peripherals, and are being pushed beyond the limit of their data processing capability. The aims of this project are:
 
@@ -50,6 +50,8 @@ The following information is also provided:
   - Firmware version
   - Serial number
   - Number of V/CT channels
+
+Note that all run time configurable options can be preset before compiling. The values provided are sensible defaults, and these values remain configurable at all times.
 
 ## Monitoring Architecture
 
