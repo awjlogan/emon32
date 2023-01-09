@@ -6,9 +6,8 @@ sercomSetup()
     portPinMux(PIN_UART_TX, PORT_PMUX_PMUXE_D);
     portPinMux(PIN_UART_RX, PORT_PMUX_PMUXE_D);
 
-    //const uint32_t baud = UART_DBG_BAUD;
-    //const uint64_t br = (uint64_t)65536 * (F_PERIPH - 16 * baud) / F_PERIPH;
-    const uint32_t baud = (F_PERIPH * 8) / (16 * 38400);
+    const uint32_t baud = UART_DBG_BAUD;
+    const uint64_t br = (uint64_t)65536 * (F_PERIPH - 16 * baud) / F_PERIPH;
 
     /* Configure clocks - runs from the OSC8M clock on gen 3 */
     PM->APBCMASK.reg |= SERCOM_UART_DBG_APBCMASK;
@@ -18,7 +17,6 @@ sercomSetup()
 
     /* Configure the USART */
     SERCOM_UART_DBG->USART.CTRLA.reg =   SERCOM_USART_CTRLA_DORD
-                                       | SERCOM_USART_CTRLA_SAMPR(1u)
                                        | SERCOM_USART_CTRLA_MODE_USART_INT_CLK
                                        | SERCOM_USART_CTRLA_RXPO(UART_DBG_PAD_RX)
                                        | SERCOM_USART_CTRLA_TXPO(UART_DBG_PAD_TX);
@@ -29,9 +27,7 @@ sercomSetup()
                                        | SERCOM_USART_CTRLB_CHSIZE(0);
     while (SERCOM_UART_DBG->USART.STATUS.reg & SERCOM_USART_SYNCBUSY_CTRLB);
 
-    SERCOM_UART_DBG->USART.BAUD.FRAC.FP = baud % 8;
-    SERCOM_UART_DBG->USART.BAUD.FRAC.BAUD = baud / 8;
-    //SERCOM_UART_DBG->USART.BAUD.reg = (uint16_t)br + 1u;
+    SERCOM_UART_DBG->USART.BAUD.reg = (uint16_t)br + 1u;
 
     /* Enable requires synchronisation (25.6.6) */
     SERCOM_UART_DBG->USART.CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;

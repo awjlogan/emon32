@@ -3,6 +3,19 @@
 void
 adcSetup()
 {
+    /* Set up ADC pins using WRCONFIG (22.8.11) */
+    PORT->Group[0].WRCONFIG.reg =   PORT_WRCONFIG_PINMASK(2u)
+                                  | PORT_WRCONFIG_PINMASK(3u)
+                                  | PORT_WRCONFIG_PINMASK(4u)
+                                  | PORT_WRCONFIG_PINMASK(5u)
+                                  | PORT_WRCONFIG_PINMASK(6u)
+                                  | PORT_WRCONFIG_PINMASK(7u)
+                                  | PORT_WRCONFIG_PINMASK(14u)
+                                  | PORT_WRCONFIG_WRPINCFG
+                                  | PORT_WRCONFIG_WRPMUX
+                                  | PORT_WRCONFIG_PMUXEN
+                                  | PORT_WRCONFIG_PMUX(PORT_PMUX_PMUXE_B_Val);
+
     /* APB bus clock is enabled by default (Table 15-1). Connect GCLK 3 */
     GCLK->CLKCTRL.reg =   GCLK_CLKCTRL_ID(ADC_GCLK_ID)
                         | GCLK_CLKCTRL_GEN(3u)
