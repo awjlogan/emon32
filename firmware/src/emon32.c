@@ -81,9 +81,8 @@ loadConfiguration(Emon32Config_t *pCfg)
 //     }
 
     /* Wait for 3 s, if a key is pressed then enter configuration */
-    uartInterruptEnable(SERCOM_UART_DBG, SERCOM_USART_INTENSET_RXC);
-    uartPutsBlocking(SERCOM_UART_DBG, "Hit any key to enter configuration menu\n\n");
-    while (systickCnt < 4097)
+    uartPutsBlocking(SERCOM_UART_DBG, "\r\n> Hit any key to enter configuration ");
+    while (systickCnt < 4095)
     {
         if (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC)
         {
@@ -98,19 +97,20 @@ loadConfiguration(Emon32Config_t *pCfg)
             wdtKick();
             emon32ClrEvent(EVT_SYSTICK_1KHz);
             systickCnt++;
-        }
 
-        /* Countdown every second, tick every 1/4 second to debug UART */
-        if (0 == (systickCnt & 0x3FF))
-        {
-            uartPutcBlocking(SERCOM_UART_DBG, '0' + seconds);
-            seconds--;
-        }
-        else if (0 == (systickCnt & 0xFF))
-        {
-            uartPutcBlocking(SERCOM_UART_DBG, '.');
+            /* Countdown every second, tick every 1/4 second to debug UART */
+            if (0 == (systickCnt & 0x3FF))
+            {
+                uartPutcBlocking(SERCOM_UART_DBG, '0' + seconds);
+                seconds--;
+            }
+            else if (0 == (systickCnt & 0xFF))
+            {
+                uartPutcBlocking(SERCOM_UART_DBG, '.');
+            }
         }
     }
+    uartPutsBlocking(SERCOM_UART_DBG, "0\r\n> Configuration loaded, start sampling!\r\n\r\n");
 }
 
 /*! @brief This function is called when the 1 ms timer overflows (SYSTICK).
@@ -159,8 +159,10 @@ main()
 
     /* Setup DMAC for non-blocking UART (this is optional, unlike ADC) */
     uartConfigureDMA();
-    uartPutsBlocking(SERCOM_UART_DBG, "\r\n== Energy Monitor 32 ==\r\n");
-    adcStartDMAC((uint32_t)ecmDataBuffer());
+    uartInterruptEnable(SERCOM_UART_DBG, SERCOM_USART_INTENSET_RXC);
+    uartInterruptEnable(SERCOM_UART_DBG, SERCOM_USART_INTENSET_ERROR);
+
+    uartPutsBlocking(SERCOM_UART_DBG, "\ec== Energy Monitor 32 ==\r\n");
 
     /* Indicate if the reset syndrome was from the watchdog */
     if (PM->RCAUSE.reg & PM_RCAUSE_WDT)
@@ -170,6 +172,8 @@ main()
 
     loadConfiguration(&e32Config);
     emon32StateSet(EMON_STATE_ACTIVE);
+
+    adcStartDMAC((uint32_t)ecmDataBuffer());
 
     for (;;)
     {
