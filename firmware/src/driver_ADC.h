@@ -9,7 +9,7 @@
 void adcSetup();
 
 /*! @brief Starts the DMAC transfer from the ADC
- *  @param [in] : address of the "collecting" structure
+ *  @param [in] buf : address of the "collecting" structure
  */
 void adcStartDMAC(uint32_t buf);
 

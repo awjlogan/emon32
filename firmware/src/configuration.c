@@ -59,7 +59,7 @@ getInputStr()
     {
         #ifdef HOSTED
             c = getchar();
-            if ('\r\n' == c)
+            if ('\n' == c)
                 c = getchar();
         #else
             while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
@@ -140,7 +140,7 @@ menuVoltageChan(unsigned int chanV)
 
         #ifdef HOSTED
             c = getchar();
-            if ('\r\n' == c)
+            if ('\n' == c)
                 c = getchar();
         #else
             while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
@@ -187,7 +187,7 @@ menuVoltage()
 
         #ifdef HOSTED
             c = getchar();
-            if ('\r\n' == c)
+            if ('\n' == c)
                 c = getchar();
         #else
             while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
@@ -224,7 +224,7 @@ menuCTChan(unsigned int chanCT)
 
         #ifdef HOSTED
             c = getchar();
-            if ('\r\n' == c)
+            if ('\n' == c)
                 c = getchar();
         #else
             while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
@@ -281,7 +281,7 @@ menuCT()
 
         #ifdef HOSTED
             c = getchar();
-            if ('\r\n' == c)
+            if ('\n' == c)
                 c = getchar();
         #else
             while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
@@ -305,26 +305,27 @@ menuConfiguration()
     {
         clearTerm();
         uartPutsBlocking(SERCOM_UART_DBG, "---- CONFIGURATION ----\r\n\r\n");
-        uartPutsBlocking(SERCOM_UART_DBG, "0: Node ID:                ");
+        uartPutsBlocking(SERCOM_UART_DBG, "0: Node ID:                  ");
         putValueEnd_10(pCfg->baseCfg.nodeID);
-        uartPutsBlocking(SERCOM_UART_DBG, "1: Cycles to report:       ");
+        uartPutsBlocking(SERCOM_UART_DBG, "1: Cycles to report:         ");
         putValueEnd_10(pCfg->baseCfg.reportCycles);
-        uartPutsBlocking(SERCOM_UART_DBG, "2: Mains frequency (Hz):   ");
+        uartPutsBlocking(SERCOM_UART_DBG, "2: Mains frequency (Hz):     ");
         putValueEnd_10(pCfg->baseCfg.mainsFreq);
-        uartPutsBlocking(SERCOM_UART_DBG, "3: Discard initial cycles: ");
+        uartPutsBlocking(SERCOM_UART_DBG, "3: Discard initial cycles:   ");
         putValueEnd_10(pCfg->baseCfg.equilCycles);
+        uartPutsBlocking(SERCOM_UART_DBG, "4: Zero crossing hysteresis: ");
         infoEdit();
 
         #ifdef HOSTED
             c = getchar();
-            if ('\r\n' == c)
+            if ('\n' == c)
                 c = getchar();
         #else
             while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
             c = uartGetc(SERCOM_UART_DBG);
         #endif
 
-        if ((c >= '0') && (c <= '3'))
+        if ((c >= '0') && (c <= '4'))
         {
             uint32_t val;
             idxChange = c - '0';
@@ -346,6 +347,10 @@ menuConfiguration()
                     break;
                 case 3:
                     pCfg->baseCfg.equilCycles = val;
+                    valChanged = 1u;
+                    break;
+                case 4:
+                    pCfg->baseCfg.zcHyst = val;
                     valChanged = 1u;
                     break;
                 default:
@@ -390,7 +395,7 @@ menuAbout()
     {
         #ifdef HOSTED
             c = getchar();
-            if ('\r\n' == c)
+            if ('\n' == c)
                 c = getchar();
         #else
             while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
@@ -427,7 +432,7 @@ menuBase()
 
         #ifdef HOSTED
             c = getchar();
-            if ('\r\n' == c)
+            if ('\n' == c)
                 c = getchar();
         #else
             while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
@@ -466,7 +471,7 @@ menuBase()
         {
             #ifdef HOSTED
                 c = getchar();
-                if ('\r\n' == c)
+                if ('\n' == c)
                     c = getchar();
             #else
                 while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));

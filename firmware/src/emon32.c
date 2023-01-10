@@ -15,13 +15,15 @@ defaultConfiguration(Emon32Config_t *pCfg)
 
     for (unsigned int idxV = 0u; idxV < NUM_V; idxV++)
     {
-        pCfg->voltageCfg[idxV].voltageCal = 0;
+        pCfg->voltageCfg[idxV].voltageCal = 268.97;
     }
+
+    /* 4.2 degree shift @ 50 Hz, 4 CTs */
     for (unsigned int idxCT = 0u; idxCT < NUM_CT; idxCT++)
     {
-        pCfg->ctCfg[idxCT].ctCal = 0u;
-        pCfg->ctCfg[idxCT].phaseX = 0u;
-        pCfg->ctCfg[idxCT].phaseY = 0u;
+        pCfg->ctCfg[idxCT].ctCal = 90.91;
+        pCfg->ctCfg[idxCT].phaseX = 13495;
+        pCfg->ctCfg[idxCT].phaseY = 19340;
     }
 }
 
@@ -173,6 +175,7 @@ main()
     loadConfiguration(&e32Config);
     emon32StateSet(EMON_STATE_ACTIVE);
 
+    ecmInit(&e32Config);
     adcStartDMAC((uint32_t)ecmDataBuffer());
 
     for (;;)

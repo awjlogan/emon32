@@ -38,6 +38,7 @@ typedef struct __attribute__((__packed__)) {
     uint8_t         nodeID;         /* ID for report*/
     uint8_t         mainsFreq;      /* Mains frequency */
     uint8_t         equilCycles;    /* "Warm up" cycles to discard */
+    uint8_t         zcHyst;         /* Zero crossing hysteresis */
     unsigned int    reportCycles;   /* Cycle count before reporting */
 } BaseCfg_t;
 
