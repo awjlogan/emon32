@@ -30,11 +30,10 @@ The firmware is then flashed to the microcontoller using, for example, openOCD. 
 
 The default settings provide a viable system compatible with the emonTx system. Details regarding _compile time_ configurable options is given in the [firmware readme](firmware/README.md). To configure _run time_ options:
 
-  1. Power off the emon32
-  2. Connect the debug UART to a host
-  3. Power on the emon32
-  4. When prompted, within 3 s, enter any key to access the configuration menu
-  5. When complete, the configuration is saved to non-volatile memory, or discarded.
+  1. Connect the debug UART to a host
+  2. Reset or power on the emon32
+  3. When prompted, within 3 s, enter any key to access the configuration menu
+  4. When complete, the configuration is saved to non-volatile memory, or discarded.
 
 The following settings are configurable at run time:
 

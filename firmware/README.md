@@ -1,5 +1,16 @@
 # _emon32_ Firmware
 
+This describes the firmware provided for the _emon32_. The software is intended to be modular, and easily portable to other microcontrollers and implementations.
+
+## emonLibCM Comparison
+
+The emonTx does not use a number of the values calculated by the full emonLibCM library. The following features are not currently supported:
+
+  - Assume RMS voltage
+  - RMS Current per CT
+  - Power factor per CT
+  - Apparent power per CT
+
 ## Compile Time Configuration Options 🧱
 
 Most compile time options are contained in `firmware/src/emon32.h`. The following options are configurable:
