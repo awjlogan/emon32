@@ -186,10 +186,49 @@ static SampleSet_t      samples[PROC_DEPTH];
 static Accumulator_t    accum_buffer[2];
 static Accumulator_t *  accum_collecting = accum_buffer;
 static Accumulator_t *  accum_processing = accum_buffer + 1;
+static ECMCycle_t       ecmCycle;
 
 /******************************************************************************
  * Functions
  *****************************************************************************/
+
+/*! @brief Zero crossing detection
+ *  @param [in] smpV : current voltage sample
+ *  @return 1 for a negative to positive crossing, -1 for a positive to
+ *          negative crossing, 0 otherwise
+ */
+int
+zeroCrossing(q15_t smpV)
+{
+    #ifndef ZERO_CROSSING_HW
+    Polarity_t          polarity_now;
+    static Polarity_t   polarity_last = POL_POS;
+    static int          hystCnt = pCfg->baseCfg.zcHyst;
+
+    polarity_now = (smpV < 0) ? POL_NEG : POL_POS;
+
+    if (polarity_now != polarity_last)
+    {
+        hystCnt--;
+        if (0 == hystCnt)
+        {
+            hystCnt = pCfg->baseCfg.zcHyst;
+            polarity_last = polarity_now;
+            if (POL_POS == polarity_now)
+            {
+                return 1;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+
+    #endif /* ZERO_CROSSING_HW */
+}
 
 /*! @brief Unpack and optionally low pass filter the raw sample
  *         The struct from the DMA has no partition into V/CT channels, so
@@ -326,14 +365,9 @@ ecmInjectSample()
 {
     SampleSet_t smpProc;
     SampleSet_t *pSmpProc = &smpProc;
-    static unsigned int idxInject;
-    static unsigned int discardCycles;
 
-    /* Zero crossing detection
-     * TODO Should this be a hardware based system, if enough pins? */
-    Polarity_t polarity_now;
-    static Polarity_t polarity_last = POL_POS;
-    static int hystCnt = 0;
+    static unsigned int idxInject;
+    static unsigned int discardCycles = pCfg->baseCfg.equilCycles;
 
     /* Copy the pre-processed sample data into the ring buffer */
     ecmFilterSample(pSmpProc);
@@ -362,23 +396,25 @@ ecmInjectSample()
         accum_collecting->processCT[idxCT].sumI_deltas += (q31_t) lastCT;
     }
 
-    /* Zero crossing detection. Flag for processing if cycle is complete */
-//     polarity_now = thisV >= 0 ? POL_POS : POL_NEG;
-//     if (polarity_now != polarity_last)
-//     {
-//         hystCnt++;
-//         if (2u == hystCnt)
-//         {
-//             polarity_last = polarity_now;
-//             hystCnt = 0u;
-//             if (POL_POS == polarity_now)
-//             {
-//                 emon32SetEvent(EVT_ECM_CYCLE_CMPL);
-//                 ecmSwapPtr((void *)accum_collecting, (void *)accum_processing);
-//                 memset((void *)accum_collecting, 0, sizeof(Accumulator_t));
-//             }
-//         }
-//     }
+    /* Check for zero crossing, swap buffers and pend event */
+    if (1 == zeroCrossing(thisV))
+    {
+        ecmSwapPtr((void *)accum_collecting, (void *)accum_processing);
+        memset((void *)accum_collecting, 0, sizeof(Accumulator_t));
+
+        if (0 == discardCycles)
+        {
+            emon32SetEvent(EVT_ECM_CYCLE_CMPL);
+        }
+        else
+        {
+            discardCycles++;
+        }
+    }
+
+    /* Advance injection point, masking for overflow */
+    idxInject = (idxInject + 1u) & (PROC_DEPTH - 1u);
+
     static uint8_t count = 0;
     count++;
     if (48 == count)
@@ -402,9 +438,6 @@ ecmInjectSample()
         }
     }
 
-    /* Advance injection point, masking for overflow */
-    idxInject = (idxInject + 1u) & (PROC_DEPTH - 1u);
-
     #ifdef HOSTED
         return 0;
     #endif
@@ -413,10 +446,7 @@ ecmInjectSample()
 void
 ecmProcessCycle()
 {
-    static unsigned int         cycleCount;
-    static volatile ECMCycle_t  ecmCycle;
-
-    cycleCount++;
+    ecmCycle.cycleCount++;
 
     /* Reused constants */
     const uint32_t numSamples = accum_processing->num_samples;
@@ -425,25 +455,29 @@ ecmProcessCycle()
     /* RMS for V channels */
     for (unsigned int idxV = 0; idxV < NUM_V; idxV++)
     {
-        ecmCycle.rmsV[idxV] =   sqrt_q15(((accum_processing->processV[idxV].sumV_sqr / numSamples)
-                              - ((accum_processing->processV[idxV].sumV_deltas * accum_processing->processV[idxV].sumV_deltas) / (numSamplesSqr))));
+        ecmCycle.rmsV[idxV] +=   sqrt_q15(((accum_processing->processV[idxV].sumV_sqr / numSamples)
+                               - ((accum_processing->processV[idxV].sumV_deltas * accum_processing->processV[idxV].sumV_deltas) / (numSamplesSqr))));
     }
 
     /* CT channels */
     for (unsigned int idxCT = 0; idxCT < NUM_CT; idxCT++)
     {
+        const int32_t sumI_deltas_sqr =   accum_processing->processCT[idxCT].sumI_deltas
+                                        * accum_processing->processCT[idxCT].sumI_deltas;
+
         /* Apply phase calibration for CT interpolated between V samples */
-        /* TODO check fixed point accumulation here, probably truncate */
         int32_t sumRealPower =   accum_processing->processCT[idxCT].sumPA * pCfg->ctCfg[idxCT].phaseX
                                + accum_processing->processCT[idxCT].sumPB * pCfg->ctCfg[idxCT].phaseY;
-        ecmCycle.valCT[idxCT].rmsCT =   sqrt_q15(((accum_processing->processCT[idxCT].sumI_sqr / numSamples)
-                                      - ((accum_processing->processCT[idxCT].sumI_deltas * accum_processing->processCT[idxCT].sumI_deltas) / numSamplesSqr)));
+
+        ecmCycle.valCT[idxCT].powerNow += (sumRealPower / numSamples) - (sumI_deltas_sqr / numSamplesSqr);
+
+        ecmCycle.valCT[idxCT].rmsCT +=   sqrt_q15(((accum_processing->processCT[idxCT].sumI_sqr / numSamples)
+                                       - (sumI_deltas_sqr / numSamplesSqr)));
     }
 
-    if (cycleCount >= pCfg->baseCfg.reportCycles)
+    if (ecmCycle.cycleCount >= pCfg->baseCfg.reportCycles)
     {
-        cycleCount = 0u;
-        // emon32SetEvent(EVT_ECM_SET_CMPL);
+        emon32SetEvent(EVT_ECM_SET_CMPL);
     }
 }
 
@@ -451,4 +485,31 @@ void
 ecmProcessSet(ECMSet_t *set)
 {
     set->msgNum++;
+
+    /* Mean value for each RMS voltage */
+    for (unsigned int idxV = 0; idxV < NUM_V; idxV++)
+    {
+        set->rmsV[idxV] = (ecmCycle.rmsV[idxV] / ecmCycle.cycleCount) * pCfg->voltageCfg[idxV].voltageCal;
+    }
+
+    /* CT channels */
+    for (unsigned int idxCT = 0; idxCT < NUM_CT; idxCT++)
+    {
+        int     wattHoursRecent;
+        float   energyNow;
+        float   scaledPower;
+
+        scaledPower =   ecmCycle.valCT[idxCT].powerNow
+                      * (pCfg->voltageCfg[0].voltageCal * pCfg->ctCfg[idxCT].ctCal);
+        set->CT[idxCT].realPower = scaledPower + 0.5f;
+
+        /* TODO add frequency deviation scaling */
+        energyNow = scaledPower + set->CT[idxCT].residualEnergy;
+        wattHoursRecent = energyNow / 3600;
+        set->CT[idxCT].wattHour += wattHoursRecent;
+        set->CT[idxCT].residualEnergy = energyNow - (wattHoursRecent * 3600.0f);
+    }
+
+    /* Zero out cycle accummulator */
+    memset((void *)ecmCycle, 0, sizeof(ECMCycle_t));
 }
