@@ -25,7 +25,7 @@
  * #define EEPROM_EMULATED
  */
 /* EEPROM address not including R/W bit */
-#define EEPROM_BASE_ADDR    0x
+#define EEPROM_BASE_ADDR    0b1010001
 /* Maximum number of bytes in a single page */
 #define EEPROM_PAGE_SIZE    8u
 

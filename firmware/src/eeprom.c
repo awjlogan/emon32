@@ -30,6 +30,11 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
                                                | DMAC_CHCTRLB_TRIGSRC(SERCOM_I2CM_DMAC_ID_TX)};
     volatile DmacDescriptor *dmacDesc = dmacGetDescriptor(DMA_CHAN_I2CM);
 
+    if (0 == dmaInitFlag)
+    {
+        dmaInit();
+    }
+
     dmacDesc->BTCTRL.reg =   DMAC_BTCTRL_BLOCKACT_NOACT
                            | DMAC_BTCTRL_STEPSIZE_X1
                            | DMAC_BTCTRL_STEPSEL_SRC
@@ -45,7 +50,7 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
     {
         dmacDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
         dmacDesc->BTCNT.reg = EEPROM_PAGE_SIZE;
-        dmacDesc->SRCADDR.reg = pData + EEPROM_PAGE_SIZE;
+        dmacDesc->SRCADDR.reg = (uint32_t)(pData + EEPROM_PAGE_SIZE);
         dmacStartTransfer(DMA_CHAN_I2CM);
 
         i2cActivate(SERCOM_I2CM, addr, 1u, EEPROM_PAGE_SIZE);
@@ -56,8 +61,8 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
 
     /* Mop up residual data */
     dmacDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
-    dmacDesc->BTCNT.reg = 8u;
-    dmacDesc->SRCADDR.reg = pData + n;
+    dmacDesc->BTCNT.reg = n;
+    dmacDesc->SRCADDR.reg = (uint32_t)(pData + n);
     dmacStartTransfer(DMA_CHAN_I2CM);
     i2cActivate(SERCOM_I2CM, addr, 1u, n);
 
@@ -69,12 +74,18 @@ eepromRead(unsigned int addr, void *pDst, unsigned int n)
 {
     #ifndef EEPROM_EMULATED
 
-    uint8_t *pData = (uint8_t *)pSrc;
+    uint8_t *pData = (uint8_t *)pDst;
     const DMACCfgCh_t ctrlb_i2c_wr = {.ctrlb =   DMAC_CHCTRLB_LVL(1u)
                                                | DMAC_CHCTRLB_TRIGACT_BEAT
                                                | DMAC_CHCTRLB_TRIGSRC(SERCOM_I2CM_DMAC_ID_RX)};
 
     volatile DmacDescriptor *dmacDesc = dmacGetDescriptor(DMA_CHAN_I2CM);
+
+    if (0 == dmaInitFlag)
+    {
+        dmaInit();
+    }
+
     dmacDesc->BTCTRL.reg =   DMAC_BTCTRL_BLOCKACT_NOACT
                            | DMAC_BTCTRL_STEPSIZE_X1
                            | DMAC_BTCTRL_STEPSEL_DST
@@ -90,7 +101,7 @@ eepromRead(unsigned int addr, void *pDst, unsigned int n)
     {
         dmacDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
         dmacDesc->BTCNT.reg = EEPROM_PAGE_SIZE;
-        dmacDesc->DSTADDR.reg = pData;
+        dmacDesc->DSTADDR.reg = (uint32_t)pData;
         dmacStartTransfer(DMA_CHAN_I2CM);
 
         i2cActivate(SERCOM_I2CM, addr, 1u, EEPROM_PAGE_SIZE);
@@ -101,7 +112,7 @@ eepromRead(unsigned int addr, void *pDst, unsigned int n)
 
     /* Mop up residual data */
     dmacDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
-    dmacDesc->BTCNT.reg = 8u;
+    dmacDesc->BTCNT.reg = n;
     dmacDesc->DSTADDR.reg = (uint32_t)&SERCOM_I2CM->I2CM.DATA;
     dmacStartTransfer(DMA_CHAN_I2CM);
     i2cActivate(SERCOM_I2CM, addr, 1u, n);

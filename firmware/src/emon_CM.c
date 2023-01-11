@@ -203,7 +203,7 @@ zeroCrossing(q15_t smpV)
     #ifndef ZERO_CROSSING_HW
     Polarity_t          polarity_now;
     static Polarity_t   polarity_last = POL_POS;
-    static int          hystCnt = pCfg->baseCfg.zcHyst;
+    static int          hystCnt = 3u;
 
     polarity_now = (smpV < 0) ? POL_NEG : POL_POS;
 
@@ -367,7 +367,7 @@ ecmInjectSample()
     SampleSet_t *pSmpProc = &smpProc;
 
     static unsigned int idxInject;
-    static unsigned int discardCycles = pCfg->baseCfg.equilCycles;
+    static unsigned int discardCycles = 5u;
 
     /* Copy the pre-processed sample data into the ring buffer */
     ecmFilterSample(pSmpProc);
@@ -511,5 +511,5 @@ ecmProcessSet(ECMSet_t *set)
     }
 
     /* Zero out cycle accummulator */
-    memset((void *)ecmCycle, 0, sizeof(ECMCycle_t));
+    memset((void *)&ecmCycle, 0, sizeof(ECMCycle_t));
 }

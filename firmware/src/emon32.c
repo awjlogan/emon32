@@ -112,7 +112,7 @@ loadConfiguration(Emon32Config_t *pCfg)
             }
         }
     }
-    uartPutsBlocking(SERCOM_UART_DBG, "0\r\n> Configuration loaded, start sampling!\r\n\r\n");
+    uartPutsBlocking(SERCOM_UART_DBG, "\r\n> Configuration loaded, start sampling!\r\n\r\n");
 }
 
 /*! @brief This function is called when the 1 ms timer overflows (SYSTICK).
