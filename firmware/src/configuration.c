@@ -41,7 +41,7 @@ getUniqueID(unsigned int idx)
     #else
         /* Section 9.6 Serial Number */
         const uint32_t id_addr_lut[4] = {
-            0x0080A00C, 0x0080A40, 0x0080A044, 0x0080A048
+            0x0080A00C, 0x0080A040, 0x0080A044, 0x0080A048
         };
         return *(volatile uint32_t *)id_addr_lut[idx];
     #endif
