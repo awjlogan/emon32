@@ -5,6 +5,10 @@
  * extend this, the base SAMD10 configuration can be bracketed in IFDEF
  */
 
+/* Online configuration takes around 2.5 KB of flash. Comment out this define to
+ * save space, with only RO access to configuration values.
+ */
+#define CONFIGURATION_RW
 
 /* Clock frequencies
  *  - Core is on the 48 MHz DFLL

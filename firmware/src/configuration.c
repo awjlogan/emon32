@@ -391,6 +391,7 @@ menuAbout()
     uartPutsBlocking(SERCOM_UART_DBG, "\r\n(c) Angus Logan 2022-23\r\n");
     uartPutsBlocking(SERCOM_UART_DBG, "For Bear and Moose\r\n\r\n");
     uartPutsBlocking(SERCOM_UART_DBG, "(b)ack");
+
     while ('b' != c)
     {
         #ifdef HOSTED
@@ -458,8 +459,8 @@ menuBase()
             case 'e':
                 break;
             default:
-                uartPutcBlocking(SERCOM_UART_DBG, '\a');
                 /* Terminal ping/flash */
+                uartPutcBlocking(SERCOM_UART_DBG, '\a');
         }
     }
 
