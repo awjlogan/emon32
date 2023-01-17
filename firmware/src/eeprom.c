@@ -117,6 +117,34 @@ eepromRead(unsigned int addr, void *pDst, unsigned int n)
     dmacStartTransfer(DMA_CHAN_I2CM);
     i2cActivate(SERCOM_I2CM, addr, 1u, n);
 
+    #endif /* EEPROM_EMULATED */
+}
 
-    #endif
+/*! @brief Find the index of the last valid write to a wear levelled block
+ *  @param [in] pPkt : pointer to the packet
+ */
+void
+wlFindLast(eepromPktWL_t *pPkt)
+{
+    /* Step through from the base address is (data) sized steps. The first
+     * byte that is different to the 0-th byte is the stalest block. If all
+     * blocks are the same, then the 0-th index is the next to be written
+     */
+
+    uint8_t idxLastWr = 0;
+    uint8_t firstByte = 0;
+
+    firstByte = eepromRead(pPkt->addr_base, &firstByte, 1u);
+    for (unsigned int idxBlk = 1u; idxBlk < pPkt->blkCnt; idxBlk++)
+    {
+        uint8_t validByte;
+        unsigned int addrRd = pPkt->addr_base + (pPkt->dataSize * idxBlk);
+        validByte = eepromRead(addrRd, &validByte, 1u);
+        idxLastWr++;
+
+        if (firstByte != validByte)
+        {
+            pPkt->idxLastWr = idxLastWr
+        }
+    }
 }

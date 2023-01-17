@@ -3,12 +3,30 @@
 
 #include <stdint.h>
 
-/*! @brief Save data to EEPROM. All writes are contigyous from the bae
+typedef struct {
+    uint16_t    addr_base;      /* Block base address */
+    uint8_t     idxLastWrite;   /* Index of last write to EEPROM */
+    uint8_t     blkCnt;         /* Number of available blocks */
+    uint8_t     dataSize;       /* Size (bytes) of the data */
+    void *      pData;          /* Pointer to the packed data */
+} eepromPktWL_t;
+
+/*! @brief Save data to EEPROM. All writes are contigyous from the base
  *         address. The implementation should account for page sizes.
  *  @param [in] addr : base address
  *  @param [in] pSrc : pointer to data
  *  @param [in] n    : number of bytes to send
  */
 void eepromWrite(unsigned int addr, const void *pSrc, unsigned int n);
+
+/*! @brief Save data to EEPROM with wear leveling.
+ *  @param [in] pPktWr : pointer to write packet
+ */
+void eepromWriteWL(eepromPktWL_t *pPktWr);
+
+/*! @brief Read data from EEPROM with wear leveling
+ *  @param [in] pPktRd : pointer to read packet
+ */
+void eepromReadWL(eepromPktWL_t *pPktRd);
 
 #endif

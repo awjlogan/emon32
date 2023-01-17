@@ -6,7 +6,7 @@ static volatile EmonState_t emonState = EMON_STATE_IDLE;
 
 /*! @brief The default configuration state of the system */
 static inline void
-defaultConfiguration(Emon32Config_t *pCfg)
+defaultConfiguration(Emon32Config_t *pCfg, Emon32Cumulative_t *pRes)
 {
     /* Default configuration: single phase, 50 Hz, 240 VAC */
     pCfg->baseCfg.mainsFreq = 50u;      /* Mains frequency */
@@ -24,7 +24,9 @@ defaultConfiguration(Emon32Config_t *pCfg)
         pCfg->ctCfg[idxCT].ctCal = 90.91;
         pCfg->ctCfg[idxCT].phaseX = 13495;
         pCfg->ctCfg[idxCT].phaseY = 19340;
+        pRes->wattHour[idxCT] = 0;
     }
+    pRes->pulseCnt = 0;
 }
 
 void
@@ -63,7 +65,7 @@ emon32StateGet()
  *  @param [in] pCfg : pointer to the configuration struct
  */
 static inline void
-loadConfiguration(Emon32Config_t *pCfg)
+loadConfiguration(Emon32Config_t *pCfg, Emon32Cumulative_t *pRes)
 {
     unsigned int systickCnt = 0u;
     unsigned int seconds = 3u;
@@ -76,10 +78,11 @@ loadConfiguration(Emon32Config_t *pCfg)
 //     if (0 == eepromByte)
 //     {
 //         eepromRead((EEPROM_BASE_ADDR + EEPROM_PAGE_SIZE), (void *)pCfg, sizeof(Emon32Config_t));
+//         /* TODO Read residual values from last start */
 //     }
 //     else
 //     {
-//         defaultConfiguration(pCfg);
+//         defaultConfiguration(pCfg, pRes);
 //     }
 
     /* Wait for 3 s, if a key is pressed then enter configuration */
@@ -115,6 +118,19 @@ loadConfiguration(Emon32Config_t *pCfg)
     uartPutsBlocking(SERCOM_UART_DBG, "\r\n> Configuration loaded, start sampling!\r\n\r\n");
 }
 
+/*! @brief Restore previous energy values
+ *  @param [in] pRes : pointer to residual values
+ *  @param [in] pData : pointer to current dataset
+ */
+void
+restoreResidual(const Emon32Cumulative_t *pRes, ECMSet_t *pData)
+{
+    for (unsigned int idxCT = 0; idxCT < NUM_CT; idxCT++)
+    {
+        pData->CT[idxCT].wattHour = pRes->wattHour[idxCT];
+    }
+}
+
 /*! @brief This function is called when the 1 ms timer overflows (SYSTICK).
  *         Latency is not guaranteed, so only non-timing critical things
  *         should be done here (UI update, watchdog etc)
@@ -122,14 +138,22 @@ loadConfiguration(Emon32Config_t *pCfg)
 static void
 evtKiloHertz()
 {
-    (void)uiSWUpdate();
+    static unsigned int swStateTime;
+
+    /* If switch is pressed >= SW_TIME_RESET, save state and reset */
+    swStateTime = (SW_CLOSED == uiSWUpdate()) ? swStateTime + 1u : 0;
+
+    if (SW_TIME_RESET <= swStateTime)
+    {
+        emon32SetEvent(EVT_SAVE_RESET);
+    }
+
     uiUpdateLED(EMON_STATE_IDLE);
 
     /* Kick watchdog - placed in the event handler to allow reset of stuck
      * processing rather than entering the interrupt reliably
      */
     wdtKick();
-    emon32ClrEvent(EVT_SYSTICK_1KHz);
 }
 
 /*! @brief This function must be called first. An implementation must provide
@@ -152,10 +176,10 @@ setup_uc()
 int
 main()
 {
-    /* Default configuration */
-    Emon32Config_t e32Config;
-    ECMSet_t dataset;
-    char txBuffer[64]; /* TODO Check size of buffer */
+    Emon32Config_t      e32Config;
+    Emon32Cumulative_t  e32Residual;
+    ECMSet_t            dataset;
+    char                txBuffer[64]; /* TODO Check size of buffer */
 
     setup_uc();
 
@@ -165,16 +189,10 @@ main()
     uartInterruptEnable(SERCOM_UART_DBG, SERCOM_USART_INTENSET_ERROR);
 
     uartPutsBlocking(SERCOM_UART_DBG, "\ec== Energy Monitor 32 ==\r\n");
+    loadConfiguration(&e32Config, &e32Residual);
+    restoreResidual(&e32Residual, &dataset);
 
-    /* Indicate if the reset syndrome was from the watchdog */
-    if (PM->RCAUSE.reg & PM_RCAUSE_WDT)
-    {
-        uartPutsNonBlocking(DMA_CHAN_UART_DBG, "\r\n> Reset by WDT\r\n", 18u);
-    }
-
-    loadConfiguration(&e32Config);
     emon32StateSet(EMON_STATE_ACTIVE);
-
     ecmInit(&e32Config);
     adcStartDMAC((uint32_t)ecmDataBuffer());
 
@@ -185,29 +203,44 @@ main()
          */
         while(0 != evtPend)
         {
+            /* 1 ms timer flag */
             if (evtPend & (1u << EVT_SYSTICK_1KHz))
             {
                 evtKiloHertz();
+                emon32ClrEvent(EVT_SYSTICK_1KHz);
             }
+
+            /* ADC sample set complete */
             if (evtPend & (1u << EVT_DMAC_SMP_CMPL))
             {
                 ecmInjectSample();
                 emon32ClrEvent(EVT_DMAC_SMP_CMPL);
             }
+
+            /* Full cycle complete */
             if (evtPend & (1u << EVT_ECM_CYCLE_CMPL))
             {
                 ecmProcessCycle();
                 emon32ClrEvent(EVT_ECM_CYCLE_CMPL);
             }
+
+            /* Report period elapsed; generate, pack, and send */
             if (evtPend & (1u << EVT_ECM_SET_CMPL))
             {
-                /* Generate the report, pack, and send */
                 unsigned int pktLength;
                 ecmProcessSet(&dataset);
                 pktLength = dataPackage(&dataset, txBuffer);
                 uartPutsNonBlocking(DMA_CHAN_UART_DBG, txBuffer, pktLength);
                 emon32ClrEvent(EVT_ECM_SET_CMPL);
             }
+
+            /* Save and reset requested */
+            if (evtPend & (1u << EVT_SAVE_RESET))
+            {
+                /* TODO Save state */
+                NVIC_SystemReset();
+            }
+
         }
         __WFI();
     };

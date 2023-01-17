@@ -7,6 +7,9 @@
 #define VERSION_FW_MAJ      0u
 #define VERSION_FW_MIN      1u
 
+/* UI timing */
+#define SW_TIME_RESET       2048u   /* time in ms to press switch to reset */
+
 /* Voltage and CT setup - this is configurable, but constrained per board. For
  * example, NUM_CT can't be greater than the number of physical channels, but
  * can be less.
@@ -58,6 +61,11 @@ typedef struct __attribute__((__packed__)) {
     CTCfg_t         ctCfg[NUM_CT];
 } Emon32Config_t;
 
+typedef struct __attribute__((__packed__)) {
+    unsigned int    wattHour[NUM_CT];
+    unsigned int    pulseCnt;
+} Emon32Cumulative_t;
+
 /* Contains the states that are available to emon32 */
 typedef enum {
     EMON_STATE_IDLE,    /* Ready to start */
@@ -78,7 +86,8 @@ typedef enum {
     EVT_DMAC_UART_CMPL  = 5u,
     EVT_DMAC_SMP_CMPL   = 6u,
     EVT_ECM_CYCLE_CMPL  = 7u,
-    EVT_ECM_SET_CMPL    = 8u
+    EVT_ECM_SET_CMPL    = 8u,
+    EVT_SAVE_RESET      = 9u
 } INTSRC_t;
 
 /* SingleSampleSet_t contains a single set of V + CT ADC samples */
