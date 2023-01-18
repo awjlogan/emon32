@@ -1,4 +1,5 @@
 #include "emon32_samd.h"
+#include "emon_CM.h"
 
 static volatile DmacDescriptor dmacs[NUM_CHAN_DMA];
 static DmacDescriptor dmacs_wb[NUM_CHAN_DMA];
@@ -82,10 +83,10 @@ irq_handler_dmac()
     DMAC->CHID.reg = DMA_CHAN_ADC;
     if (DMAC->CHINTFLAG.reg & DMAC_CHINTFLAG_TCMPL)
     {
-        /* Restart DMA for ADC here, raise flag to handle sample */
+        /* Restart DMA for ADC and inject sample */
         ecmSwapDataBuffer();
         adcStartDMAC((uint32_t)ecmDataBuffer());
-        emon32SetEvent(EVT_DMAC_SMP_CMPL);
+        ecmInjectSample();
         DMAC->CHINTFLAG.reg = DMAC_CHINTFLAG_TCMPL;
     }
 

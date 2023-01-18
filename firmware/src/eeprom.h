@@ -5,7 +5,7 @@
 
 typedef struct {
     uint16_t    addr_base;      /* Block base address */
-    uint8_t     idxLastWrite;   /* Index of last write to EEPROM */
+    int8_t      idxNextWrite;   /* Index of next write to EEPROM */
     uint8_t     blkCnt;         /* Number of available blocks */
     uint8_t     dataSize;       /* Size (bytes) of the data */
     void *      pData;          /* Pointer to the packed data */

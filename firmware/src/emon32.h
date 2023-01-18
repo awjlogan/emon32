@@ -14,6 +14,7 @@
  * example, NUM_CT can't be greater than the number of physical channels, but
  * can be less.
  */
+#define DELTA_WH_STORE      200u    /* Threshold to store to non-volatile */
 #define NUM_V               1u
 #define NUM_CT              4u
 #define VCT_TOTAL           NUM_V + NUM_CT
@@ -62,8 +63,9 @@ typedef struct __attribute__((__packed__)) {
 } Emon32Config_t;
 
 typedef struct __attribute__((__packed__)) {
-    unsigned int    wattHour[NUM_CT];
-    unsigned int    pulseCnt;
+    uint8_t     valid;          /* Valid byte for wear levelling */
+    uint32_t    wattHour[NUM_CT];
+    uint32_t    pulseCnt;
 } Emon32Cumulative_t;
 
 /* Contains the states that are available to emon32 */

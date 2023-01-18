@@ -44,28 +44,3 @@ uiSWState()
 {
     return sw_last;
 }
-
-void
-uiUpdateLED(EmonState_t estate)
-{
-    static unsigned int ticks;
-    if (EMON_STATE_IDLE == estate)
-    {
-        /* TODO LED to pulse */
-        portPinDrv(PIN_LED, PIN_DRV_CLR);
-    }
-    else if (EMON_STATE_ACTIVE == estate)
-    {
-        portPinDrv(PIN_LED, PIN_DRV_SET);
-    }
-    else
-    {
-        /* Flash at 1 Hz */
-        ticks++;
-        if (500u == ticks)
-        {
-            ticks = 0u;
-            portPinDrv(PIN_LED, PIN_DRV_TGL);
-        }
-    }
-}
