@@ -11,8 +11,8 @@ typedef struct {
     void *      pData;          /* Pointer to the packed data */
 } eepromPktWL_t;
 
-/*! @brief Save data to EEPROM. All writes are contigyous from the base
- *         address. The implementation should account for page sizes.
+/*! @brief Save data to EEPROM. All writes are contiguous from the base
+ *         address. The implementation should account for page boundaries.
  *  @param [in] addr : base address
  *  @param [in] pSrc : pointer to data
  *  @param [in] n    : number of bytes to send

@@ -6,8 +6,9 @@ sercomSetup()
     portPinMux(PIN_UART_TX, PORT_PMUX_PMUXE_D);
     portPinMux(PIN_UART_RX, PORT_PMUX_PMUXE_D);
 
-    const uint32_t baud = UART_DBG_BAUD;
-    const uint64_t br = (uint64_t)65536 * (F_PERIPH - 16 * baud) / F_PERIPH;
+    /* Debug UART setup */
+    const uint32_t baud_dbg = UART_DBG_BAUD;
+    const uint64_t br_dbg = (uint64_t)65536 * (F_PERIPH - 16 * baud_dbg) / F_PERIPH;
 
     /* Configure clocks - runs from the OSC8M clock on gen 3 */
     PM->APBCMASK.reg |= SERCOM_UART_DBG_APBCMASK;
@@ -27,7 +28,7 @@ sercomSetup()
                                        | SERCOM_USART_CTRLB_CHSIZE(0);
     while (SERCOM_UART_DBG->USART.STATUS.reg & SERCOM_USART_SYNCBUSY_CTRLB);
 
-    SERCOM_UART_DBG->USART.BAUD.reg = (uint16_t)br + 1u;
+    SERCOM_UART_DBG->USART.BAUD.reg = (uint16_t)br_dbg + 1u;
 
     /* Enable requires synchronisation (25.6.6) */
     SERCOM_UART_DBG->USART.CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;
@@ -35,6 +36,7 @@ sercomSetup()
 
 #ifndef EEPROM_EMULATED
 
+    /* I2C Setup */
     portPinMux(PIN_I2C_SDA, PORT_PMUX_PMUXE_C);
     portPinMux(PIN_I2C_SCL, PORT_PMUX_PMUXO_C);
 
@@ -65,7 +67,12 @@ sercomSetup()
     SERCOM_I2CM->I2CM.STATUS.reg |= SERCOM_I2CM_STATUS_BUSSTATE(0x1u);
     while (SERCOM_I2CM->I2CM.SYNCBUSY.reg & SERCOM_I2CM_SYNCBUSY_SYSOP);
 
-#endif
+#endif /* EEPROM_EMULATED */
+
+    /* Data transmitter setup. When using RFM69 modules, this should be
+     * configured as SPI. If using ESP8266, then this should be a UART
+     */
+
 
 }
 

@@ -28,8 +28,12 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
 {
     #ifndef EEPROM_EMULATED
 
+    /* Make byte count and address static to allow re-entrant writes */
+    static unsigned int addr_local;
+    static unsigned int n_local;
+
     uint8_t align_bytes = 16u - (addr & 0xFu);
-    uint8_t *pData = (uint8_t *)pSrc;
+    const uint8_t *pData = (uint8_t *)pSrc;
     const DMACCfgCh_t ctrlb_i2c_wr = {.ctrlb =   DMAC_CHCTRLB_LVL(1u)
                                                | DMAC_CHCTRLB_TRIGACT_BEAT
                                                | DMAC_CHCTRLB_TRIGSRC(SERCOM_I2CM_DMAC_ID_TX)};
@@ -57,15 +61,17 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
     dmacDesc->BTCNT.reg = (align_bytes > n) ? n : align_bytes;
     dmacDesc->SRCADDR.reg = (uint32_t)(pData);
     dmacStartTransfer(DMA_CHAN_I2CM);
-    i2cActivate(SERCOM_I2CM, addr, 1u, n);
+
     if (align_bytes > n)
     {
         n = 0;
+        i2cActivate(SERCOM_I2CM, addr, 1u, align_bytes);
     }
     else
     {
         n -= align_bytes;
         pData += align_bytes;
+        i2cActivate(SERCOM_I2CM, addr, 1u, n);
     }
 
     /* Write any contiguous sequence */
