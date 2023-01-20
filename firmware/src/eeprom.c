@@ -4,6 +4,13 @@
 #include "eeprom.h"
 #include "emon32_samd.h"
 
+/* Local data for interrupt driven EEPROM write */
+typedef struct {
+    unsigned int    addr;
+    unsigned int    n;
+    uint8_t         *pData;
+} wrLocal_t;
+
 static unsigned int dmaInitFlag;
 
 /*! @brief Get the DMAC descriptor, and set up initial values */
@@ -20,20 +27,41 @@ dmaInit()
 
     dmacDesc->DSTADDR.reg = (uint32_t)&SERCOM_I2CM->I2CM.DATA;
     dmacDesc->DESCADDR.reg = 0u;
+
+    dmacEnableChannelInterrupt(DMA_CHAN_I2CM);
+
     dmaInitFlag = 1u;
 }
 
-void
+/*! @brief Send n bytes over I2C using DMA
+ *  @param [in] dmacDesc : pointer to DMAC descriptor struct
+ *  @param [in] wr : pointer to local address, data, and remaining bytes
+ *  @param [in] n : number of bytes to send in this chunk
+ */
+static void
+writeSetup(DmacDescriptor *dmacDesc, wrLocal_t *wr, uint8_t n)
+{
+    dmacDesc->BTCNT.reg = n;
+    dmacStartTransfer(DMA_CHAN_I2CM);
+    i2cActivate(SERCOM_I2CM, wrLocal->addr, 1u, n);
+
+    wr->addr += n;
+    wr->n -= n;
+    wr->pData += n;
+}
+
+eepromWrStatus_t
 eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
 {
     #ifndef EEPROM_EMULATED
 
     /* Make byte count and address static to allow re-entrant writes */
-    static unsigned int addr_local;
-    static unsigned int n_local;
+    static wrLocal_t    wrLocal;
+    uint8_t             align_bytes;
 
-    uint8_t align_bytes = 16u - (addr & 0xFu);
-    const uint8_t *pData = (uint8_t *)pSrc;
+    /* If all parameters are 0, then this is a continuation from ISR */
+    const unsigned int  continueBlock = (0 == addr) && (0 == pSrc) && (0 == n);
+
     const DMACCfgCh_t ctrlb_i2c_wr = {.ctrlb =   DMAC_CHCTRLB_LVL(1u)
                                                | DMAC_CHCTRLB_TRIGACT_BEAT
                                                | DMAC_CHCTRLB_TRIGSRC(SERCOM_I2CM_DMAC_ID_TX)};
@@ -54,51 +82,55 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
 
     dmacChannelConfigure(DMA_CHAN_I2CM, &ctrlb_i2c_wr);
 
-    /* For 24C0x EEPROMs, writes can not go over 16 byte pages. Align the
-     * first transfer to end of 16 byte page.
+    /* If no ongoing transaction:
+     *   - if it is a continuation, then return complete
+     *   - otherwise capture required details
      */
-    dmacDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
-    dmacDesc->BTCNT.reg = (align_bytes > n) ? n : align_bytes;
-    dmacDesc->SRCADDR.reg = (uint32_t)(pData);
-    dmacStartTransfer(DMA_CHAN_I2CM);
-
-    if (align_bytes > n)
+    if (0 == wrLocal.n)
     {
-        n = 0;
-        i2cActivate(SERCOM_I2CM, addr, 1u, align_bytes);
+        if (0 != continueBlock)
+        {
+            return EEPROM_WR_COMPLETE;
+        }
+
+        wrLocal.n = n;
+        wrLocal.pData = (uint8_t *)pSrc;
+        wrLocal.addr = addr;
     }
+    /* If there is a pending data, and this is new, indicate BUSY */
     else
     {
-        n -= align_bytes;
-        pData += align_bytes;
-        i2cActivate(SERCOM_I2CM, addr, 1u, n);
+        if (0 == continueBlock)
+        {
+            return EEPROM_WR_BUSY;
+        }
     }
 
-    /* Write any contiguous sequence */
+    dmacDesc->SRCADDR.reg = (uint32_t)wrLocal.pData;
+    dmacDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
+
+    /* Writes can not go over EEPROM_PAGE_SIZE byte pages. Align the first
+     * ransfer to end of EEPROM_PAGE_SIZE byte page.
+     */
+    align_bytes = EEPROM_PAGE_SIZE - (wrLocal.addr & (EEPROM_PAGE_SIZE - 1u));
+    if (0 != align_bytes)
+    {
+        writeSetup(dmacDesc, &wrLocal, align_bytes);
+        return EEPROM_WR_PEND;
+    }
+
+    /* Write any whole pages */
     while (n > EEPROM_PAGE_SIZE)
     {
-        dmacDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
-        dmacDesc->BTCNT.reg = EEPROM_PAGE_SIZE;
-        dmacDesc->SRCADDR.reg = (uint32_t)pData;
-        dmacStartTransfer(DMA_CHAN_I2CM);
-
-        i2cActivate(SERCOM_I2CM, addr, 1u, EEPROM_PAGE_SIZE);
-        n -= EEPROM_PAGE_SIZE;
-        addr += EEPROM_PAGE_SIZE;
-        pData += EEPROM_PAGE_SIZE;
+        writeSetup(dmacDesc, &wrLocal, EEPROM_PAGE_SIZE);
+        return EEPROM_WR_PEND;
     }
 
     /* Mop up residual data */
-    if (0 != n)
-    {
-        dmacDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
-        dmacDesc->BTCNT.reg = n;
-        dmacDesc->SRCADDR.reg = (uint32_t)pData;
-        dmacStartTransfer(DMA_CHAN_I2CM);
-        i2cActivate(SERCOM_I2CM, addr, 1u, n);
-    }
+    writeSetup(dmacDesc, &wrLocal, wrLocal.n);
+    return EEPROM_WR_PEND;
 
-    #endif
+    #endif /* EEPROM_EMULATED */
 }
 
 void
@@ -166,6 +198,7 @@ wlFindLast(eepromPktWL_t *pPkt)
         }
     }
 
+    /* TODO Compare checksum of packet to ensure that it is not corrupted */
     pPkt->idxNextWrite = (idxNextWr == (pPkt->blkCnt - 1u)) ? 0 : idxNextWr;
 }
 
@@ -186,10 +219,12 @@ eepromWriteWL(eepromPktWL_t *pPktWr)
     eepromRead((addrWr - pPktWr->dataSize), &validByte, 1u);
 
     /* The valid byte is calculated to have even bit 0/1 writes. */
+    /* Start filling with 1s */
     if (0 == validByte)
     {
         validByte += 1u;
     }
+    /* Start filling with 0s */
     else if (0xFFu == validByte)
     {
         validByte <<= 1;
@@ -205,7 +240,7 @@ eepromWriteWL(eepromPktWL_t *pPktWr)
     }
     *(uint8_t *)pPktWr->pData = validByte;
 
-    eepromWrite(addrWr, pPktWr->pData, pPktWr->dataSize);
+    (void)eepromWrite(addrWr, pPktWr->pData, pPktWr->dataSize);
 
     idxWr = pPktWr->idxNextWrite + 1u;
     if (idxWr == pPktWr->blkCnt)
@@ -221,8 +256,8 @@ eepromReadWL(eepromPktWL_t *pPktRd)
     /* Check for correct indexing, find it not yet set. Read into struct from
      * correct location.
      */
-    int8_t idxRd;
-    uint16_t addrRd;
+    int8_t      idxRd;
+    uint16_t    addrRd;
 
     if (-1 == pPktRd->idxNextWrite) wlFindLast(pPktRd);
     idxRd = pPktRd->idxNextWrite - 1u;

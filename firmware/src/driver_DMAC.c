@@ -99,6 +99,13 @@ irq_handler_dmac()
         emon32SetEvent(EVT_DMAC_UART_CMPL);
         DMAC->CHINTFLAG.reg = DMAC_CHINTFLAG_TCMPL;
     }
+
+    DMAC->CHID.reg = DMA_CHAN_I2CM;
+    {
+        /* DMA for this channel is used to write to I2C EEPROM */
+        (void)eepromWrite(0, NULL, 0);
+        DMAC->CHINTFLAG.reg = DMAC_CHINTFLAG_TCMPL;
+    }
 }
 
 uint16_t

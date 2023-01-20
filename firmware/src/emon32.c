@@ -260,7 +260,10 @@ main()
                 pktLength = dataPackage(&dataset, txBuffer);
                 uartPutsNonBlocking(DMA_CHAN_UART_DBG, txBuffer, pktLength);
 
-                /* Store cumulative values if over threshold */
+                /* Store cumulative values if over threshold
+                 * TODO catch overflow of energy. _Unlikely_ for a domestic
+                 * setting (4 MWh!) but should handle safely.
+                 */
                 latestWh = totalEnergy(&dataset);
                 if ((latestWh - lastStoredWh) > DELTA_WH_STORE)
                 {
