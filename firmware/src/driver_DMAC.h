@@ -41,4 +41,11 @@ void dmacClearChannelInterrupt(unsigned int ch);
  */
 void dmacChannelConfigure(unsigned int ch, const DMACCfgCh_t *pCfg);
 
+/*! @brief Calculate the CRC16 (CCITT - 0x1021)
+ *  @param [in] pData : pointer to data
+ *  @param [in] n : number of bytes in data
+ *  @return CRC16 value
+ */
+uint16_t crc16_ccitt(const void *pData, unsigned int n);
+
 #endif

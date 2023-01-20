@@ -28,6 +28,9 @@ dmacSetup()
                         | DMAC_CHCTRLB_TRIGSRC(ADC_DMAC_ID_RESRDY)
                         | DMAC_CHCTRLB_TRIGACT_BEAT;
 
+    /* CRC module - CRC16-CCITT byte wise access from IO */
+    DMAC->CRCCTRL.reg = DMAC_CRCCTRL_CRCSRC_IO;
+
     /* Enable the DMAC interrupt in the NVIC, but leave the channel interrupt
      * enable/disable for each channel to the peripheral */
     NVIC_EnableIRQ(DMAC_IRQn);
@@ -96,4 +99,24 @@ irq_handler_dmac()
         emon32SetEvent(EVT_DMAC_UART_CMPL);
         DMAC->CHINTFLAG.reg = DMAC_CHINTFLAG_TCMPL;
     }
+}
+
+uint16_t
+crc16_ccitt(const void *pData, unsigned int n)
+{
+    uint8_t *pD = (uint8_t *)pData;
+
+    /* CCITT is 0xFFFF initial value */
+    DMAC->CRCDATAIN.reg = 0xFFu;
+    while (DMAC->CRCSTATUS.reg & DMAC_CRCSTATUS_CRCBUSY);
+    DMAC->CRCDATAIN.reg = 0xFFu;
+    while (DMAC->CRCSTATUS.reg & DMAC_CRCSTATUS_CRCBUSY);
+
+    /* Input into CRC data byte wise */
+    while (n--)
+    {
+        DMAC->CRCDATAIN.reg = *pD++;
+        while (DMAC->CRCSTATUS.reg & DMAC_CRCSTATUS_CRCBUSY);
+    }
+    return DMAC->CRCCHKSUM.reg;
 }

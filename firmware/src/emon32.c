@@ -7,31 +7,6 @@
 static volatile uint32_t    evtPend;
 static volatile EmonState_t emonState = EMON_STATE_IDLE;
 
-/*! @brief The default configuration state of the system */
-static inline void
-defaultConfiguration(Emon32Config_t *pCfg, Emon32Cumulative_t *pRes)
-{
-    /* Default configuration: single phase, 50 Hz, 240 VAC */
-    pCfg->baseCfg.mainsFreq = 50u;      /* Mains frequency */
-    pCfg->baseCfg.reportCycles = 500u;  /* 10 s @ 50 Hz */
-    pCfg->baseCfg.equilCycles = 5u;     /* Warm up cycles to populate buffers */
-
-    for (unsigned int idxV = 0u; idxV < NUM_V; idxV++)
-    {
-        pCfg->voltageCfg[idxV].voltageCal = 268.97;
-    }
-
-    /* 4.2 degree shift @ 50 Hz, 4 CTs */
-    for (unsigned int idxCT = 0u; idxCT < NUM_CT; idxCT++)
-    {
-        pCfg->ctCfg[idxCT].ctCal = 90.91;
-        pCfg->ctCfg[idxCT].phaseX = 13495;
-        pCfg->ctCfg[idxCT].phaseY = 19340;
-        pRes->wattHour[idxCT] = 0;
-    }
-    pRes->pulseCnt = 0;
-}
-
 void
 emon32SetEvent(INTSRC_t evt)
 {
@@ -62,6 +37,31 @@ EmonState_t
 emon32StateGet()
 {
     return emonState;
+}
+
+/*! @brief The default configuration state of the system */
+static inline void
+defaultConfiguration(Emon32Config_t *pCfg, Emon32Cumulative_t *pRes)
+{
+    /* Default configuration: single phase, 50 Hz, 240 VAC */
+    pCfg->baseCfg.mainsFreq = 50u;      /* Mains frequency */
+    pCfg->baseCfg.reportCycles = 500u;  /* 10 s @ 50 Hz */
+    pCfg->baseCfg.equilCycles = 5u;     /* Warm up cycles to populate buffers */
+
+    for (unsigned int idxV = 0u; idxV < NUM_V; idxV++)
+    {
+        pCfg->voltageCfg[idxV].voltageCal = 268.97;
+    }
+
+    /* 4.2 degree shift @ 50 Hz, 4 CTs */
+    for (unsigned int idxCT = 0u; idxCT < NUM_CT; idxCT++)
+    {
+        pCfg->ctCfg[idxCT].ctCal = 90.91;
+        pCfg->ctCfg[idxCT].phaseX = 13495;
+        pCfg->ctCfg[idxCT].phaseY = 19340;
+        pRes->report.wattHour[idxCT] = 0;
+    }
+    pRes->report.pulseCnt = 0;
 }
 
 /*! @brief This function handles loading of configuration data
@@ -134,7 +134,7 @@ loadCumulative(eepromPktWL_t *pPkt, ECMSet_t *pData)
     /* Store into current result set */
     for (unsigned int idxCT = 0; idxCT < NUM_CT; idxCT++)
     {
-        pData->CT[idxCT].wattHour = data.wattHour[idxCT];
+        pData->CT[idxCT].wattHour = data.report.wattHour[idxCT];
     }
 }
 
@@ -146,12 +146,15 @@ storeCumulative(eepromPktWL_t *pPkt, const ECMSet_t *pData)
 {
     Emon32Cumulative_t data;
     pPkt->pData = &data;
-    eepromWriteWL(pPkt);
 
+    /* Copy data and calculate CRC */
     for (unsigned int idxCT = 0; idxCT < NUM_CT; idxCT++)
     {
-        data.wattHour[idxCT] = pData->CT[idxCT].wattHour;
+        data.report.wattHour[idxCT] = pData->CT[idxCT].wattHour;
     }
+    data.crc = crc16_ccitt(&data.report, sizeof(Emon32Report_t));
+
+    eepromWriteWL(pPkt);
 }
 
 /*! @brief This function is called when the 1 ms timer overflows (SYSTICK).
@@ -187,9 +190,9 @@ setup_uc()
     clkSetup();
     timerSetup();
     portSetup();
+    dmacSetup();
     sercomSetup();
     adcSetup();
-    dmacSetup();
     evsysSetup();
     wdtSetup(WDT_PER_4K);
 };

@@ -22,6 +22,10 @@
 #define SAMPLES_IN_SET      2u
 #define SAMPLE_BUF_DEPTH    2u
 
+/* Data transmitter configuration. Options are RFM69 or ESP8266. */
+#define TRANSMIT_RFM69
+/* #define TRANSMIT_ESP8266 */
+
 /* Uncomment to downsample the sample rate by low pass filter
  * Otherwise, the second sample from each set will be discarded
  */
@@ -63,9 +67,14 @@ typedef struct __attribute__((__packed__)) {
 } Emon32Config_t;
 
 typedef struct __attribute__((__packed__)) {
-    uint8_t     valid;          /* Valid byte for wear levelling */
-    uint32_t    wattHour[NUM_CT];
-    uint32_t    pulseCnt;
+    uint32_t wattHour[NUM_CT];
+    uint32_t pulseCnt;
+} Emon32Report_t;
+
+typedef struct __attribute__((__packed__)) {
+    uint8_t         valid;  /* Valid byte for wear levelling */
+    Emon32Report_t  report;
+    uint16_t        crc;    /* CRC16 of data - polynomial is IMPDEF */
 } Emon32Cumulative_t;
 
 /* Contains the states that are available to emon32 */
