@@ -6,6 +6,19 @@
 /*! @brief  Sets up the systm timers unit */
 void timerSetup();
 
+/*! @brief  Non-blocking delay. Returns -1 if the timer is already in use
+ *  @param [in] delay : period in us
+ */
+int timerDelayNB_us(uint32_t delay);
+
+/*! @brief  Enable timer interrupt to NVIC (or similar)
+ */
+void timerInterruptEnable();
+
+/*! @brief  Disable timer interrupt to NVIC (or similar)
+ */
+void timerInterruptDisable();
+
 /*! @brief  Blocking delay. Use with caution. Returns -1 if the timer is
  *          already in use.
  *  @param [in] delay : period in ms

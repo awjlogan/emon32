@@ -49,6 +49,31 @@ timerSetup()
                              | TC_CTRLA_PRESCSYNC_RESYNC;
 }
 
+void
+commonSetup(uint32_t delay)
+{
+    /* Unmask match interrrupt, zero counter, set compare value */
+    TC2->COUNT32.INTENSET.reg |= TC_INTENSET_MC0;
+    TC2->COUNT32.COUNT.reg = 0u;
+    while (TC2->COUNT32.STATUS.reg & TC_STATUS_SYNCBUSY);
+    TC2->COUNT32.CC[0].reg = delay;
+    while (TC2->COUNT32.STATUS.reg & TC_STATUS_SYNCBUSY);
+    TC2->COUNT32.CTRLA.reg |= TC_CTRLA_ENABLE;
+    while (TC2->COUNT32.STATUS.reg & TC_STATUS_SYNCBUSY);
+}
+
+int
+timerDelayNB_us(uint32_t delay)
+{
+    if (TC2->COUNT32.CTRLA.reg & TC_CTRLA_ENABLE)
+    {
+        return -1;
+    }
+
+    timerInterruptEnable();
+    commonSetup(delay);
+}
+
 int
 timerDelay_us(uint32_t delay)
 {
@@ -58,17 +83,11 @@ timerDelay_us(uint32_t delay)
         return -1;
     }
 
-    /* Unmask match interrrupt, zero counter, set compare value, and start */
-    TC2->COUNT32.INTENSET.reg |= TC_INTENSET_MC0;
-    TC2->COUNT32.COUNT.reg = 0u;
-    while (TC2->COUNT32.STATUS.reg & TC_STATUS_SYNCBUSY);
-    TC2->COUNT32.CC[0].reg = delay;
-    while (TC2->COUNT32.STATUS.reg & TC_STATUS_SYNCBUSY);
-    TC2->COUNT32.CTRLA.reg |= TC_CTRLA_ENABLE;
-    while (TC2->COUNT32.STATUS.reg & TC_STATUS_SYNCBUSY);
+    commonSetup(delay);
 
     /* Wait for timer to complete, then disable */
     while (0 == (TC2->COUNT32.INTFLAG.reg & TC_INTFLAG_MC0));
+    TC2->COUNT32.INTENCLR.reg = TC_INTENCLR_MC0;
     TC2->COUNT32.INTFLAG.reg |= TC_INTFLAG_MC0;
     TC2->COUNT32.CTRLA.reg &= ~TC_CTRLA_ENABLE;
 
@@ -126,4 +145,12 @@ irq_handler_sys_tick()
     {
         wdtKick();
     }
+}
+
+/*! @brief On delay timer (TC2), set event for consumption in main loop
+ */
+irq_handler_tc2()
+{
+    emon32SetEvent(EVT_TIMER_MC);
+    TC2->COUNT32.INTFLAG.reg |= TC_INTFLAG_MC0;
 }

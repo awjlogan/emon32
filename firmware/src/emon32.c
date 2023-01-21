@@ -3,6 +3,8 @@
 #include "emon32_samd.h"
 #include "emon_CM.h"
 
+#define EEPROM_WL_NUM_BLK   EEPROM_WL_SIZE / EEPROM_WL_SIZE_BLK
+
 /* Persistent state variables */
 static volatile uint32_t    evtPend;
 static volatile EmonState_t emonState = EMON_STATE_IDLE;
@@ -180,9 +182,28 @@ evtKiloHertz()
     wdtKick();
 }
 
-/*! @brief This function must be called first. An implementation must provide
- *         all the functions that are called; these can be empty if they are
- *         not used.
+
+/*! @brief Check if an event source is active
+ *  @param [in] : event source to check
+ *  @return : 1 if pending, 0 otherwise
+ */
+static inline unsigned int
+evtPending(INTSRC_t evt)
+{
+    if (evtPend & (1u << evt))
+    {
+        return 1u;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+
+/*! @brief Setup the microcontoller. This function must be called first. An
+ *         implementation must provide all the functions that are called.
+ *         These can be empty if they are not used.
  */
 static inline void
 setup_uc()
@@ -205,7 +226,6 @@ main()
     eepromPktWL_t       eepromPkt;
     uint32_t            lastStoredWh;
     uint32_t            latestWh;
-
     char                txBuffer[64]; /* TODO Check size of buffer */
 
     setup_uc();
@@ -218,8 +238,8 @@ main()
     uartPutsBlocking(SERCOM_UART_DBG, "\ec== Energy Monitor 32 ==\r\n");
 
     /* Load stored values from non-volatile memory */
-    eepromPkt.addr_base = 0x1198;
-    eepromPkt.blkCnt = 8u;
+    eepromPkt.addr_base = EEPROM_WL_OFFSET;
+    eepromPkt.blkCnt = EEPROM_WL_NUM_BLK;
     eepromPkt.dataSize = sizeof(Emon32Cumulative_t);
     eepromPkt.idxNextWrite = -1;
 
@@ -239,43 +259,75 @@ main()
         while(0 != evtPend)
         {
             /* 1 ms timer flag */
-            if (evtPend & (1u << EVT_SYSTICK_1KHz))
+            if (evtPending(EVT_SYSTICK_1KHz))
             {
                 evtKiloHertz();
                 emon32ClrEvent(EVT_SYSTICK_1KHz);
             }
 
             /* Full cycle complete */
-            if (evtPend & (1u << EVT_ECM_CYCLE_CMPL))
+            if (evtPending(EVT_ECM_CYCLE_CMPL))
             {
                 ecmProcessCycle();
                 emon32ClrEvent(EVT_ECM_CYCLE_CMPL);
             }
 
             /* Report period elapsed; generate, pack, and send */
-            if (evtPend & (1u << EVT_ECM_SET_CMPL))
+            if (evtPending(EVT_ECM_SET_CMPL))
             {
                 unsigned int pktLength;
+                unsigned int energyOverflow;
+
                 ecmProcessSet(&dataset);
                 pktLength = dataPackage(&dataset, txBuffer);
                 uartPutsNonBlocking(DMA_CHAN_UART_DBG, txBuffer, pktLength);
 
-                /* Store cumulative values if over threshold
-                 * TODO catch overflow of energy. _Unlikely_ for a domestic
-                 * setting (4 MWh!) but should handle safely.
-                 */
+                /* Store cumulative values if over threshold */
                 latestWh = totalEnergy(&dataset);
-                if ((latestWh - lastStoredWh) > DELTA_WH_STORE)
+
+                /* Catch overflow of energy. This corresponds to 4 MWh(!), so
+                 * unlikely to happen, but handle safely.
+                 */
+                energyOverflow = (latestWh < lastStoredWh) ? 1u : 0;
+                if (0 != energyOverflow)
+                {
+                    uartPutsBlocking("\r\n> Cumulative energy overflowed counter!");
+                }
+
+                if (((latestWh - lastStoredWh) > DELTA_WH_STORE) || energyOverflow)
                 {
                     storeCumulative(&eepromPkt, &dataset);
                     lastStoredWh = latestWh;
                 }
-
                 emon32ClrEvent(EVT_ECM_SET_CMPL);
             }
 
+            /* When the EEPROM page buffer has been filled, start the write
+             * timer to ensure that the write completes successfully. Retry if
+             * the timer is in use.
+             */
+            if (evtPending(EVT_DMAC_I2C_CMPL))
+            {
+                if (-1 != timerDelayNB_us(EEPROM_WR_TIME))
+                {
+                    emon32ClrEvent(EVT_DMAC_I2C_CMPL);
+                }
+            }
+
+            /* Start writing the next EEROM block. If complete, disconnect
+             * timer from the NVIC.
+             */
+            if (evtPending(EVT_TIMER_MC))
+            {
+                if (EEPROM_WR_COMPLETE == eepromWrite(0, NULL, 0))
+                {
+                    timerInterruptDisable();
+                }
+                emon32ClrEvent(EVT_TIMER_MC);
+            }
+
             /* Save and reset requested */
-            if (evtPend & (1u << EVT_SAVE_RESET))
+            if (evtPending(EVT_SAVE_RESET))
             {
                 storeCumulative(&eepromPkt, &dataset);
                 NVIC_SystemReset();

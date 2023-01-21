@@ -28,10 +28,16 @@
 /* Uncomment to use the software EEPROM mode (not implemented yet)
  * #define EEPROM_EMULATED
  */
-/* EEPROM address not including R/W bit */
-#define EEPROM_BASE_ADDR    0b1010001
+/* Top of EEPROM address, not including R/W bit */
+#define EEPROM_BASE_ADDR    0b1010000
 /* Maximum number of bytes in a single page */
 #define EEPROM_PAGE_SIZE    16u
+/* Worst case EEPROM write time (microseconds) */
+#define EEPROM_WR_TIME      5000ul
+/* Size (bytes) of wear levelled portion */
+#define EEPROM_WL_SIZE      384
+/* Offset of wear levelled area */
+#define EEPROM_WL_OFFSET    128
 
 /* SERCOM peripheral defines */
 #define SERCOM_UART_DBG     SERCOM0

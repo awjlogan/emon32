@@ -22,6 +22,16 @@
 #define SAMPLES_IN_SET      2u
 #define SAMPLE_BUF_DEPTH    2u
 
+/* Pulse count setup.
+ * TODO Implement pulse counter
+ */
+#define NUM_PULSECOUNT      0
+
+/* Precalculate the size of the EEPROM storage required to capture cumulative
+ * energy and pulse count values. 2 bytes for CRC, 1 for valid
+ */
+#define EEPROM_WL_SIZE_BLK  (NUM_CT * 4) + (NUM_PULSECOUNT * 4) + 2 + 1
+
 /* Data transmitter configuration. Options are RFM69 or ESP8266. */
 #define TRANSMIT_RFM69
 /* #define TRANSMIT_ESP8266 */
@@ -98,7 +108,9 @@ typedef enum {
     EVT_DMAC_SMP_CMPL   = 6u,
     EVT_ECM_CYCLE_CMPL  = 7u,
     EVT_ECM_SET_CMPL    = 8u,
-    EVT_SAVE_RESET      = 9u
+    EVT_SAVE_RESET      = 9u,
+    EVT_DMAC_I2C_CMPL   = 10u,
+    EVT_TIMER_MC        = 11u
 } INTSRC_t;
 
 /* SingleSampleSet_t contains a single set of V + CT ADC samples */
