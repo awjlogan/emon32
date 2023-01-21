@@ -1,13 +1,18 @@
-#include "board_def.h"
-#include "driver_DMAC.h"
-#include "driver_SERCOM.h"
-#include "eeprom.h"
+#include <string.h>
+
 #include "emon32_samd.h"
+
+/* A write including the lower address byte */
+typedef struct __attribute__((__packed__)) {
+    uint8_t         addrLow;
+    uint8_t         data[EEPROM_PAGE_SIZE];
+} writePkt_t;
 
 /* Local data for interrupt driven EEPROM write */
 typedef struct {
-    unsigned int    addr;
+    uint16_t        addr;
     unsigned int    n;
+    writePkt        *pPkt;
     uint8_t         *pData;
 } wrLocal_t;
 
@@ -41,9 +46,22 @@ dmaInit()
 static void
 writeSetup(DmacDescriptor *dmacDesc, wrLocal_t *wr, uint8_t n)
 {
-    dmacDesc->BTCNT.reg = n;
+    /* Construct the address bytes. Top half of the EEPROM address is in the
+       device select packet. Bottom half is the first byte sent */
+    uint8_t i2cBase = EEPROM_BASE_ADDR;
+    i2cBase |= (wr->addr >> 8);
+    i2cBase <<= 1u;
+    wr->pPkt = (wr->addr & 0xFFu);
+
+    /* Copy data from the source into the write buffer */
+    memcpy((wr->wrPkt + 1u), wr->pData, n)
+
+    /* Need to send an extra byte (n + 1) for the low address */
+    dmacDesc->SRCADDR.reg = wr->pPkt + (n + 1u);
+    dmacDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
+    dmacDesc->BTCNT.reg = n + 1u;
     dmacStartTransfer(DMA_CHAN_I2CM);
-    i2cActivate(SERCOM_I2CM, wrLocal->addr, 1u, n);
+    i2cActivate(SERCOM_I2CM, i2cBase, 1u, (n + 1u));
 
     wr->addr += n;
     wr->n -= n;
@@ -55,6 +73,7 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
 {
     #ifndef EEPROM_EMULATED
 
+    writePkt_t          wrPkt;
     /* Make byte count and address static to allow re-entrant writes */
     static wrLocal_t    wrLocal;
     uint8_t             align_bytes;
@@ -93,7 +112,9 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
             return EEPROM_WR_COMPLETE;
         }
 
+        pData = (uint8_t *)pSrc;
         wrLocal.n = n;
+        wrLocal.pPkt = &wrPkt;
         wrLocal.pData = (uint8_t *)pSrc;
         wrLocal.addr = addr;
     }
@@ -113,16 +134,20 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
         }
     }
 
-    dmacDesc->SRCADDR.reg = (uint32_t)wrLocal.pData;
-    dmacDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
-
     /* Writes can not go over EEPROM_PAGE_SIZE byte pages. Align the first
-     * ransfer to end of EEPROM_PAGE_SIZE byte page.
+     * transfer to end of EEPROM_PAGE_SIZE byte page.
      */
-    align_bytes = EEPROM_PAGE_SIZE - (wrLocal.addr & (EEPROM_PAGE_SIZE - 1u));
+    align_bytes = (EEPROM_PAGE_SIZE - (wrLocal.addr & (EEPROM_PAGE_SIZE - 1u))) % EEPROM_PAGE_SIZE;
     if (0 != align_bytes)
     {
+        if (align_bytes > n)
+        {
+                align_bytes = n;
+        }
+
+        /* Copy data into the write packet's data section */
         writeSetup(dmacDesc, &wrLocal, align_bytes);
+
         return EEPROM_WR_PEND;
     }
 

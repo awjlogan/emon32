@@ -5,12 +5,6 @@
 
 #include "board_def.h"
 #include "emon32.h"
-#include "emon_CM.h"
-#include "ui.h"
-#include "util.h"
-#include "configuration.h"
-#include "data.h"
-#include "eeprom.h"
 
 #include "driver_ADC.h"
 #include "driver_CLK.h"
@@ -20,5 +14,12 @@
 #include "driver_DMAC.h"
 #include "driver_EVSYS.h"
 #include "driver_WDT.h"
+
+#include "emon_CM.h"
+#include "ui.h"
+#include "util.h"
+#include "configuration.h"
+#include "data.h"
+#include "eeprom.h"
 
 #endif
