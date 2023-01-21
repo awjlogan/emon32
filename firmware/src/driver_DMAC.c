@@ -77,6 +77,19 @@ dmacChannelConfigure(unsigned int ch, const DMACCfgCh_t *pCfg)
     DMAC->CHCTRLB.reg = pCfg->ctrlb;
 }
 
+unsigned int
+dmacChannelBusy(unsigned int ch)
+{
+    if (0 != (DMAC->BUSYCH.reg & (1u << ch)))
+    {
+        return 1u;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
 void
 irq_handler_dmac()
 {
@@ -103,7 +116,7 @@ irq_handler_dmac()
     DMAC->CHID.reg = DMA_CHAN_I2CM;
     {
         /* DMA for this channel is used to write to I2C EEPROM */
-        (void)eepromWrite(0, NULL, 0);
+        emon32SetEvent(EVT_DMAC_I2C_CMPL);
         DMAC->CHINTFLAG.reg = DMAC_CHINTFLAG_TCMPL;
     }
 }

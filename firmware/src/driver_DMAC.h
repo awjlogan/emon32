@@ -12,6 +12,7 @@ void dmacSetup();
 
 /*! @brief Returns a pointer to DMA descriptor for the channel.
  *  @param [in] ch : channel
+ *  @return Pointer to the DmacDescriptor struct
  */
 volatile DmacDescriptor *dmacGetDescriptor(unsigned int ch);
 
@@ -19,6 +20,12 @@ volatile DmacDescriptor *dmacGetDescriptor(unsigned int ch);
  *  @param [in] ch : channel number
  */
 void dmacStartTransfer(unsigned int ch);
+
+/*! @brief Get channel transfer status
+ *  @param [in] ch : channel number
+ *  @return 1 if channel ch is busy. 0 otherwise
+ */
+unsigned int dmacChannelBusy(unsigned int ch);
 
 /*! @brief Enable DMAC channel interrupt
  *  @param [in] ch : channel to enable interrupt for

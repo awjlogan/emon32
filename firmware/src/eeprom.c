@@ -104,6 +104,13 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
         {
             return EEPROM_WR_BUSY;
         }
+        else
+        {
+            if (0 != dmacChannelBusy(DMA_CHAN_I2CM))
+            {
+                return EEPROM_WR_BUSY;
+            }
+        }
     }
 
     dmacDesc->SRCADDR.reg = (uint32_t)wrLocal.pData;
