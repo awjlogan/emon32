@@ -170,12 +170,32 @@ eepromRead(unsigned int addr, void *pDst, unsigned int n)
 {
     #ifndef EEPROM_EMULATED
 
+    uint8_t addrHigh;
+    uint8_t addrLow;
+
     uint8_t *pData = (uint8_t *)pDst;
     const DMACCfgCh_t ctrlb_i2c_wr = {.ctrlb =   DMAC_CHCTRLB_LVL(1u)
                                                | DMAC_CHCTRLB_TRIGACT_BEAT
                                                | DMAC_CHCTRLB_TRIGSRC(SERCOM_I2CM_DMAC_ID_RX)};
 
     volatile DmacDescriptor *dmacDesc = dmacGetDescriptor(DMA_CHAN_I2CM);
+
+    /* Set the addres to read from in the EEPROM. This is a select write,
+     * followed by the byte low address. */
+    addrHigh =   EEPROM_BASE_ADDR
+               | (addr >> 8);
+    addrHigh <<= 1u;
+    addrLow = addr & 0xFFu;
+
+    /* Send address, wait for ack, then send low byte of address */
+    /* TODO handle timeouts and other errors gracefully */
+    i2cActivate(SERCOM_I2CM, addrHigh, 0u, 0u);
+    while (!(SERCOM_I2CM->INTFLAG.reg & SERCOM_I2CM_INTFLAG_MB));
+
+    if (!(SERCOM_I2CM->STATUS.reg & SERCOM_I2CM_STATUS_RXNACK))
+    {
+        SERCOM_I2CM->DATA.reg = addrLow;
+    }
 
     if (0 == dmaInitFlag)
     {
@@ -197,6 +217,9 @@ eepromRead(unsigned int addr, void *pDst, unsigned int n)
     dmacDesc->DSTADDR.reg = (uint32_t)pData;
     dmacStartTransfer(DMA_CHAN_I2CM);
 
+    /* Now ready to read sequentially, issue Select packet, and DMA will fill
+     * the pData buffer. The DMAC will raise an interrupt when complete */
+    addrHigh = (EEPROM_BASE_ADDR << 1u) + 1u;
     i2cActivate(SERCOM_I2CM, addr, 1u, n);
 
     #endif /* EEPROM_EMULATED */

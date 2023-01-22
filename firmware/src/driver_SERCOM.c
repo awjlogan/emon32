@@ -67,6 +67,9 @@ sercomSetup()
     SERCOM_I2CM->I2CM.STATUS.reg |= SERCOM_I2CM_STATUS_BUSSTATE(0x1u);
     while (SERCOM_I2CM->I2CM.SYNCBUSY.reg & SERCOM_I2CM_SYNCBUSY_SYSOP);
 
+    SERCOM_I2CM->I2CM.INTENSET.reg =   SERCOM_I2CM_INTENSET_MB
+                                     | SERCOM_I2CM_INTENSET_SB;
+
 #endif /* EEPROM_EMULATED */
 
     /* Data transmitter setup. When using RFM69 modules, this should be

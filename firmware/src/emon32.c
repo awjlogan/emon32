@@ -322,6 +322,7 @@ main()
                 if (EEPROM_WR_COMPLETE == eepromWrite(0, NULL, 0))
                 {
                     timerInterruptDisable();
+                    timerDisable();
                 }
                 emon32ClrEvent(EVT_TIMER_MC);
             }

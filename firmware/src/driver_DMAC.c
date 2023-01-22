@@ -114,6 +114,7 @@ irq_handler_dmac()
     }
 
     DMAC->CHID.reg = DMA_CHAN_I2CM;
+    if (DMAC->CHINTFLAG.reg & DMAC_CHINTFLAG_TCMPL)
     {
         /* DMA for this channel is used to write to I2C EEPROM */
         emon32SetEvent(EVT_DMAC_I2C_CMPL);

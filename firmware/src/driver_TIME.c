@@ -62,6 +62,12 @@ commonSetup(uint32_t delay)
     while (TC2->COUNT32.STATUS.reg & TC_STATUS_SYNCBUSY);
 }
 
+void
+timerDisable()
+{
+    TC2->COUNT32.CTRLA.reg &= ~TC_CTRLA_ENABLE;
+}
+
 int
 timerDelayNB_us(uint32_t delay)
 {
