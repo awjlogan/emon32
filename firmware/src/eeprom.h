@@ -35,7 +35,7 @@ eepromWrStatus_t eepromWrite(unsigned int addr, const void *pSrc, unsigned int n
  *  @param [in] pDst : pointer to read destination
  *  @param [in] n : number of bytes to read
  */
-void eepromRead(unsigned int addr, void *pDst, unsigned int n)
+void eepromRead(unsigned int addr, void *pDst, unsigned int n);
 
 /*! @brief Save data to EEPROM with wear leveling.
  *  @param [in] pPktWr : pointer to write packet

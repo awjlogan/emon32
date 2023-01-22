@@ -12,7 +12,7 @@ typedef struct __attribute__((__packed__)) {
 typedef struct {
     uint16_t        addr;
     unsigned int    n;
-    writePkt        *pPkt;
+    writePkt_t      *pPkt;
     uint8_t         *pData;
 } wrLocal_t;
 
@@ -51,13 +51,13 @@ writeSetup(DmacDescriptor *dmacDesc, wrLocal_t *wr, uint8_t n)
     uint8_t i2cBase = EEPROM_BASE_ADDR;
     i2cBase |= (wr->addr >> 8);
     i2cBase <<= 1u;
-    wr->pPkt = (wr->addr & 0xFFu);
+    *(uint8_t *)wr->pPkt = (wr->addr & 0xFFu);
 
     /* Copy data from the source into the write buffer */
-    memcpy((wr->wrPkt + 1u), wr->pData, n)
+    memcpy((wr->pPkt + 1u), wr->pData, n);
 
     /* Need to send an extra byte (n + 1) for the low address */
-    dmacDesc->SRCADDR.reg = wr->pPkt + (n + 1u);
+    dmacDesc->SRCADDR.reg = (uint32_t)wr->pPkt + (n + 1u);
     dmacDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
     dmacDesc->BTCNT.reg = n + 1u;
     dmacStartTransfer(DMA_CHAN_I2CM);
@@ -112,7 +112,6 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
             return EEPROM_WR_COMPLETE;
         }
 
-        pData = (uint8_t *)pSrc;
         wrLocal.n = n;
         wrLocal.pPkt = &wrPkt;
         wrLocal.pData = (uint8_t *)pSrc;
@@ -146,7 +145,7 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
         }
 
         /* Copy data into the write packet's data section */
-        writeSetup(dmacDesc, &wrLocal, align_bytes);
+        writeSetup((DmacDescriptor *)dmacDesc, &wrLocal, align_bytes);
 
         return EEPROM_WR_PEND;
     }
@@ -154,12 +153,12 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
     /* Write any whole pages */
     while (n > EEPROM_PAGE_SIZE)
     {
-        writeSetup(dmacDesc, &wrLocal, EEPROM_PAGE_SIZE);
+        writeSetup((DmacDescriptor *)dmacDesc, &wrLocal, EEPROM_PAGE_SIZE);
         return EEPROM_WR_PEND;
     }
 
     /* Mop up residual data */
-    writeSetup(dmacDesc, &wrLocal, wrLocal.n);
+    writeSetup((DmacDescriptor *)dmacDesc, &wrLocal, wrLocal.n);
     return EEPROM_WR_PEND;
 
     #endif /* EEPROM_EMULATED */
@@ -190,11 +189,11 @@ eepromRead(unsigned int addr, void *pDst, unsigned int n)
     /* Send address, wait for ack, then send low byte of address */
     /* TODO handle timeouts and other errors gracefully */
     i2cActivate(SERCOM_I2CM, addrHigh, 0u, 0u);
-    while (!(SERCOM_I2CM->INTFLAG.reg & SERCOM_I2CM_INTFLAG_MB));
+    while (!(SERCOM_I2CM->I2CM.INTFLAG.reg & SERCOM_I2CM_INTFLAG_MB));
 
-    if (!(SERCOM_I2CM->STATUS.reg & SERCOM_I2CM_STATUS_RXNACK))
+    if (!(SERCOM_I2CM->I2CM.STATUS.reg & SERCOM_I2CM_STATUS_RXNACK))
     {
-        SERCOM_I2CM->DATA.reg = addrLow;
+        SERCOM_I2CM->I2CM.DATA.reg = addrLow;
     }
 
     if (0 == dmaInitFlag)

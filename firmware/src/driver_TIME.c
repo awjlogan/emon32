@@ -76,8 +76,10 @@ timerDelayNB_us(uint32_t delay)
         return -1;
     }
 
-    timerInterruptEnable();
+    NVIC_EnableIRQ(TC2_IRQn);
     commonSetup(delay);
+
+    return 0;
 }
 
 int
@@ -155,6 +157,7 @@ irq_handler_sys_tick()
 
 /*! @brief On delay timer (TC2), set event for consumption in main loop
  */
+void
 irq_handler_tc2()
 {
     emon32SetEvent(EVT_TIMER_MC);

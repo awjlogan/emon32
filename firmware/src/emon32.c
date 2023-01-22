@@ -1,3 +1,6 @@
+#include <stddef.h>
+
+#include "board_def.h"
 #include "emon32.h"
 #include "eeprom.h"
 #include "emon32_samd.h"
@@ -291,7 +294,7 @@ main()
                 energyOverflow = (latestWh < lastStoredWh) ? 1u : 0;
                 if (0 != energyOverflow)
                 {
-                    uartPutsBlocking("\r\n> Cumulative energy overflowed counter!");
+                    uartPutsBlocking(SERCOM_UART_DBG, "\r\n> Cumulative energy overflowed counter!");
                 }
 
                 if (((latestWh - lastStoredWh) > DELTA_WH_STORE) || energyOverflow)
@@ -321,7 +324,7 @@ main()
             {
                 if (EEPROM_WR_COMPLETE == eepromWrite(0, NULL, 0))
                 {
-                    timerInterruptDisable();
+                    NVIC_DisableIRQ(TC2_IRQn);
                     timerDisable();
                 }
                 emon32ClrEvent(EVT_TIMER_MC);
