@@ -22,7 +22,6 @@ dataPackage_n(const ECMSet_t *pData, char *pDst, unsigned int n)
     }
 
     /* V RMS for each channel.
-     * TODO should this be a float?
      * TODO : how should this look for multiple V channels?
      */
     charCnt += 6;
@@ -30,7 +29,7 @@ dataPackage_n(const ECMSet_t *pData, char *pDst, unsigned int n)
     {
         cursor = utilStrInsert(pDst, ",Vrms:", cursor, 6);
     }
-    insLen = utilItoa(tmpBuf, pData->rmsV[0], ITOA_BASE10) - 1u;
+    insLen = utilFtoa(tmpBuf, pData->rmsV[0]) - 1u;
     charCnt += insLen;
     if (charCnt <= n)
     {
@@ -94,10 +93,10 @@ dataPackage_n(const ECMSet_t *pData, char *pDst, unsigned int n)
 unsigned int
 dataPackage(const ECMSet_t *pData, char *pDst)
 {
-    unsigned int charCnt;
-    char tmpBuf[16];
-    unsigned int cursor;
-    unsigned int insLen;
+    unsigned int    charCnt;
+    char            tmpBuf[16];
+    unsigned int    cursor;
+    unsigned int    insLen;
 
     /* Message number */
     cursor = utilStrInsert(pDst, "MSG:", 0, 4);
@@ -111,7 +110,7 @@ dataPackage(const ECMSet_t *pData, char *pDst)
      */
     cursor = utilStrInsert(pDst, ",Vrms:", cursor, 6);
     charCnt += 6u;
-    insLen = utilFtoa(tmpBuf, (pData->rmsV[0] * 0.01)) - 1u;
+    insLen = utilFtoa(tmpBuf, (pData->rmsV[0] * 0.01f)) - 1u;
     charCnt += insLen;
     cursor = utilStrInsert(pDst, tmpBuf, cursor, insLen);
 
