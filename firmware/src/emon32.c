@@ -51,7 +51,6 @@ defaultConfiguration(Emon32Config_t *pCfg, Emon32Cumulative_t *pRes)
     /* Default configuration: single phase, 50 Hz, 240 VAC */
     pCfg->baseCfg.mainsFreq = 50u;      /* Mains frequency */
     pCfg->baseCfg.reportCycles = 500u;  /* 10 s @ 50 Hz */
-    pCfg->baseCfg.equilCycles = 5u;     /* Warm up cycles to populate buffers */
 
     for (unsigned int idxV = 0u; idxV < NUM_V; idxV++)
     {
@@ -246,7 +245,7 @@ main()
     eepromPkt.dataSize = sizeof(Emon32Cumulative_t);
     eepromPkt.idxNextWrite = -1;
 
-    // loadConfiguration(&e32Config);
+    loadConfiguration(&e32Config);
     loadCumulative(&eepromPkt, &dataset);
     lastStoredWh = totalEnergy(&dataset);
 

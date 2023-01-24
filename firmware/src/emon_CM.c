@@ -203,7 +203,7 @@ zeroCrossing(q15_t smpV)
     #ifndef ZERO_CROSSING_HW
     Polarity_t          polarity_now;
     static Polarity_t   polarity_last = POL_POS;
-    static int          hystCnt = 3u;
+    static int          hystCnt = ZC_HYST;
 
     polarity_now = (smpV < 0) ? POL_NEG : POL_POS;
 
@@ -212,7 +212,7 @@ zeroCrossing(q15_t smpV)
         hystCnt--;
         if (0 == hystCnt)
         {
-            hystCnt = pCfg->baseCfg.zcHyst;
+            hystCnt = ZC_HYST;
             polarity_last = polarity_now;
             if (POL_POS == polarity_now)
             {
@@ -423,7 +423,7 @@ ecmInjectSample()
         ecmSwapPtr((void *)accum_collecting, (void *)accum_processing);
         memset((void *)accum_collecting, 0, sizeof(Accumulator_t));
 
-        if (pCfg->baseCfg.equilCycles == discardCycles)
+        if (EQUIL_CYCLES == discardCycles)
         {
             #ifndef HOSTED
                 emon32SetEvent(EVT_ECM_CYCLE_CMPL);

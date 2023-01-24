@@ -48,11 +48,24 @@ getUniqueID(unsigned int idx)
 }
 
 static void
+enterConfigText()
+{
+    uartPutsBlocking(SERCOM_UART_DBG, "Enter the channel index to configure\r\n\r\n");
+}
+
+static char
+waitForChar()
+{
+    while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
+    return uartGetc(SERCOM_UART_DBG);
+}
+
+static void
 getInputStr()
 {
-    char *pBuf = genBuf;
-    unsigned int charCnt = 0;
-    char c = 0;
+    char            *pBuf = genBuf;
+    unsigned int    charCnt = 0;
+    char            c = 0;
 
     /* Exit when # is received, or out of bounds */
     while ('#' != c && (charCnt < GENBUF_W))
@@ -62,9 +75,8 @@ getInputStr()
             if ('\n' == c)
                 c = getchar();
         #else
-            while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
-            c = uartGetc(SERCOM_UART_DBG);
-        #endif
+            c = waitForChar();
+        #endif /* HOSTED */
         if ('#' != c)
         {
             *pBuf++ = c;
@@ -125,7 +137,6 @@ static void
 menuVoltageChan(unsigned int chanV)
 {
     char c = 0;
-    unsigned int idxChange = 0;
 
     while ('b' != c)
     {
@@ -143,25 +154,14 @@ menuVoltageChan(unsigned int chanV)
             if ('\n' == c)
                 c = getchar();
         #else
-            while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
-            c = uartGetc(SERCOM_UART_DBG);
+            c = waitForChar();
         #endif
 
+        /* (Currently) only a single option for Voltage channel */
         if ('0' == c)
         {
-            float val;
-            idxChange = c - '0';
-            val = getValue_float();
+            pCfg->voltageCfg[chanV].voltageCal = getValue_float();
 
-            switch (idxChange)
-            {
-                case 0:
-                    pCfg->voltageCfg[chanV].voltageCal = val;
-                    valChanged = 1u;
-                    break;
-                default:
-                    break;
-            }
         }
     }
 }
@@ -183,15 +183,14 @@ menuVoltage()
             uartPutsBlocking(SERCOM_UART_DBG, genBuf);
             uartPutsBlocking(SERCOM_UART_DBG, "\r\n");
         }
-        uartPutsBlocking(SERCOM_UART_DBG, "Enter the channel index to enter configuration\r\n\r\n");
+        enterConfigText();
 
         #ifdef HOSTED
             c = getchar();
             if ('\n' == c)
                 c = getchar();
         #else
-            while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
-            c = uartGetc(SERCOM_UART_DBG);
+            c = waitForChar();
         #endif
 
         if ('b' != c)
@@ -227,8 +226,7 @@ menuCTChan(unsigned int chanCT)
             if ('\n' == c)
                 c = getchar();
         #else
-            while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
-            c = uartGetc(SERCOM_UART_DBG);
+            c = waitForChar();
         #endif
 
         if ('0' == c)
@@ -277,15 +275,14 @@ menuCT()
             uartPutsBlocking(SERCOM_UART_DBG, genBuf);
             uartPutsBlocking(SERCOM_UART_DBG, "\r\n");
         }
-        uartPutsBlocking(SERCOM_UART_DBG, "Enter the channel index to enter configuration\r\n\r\n");
+        enterConfigText();
 
         #ifdef HOSTED
             c = getchar();
             if ('\n' == c)
                 c = getchar();
         #else
-            while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
-            c = uartGetc(SERCOM_UART_DBG);
+            c = waitForChar();
         #endif
 
         if ('b' != c)
@@ -311,9 +308,6 @@ menuConfiguration()
         putValueEnd_10(pCfg->baseCfg.reportCycles);
         uartPutsBlocking(SERCOM_UART_DBG, "2: Mains frequency (Hz):     ");
         putValueEnd_10(pCfg->baseCfg.mainsFreq);
-        uartPutsBlocking(SERCOM_UART_DBG, "3: Discard initial cycles:   ");
-        putValueEnd_10(pCfg->baseCfg.equilCycles);
-        uartPutsBlocking(SERCOM_UART_DBG, "4: Zero crossing hysteresis: ");
         infoEdit();
 
         #ifdef HOSTED
@@ -321,11 +315,10 @@ menuConfiguration()
             if ('\n' == c)
                 c = getchar();
         #else
-            while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
-            c = uartGetc(SERCOM_UART_DBG);
+            c = waitForChar();
         #endif
 
-        if ((c >= '0') && (c <= '4'))
+        if ((c >= '0') && (c <= '2'))
         {
             uint32_t val;
             idxChange = c - '0';
@@ -343,14 +336,6 @@ menuConfiguration()
                     break;
                 case 2:
                     pCfg->baseCfg.mainsFreq = val;
-                    valChanged = 1u;
-                    break;
-                case 3:
-                    pCfg->baseCfg.equilCycles = val;
-                    valChanged = 1u;
-                    break;
-                case 4:
-                    pCfg->baseCfg.zcHyst = val;
                     valChanged = 1u;
                     break;
                 default:
@@ -399,8 +384,7 @@ menuAbout()
             if ('\n' == c)
                 c = getchar();
         #else
-            while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
-            c = uartGetc(SERCOM_UART_DBG);
+            c = waitForChar();
         #endif
     }
 }
@@ -436,8 +420,7 @@ menuBase()
             if ('\n' == c)
                 c = getchar();
         #else
-            while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
-            c = uartGetc(SERCOM_UART_DBG);
+            c = waitForChar();
         #endif
 
         switch (c)
@@ -475,25 +458,19 @@ menuBase()
                 if ('\n' == c)
                     c = getchar();
             #else
-                while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
-                c = uartGetc(SERCOM_UART_DBG);
+                c = waitForChar();
             #endif
 
         }
         c = ('y' == c) ? 'e' : 's';
     }
 
+    /* Save configuration */
     if ('s' == c)
     {
         #ifndef HOSTED
-            /* Save configuration. The first byte of the EEPROM is written as 0
-             * to mark that the stored data are valid.
-             */
-            c = 0;
-            eepromWrite(EEPROM_BASE_ADDR, (void *)&c, 1u);
-            eepromWrite(EEPROM_BASE_ADDR + EEPROM_PAGE_SIZE, pCfg, sizeof(Emon32Config_t));
+            eepromWrite(EEPROM_BASE_ADDR, pCfg, sizeof(Emon32Config_t));
         #endif
-        uartPutsBlocking(SERCOM_UART_DBG, "Configuration saved.\r\n");
     }
 }
 
