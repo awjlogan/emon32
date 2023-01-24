@@ -5,9 +5,11 @@ BIN = emon32
 ##############################################################################
 .PHONY: all directory clean size
 
-CC = arm-none-eabi-gcc
-OBJCOPY = arm-none-eabi-objcopy
-SIZE = arm-none-eabi-size
+# Path to toolchain, e.g. /path/to/bin/ Leave empty if already on path.
+TC_PATH =
+CC = $(TC_PATH)arm-none-eabi-gcc
+OBJCOPY = $(TC_PATH)arm-none-eabi-objcopy
+SIZE = $(TC_PATH)arm-none-eabi-size
 
 ifeq ($(OS), Windows_NT)
   MKDIR = gmkdir
