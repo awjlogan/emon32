@@ -110,7 +110,7 @@ dataPackage(const ECMSet_t *pData, char *pDst)
      */
     cursor = utilStrInsert(pDst, ",Vrms:", cursor, 6);
     charCnt += 6u;
-    insLen = utilFtoa(tmpBuf, (pData->rmsV[0] * 0.01f)) - 1u;
+    insLen = utilFtoa(tmpBuf, (pData->rmsV[0])) - 1u;
     charCnt += insLen;
     cursor = utilStrInsert(pDst, tmpBuf, cursor, insLen);
 
