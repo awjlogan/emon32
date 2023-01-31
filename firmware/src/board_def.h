@@ -43,16 +43,20 @@
 #define SERCOM_UART_DBG     SERCOM0
 #define SERCOM_I2CM         SERCOM1
 #define SERCOM_UART_DATA    SERCOM2
+#define SERCOM_SPI_DATA     SERCOM2
 
 #define SERCOM_UART_DBG_APBCMASK    PM_APBCMASK_SERCOM0
 #define SERCOM_I2CM_APBCMASK        PM_APBCMASK_SERCOM1
+#define SERCOM_UART_DATA_APBCMASK   PM_APBCMASK_SERCOM2
 
 #define SERCOM_UART_DBG_GCLK_ID     SERCOM0_GCLK_ID_CORE
 #define SERCOM_I2CM_GCLK_ID         SERCOM1_GCLK_ID_CORE
+#define SERCOM_UART_DATA_GCLK_ID    SERCOM2_GCLK_ID_CORE
 
 #define SERCOM_UART_DBG_DMAC_ID_TX  SERCOM0_DMAC_ID_TX
 #define SERCOM_I2CM_DMAC_ID_TX      SERCOM2_DMAC_ID_TX
 #define SERCOM_I2CM_DMAC_ID_RX      SERCOM2_DMAC_ID_RX
+#define SERCOM_UART_DATA_DMAC_ID_TX SERCOM2_DMAC_ID_TX
 
 #define SERCOM_UART_DBG_NVIC_IRQn   SERCOM0_IRQn
 
@@ -61,23 +65,29 @@
 #define PIN_GEN_STATUS      25u
 #define PIN_LED             16u
 #define PIN_SW              15u
-#define PIN_UART_RX         9u
-#define PIN_UART_TX         8u
+#define PIN_UART_DBG_RX     9u
+#define PIN_UART_DBG_TX     8u
 #define PIN_I2C_SDA         22u
 #define PIN_I2C_SCL         23u
+#define PIN_UART_DATA_TX    17u
 
-/* UART related defines */
+/* Debug UART related defines */
 #define UART_DBG_PAD_RX     3u
 #define UART_DBG_PAD_TX     1u
 #define UART_DBG_BAUD       38400u
 
+/* Data UART related defines */
+#define UART_DATA_PAD_TX    1u
+#define UART_DATA_BAUD      115200ul
+
 /* DMA defines */
-#define NUM_CHAN_DMA        3u
+#define NUM_CHAN_DMA        4u
+#define DMA_CHAN_UART_DATA  3u
 #define DMA_CHAN_I2CM       2u
 #define DMA_CHAN_UART_DBG   1u
 #define DMA_CHAN_ADC        0u
 
-/* SAMD10 calibration values */
+/* SAMD10 calibration values (NVM User Row Mapping Table 9-3) */
 #define CAL_REG_LOW         *(const volatile uint32_t *)(0x00806020)
 #define CAL_REG_HIGH        *(const volatile uint32_t *)(0x00806024)
 #define CAL_OSC32_Msk       0x1FC0u

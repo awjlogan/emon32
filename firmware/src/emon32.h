@@ -36,8 +36,8 @@
 #define EEPROM_WL_SIZE_BLK  (NUM_CT * 4) + (NUM_PULSECOUNT * 4) + 2 + 1
 
 /* Data transmitter configuration. Options are RFM69 or ESP8266. */
-#define TRANSMIT_RFM69
-/* #define TRANSMIT_ESP8266 */
+// #define TRANSMIT_RFM69
+#define TRANSMIT_ESP8266
 
 /* Uncomment to downsample the sample rate by low pass filter
  * Otherwise, the second sample from each set will be discarded

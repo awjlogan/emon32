@@ -3,10 +3,10 @@
 void
 sercomSetup()
 {
-    portPinMux(PIN_UART_TX, PORT_PMUX_PMUXE_D);
-    portPinMux(PIN_UART_RX, PORT_PMUX_PMUXE_D);
-
     /* Debug UART setup */
+    portPinMux(PIN_UART_DBG_TX, PORT_PMUX_PMUXE_D);
+    portPinMux(PIN_UART_DBG_RX, PORT_PMUX_PMUXE_D);
+
     const uint32_t baud_dbg = UART_DBG_BAUD;
     const uint64_t br_dbg = (uint64_t)65536 * (F_PERIPH - 16 * baud_dbg) / F_PERIPH;
 
@@ -76,6 +76,36 @@ sercomSetup()
      * configured as SPI. If using ESP8266, then this should be a UART
      */
 
+#ifdef TRANSMIT_ESP8266
+
+    portPinMux(PIN_UART_DATA_TX, PORT_PMUX_PMUXE_D);
+
+    const uint32_t baud_data = UART_DBG_BAUD;
+    const uint64_t br_data = (uint64_t)65536 * (F_PERIPH - 16 * baud_data) / F_PERIPH;
+
+    /* Configure clocks - runs from the OSC8M clock on gen 3 */
+    PM->APBCMASK.reg |= SERCOM_UART_DATA_APBCMASK;
+    GCLK->CLKCTRL.reg =   GCLK_CLKCTRL_ID(SERCOM_UART_DATA_GCLK_ID)
+                        | GCLK_CLKCTRL_GEN(3u)
+                        | GCLK_CLKCTRL_CLKEN;
+
+    /* Configure the USART */
+    SERCOM_UART_DATA->USART.CTRLA.reg =   SERCOM_USART_CTRLA_DORD
+                                        | SERCOM_USART_CTRLA_MODE_USART_INT_CLK
+                                        | SERCOM_USART_CTRLA_TXPO(UART_DBG_PAD_TX);
+
+    /* TX/RX enable requires synchronisation */
+    SERCOM_UART_DATA->USART.CTRLB.reg =   SERCOM_USART_CTRLB_TXEN
+                                        | SERCOM_USART_CTRLB_CHSIZE(0);
+    while (SERCOM_UART_DATA->USART.STATUS.reg & SERCOM_USART_SYNCBUSY_CTRLB);
+
+    SERCOM_UART_DATA->USART.BAUD.reg = (uint16_t)br_data + 1u;
+
+    /* Enable requires synchronisation (25.6.6) */
+    SERCOM_UART_DATA->USART.CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;
+    while (SERCOM_UART_DATA->USART.STATUS.reg & SERCOM_USART_SYNCBUSY_ENABLE);
+
+#endif /* TRANSMIT_ESP8266 */
 
 }
 

@@ -284,6 +284,10 @@ main()
                 pktLength = dataPackage(&dataset, txBuffer);
                 uartPutsNonBlocking(DMA_CHAN_UART_DBG, txBuffer, pktLength);
 
+                #ifdef TRANSMIT_ESP8266
+                uartPutsNonBlocking(DMA_CHAN_UART_DATA, txBuffer, pktLength);
+                #endif
+
                 /* Store cumulative values if over threshold */
                 latestWh = totalEnergy(&dataset);
 

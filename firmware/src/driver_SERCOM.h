@@ -4,6 +4,11 @@
 #include "samd10.h"
 #include <stdint.h>
 
+typedef struct {
+    uint8_t addr;
+    uint8_t data;
+} spiPkt_t;
+
 /* @brief configure the serial communication modules */
 void sercomSetup();
 
@@ -68,4 +73,15 @@ void uartInterruptClear(Sercom *sercom, uint32_t interrupt);
  */
 void i2cActivate(Sercom *sercom, unsigned int addr, unsigned int dma, unsigned int len);
 
+/*! @brief Write a byte to a configured SPI channel
+ *  @param [in] sercom : SERCOM instance
+ *  @param [in] pPkt : pointer to SPI packet
+ */
+void spiWriteByte(Sercom *sercom, const spiPkt_t *pPkt);
+
+/*! @brief Read a byte from a configured SPI channel
+ *  @param [in] sercom : SERCOM instance
+ *  @param [in] pPkt : pointer to SPI packet
+ */
+void spiReadByte(Sercom *sercom, spiPkt_t *pPkt);
 #endif
