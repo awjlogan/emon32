@@ -56,8 +56,12 @@ enterConfigText()
 static char
 waitForChar()
 {
+#ifndef HOSTED
     while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
     return uartGetc(SERCOM_UART_DBG);
+#else
+    return getchar();
+#endif
 }
 
 static void
