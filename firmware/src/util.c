@@ -217,7 +217,12 @@ utilAtof(char *pBuf)
             fraction = mulCnt;
         }
     }
-    val = val / fraction;
+
+    if (0 != fraction)
+    {
+        val = val / fraction;
+    }
+
     if (isNegative)
     {
         val = -val;

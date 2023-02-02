@@ -161,7 +161,11 @@ util_atof()
     char txt0[] = "0";
     char txt1[] = "1";
     char txt2[] = "240.64";
+    char txt3[] = "-100";
+    atofTest(txt0);
+    atofTest(txt1);
     atofTest(txt2);
+    atofTest(txt3);
 }
 
 void
