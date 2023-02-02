@@ -169,6 +169,12 @@ utilFtoa(char *pBuf, float val)
     *pBuf++ = (decimals % 10) + '0';
     *pBuf++ = '.';
 
+    if (0 == units)
+    {
+        *pBuf++ = '0';
+        charCnt++;
+    }
+
     while (0 != units)
     {
         *pBuf++ = (units % 10) + '0';

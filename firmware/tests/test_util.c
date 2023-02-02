@@ -84,7 +84,7 @@ util_itoa()
         memset(abuf_util, 0, 24);
         snprintf(abuf_gold, 24, "%x", val);
         utilItoa(abuf_util, val, ITOA_BASE16);
-        if (0 != strcmp(abuf_gold, abuf_util))
+        if (strcmp(abuf_gold, abuf_util))
         {
             printf("    %d : %s\n", val, abuf_util);
             assert(!(strcmp(abuf_gold, abuf_util)));
@@ -169,6 +169,28 @@ util_atof()
 }
 
 void
+util_ftoa()
+{
+    float tests[5] = {0.0, -100.0, 100.0, 123.45, -123.45};
+    unsigned int testLen, goldLen;
+    char testBuf[16], goldBuf[16];
+    for (unsigned int i = 0; i < 5; i++)
+    {
+        memset(testBuf, 0, 16);
+        memset(goldBuf, 0, 16);
+        testLen = utilFtoa(testBuf, tests[i]);
+        goldLen = snprintf(goldBuf, 16, "%.2f", tests[i]);
+
+        if ( strcmp(goldBuf, testBuf) || (testLen != goldLen) )
+        {
+            printf("\n\n  Test: %s (%d)\n", testBuf, testLen);
+            printf("  Gold: %s (%d)\n", goldBuf, goldLen);
+            assert(0);
+        }
+    }
+}
+
+void
 util_insert(const char *ins, const char *gold, unsigned int pos, unsigned int len, unsigned int gold_cursor)
 {
     char base_str[] = "This is an existing string to insert into";
@@ -216,5 +238,10 @@ main(int argc, char *argv[])
     /* Convert strings to float */
     printf("  utilAtof ... ");
     util_atof();
+    printf("PASSED\n\n");
+
+    /* Convert float to string */
+    printf("  utilFtoa ... ");
+    util_ftoa();
     printf("PASSED\n\n");
 }
