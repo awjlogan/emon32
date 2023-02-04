@@ -29,7 +29,7 @@ dataPackage_n(const ECMSet_t *pData, char *pDst, unsigned int n)
     {
         cursor = utilStrInsert(pDst, ",Vrms:", cursor, 6);
     }
-    insLen = utilFtoa(tmpBuf, pData->rmsV[0]) - 1u;
+    insLen = utilFtoa(tmpBuf, pData->rmsV[0]) ;
     charCnt += insLen;
     if (charCnt <= n)
     {
@@ -55,7 +55,7 @@ dataPackage_n(const ECMSet_t *pData, char *pDst, unsigned int n)
         {
             cursor = utilStrInsert(pDst, ":", cursor, 1);
         }
-        insLen = utilItoa(tmpBuf, pData->CT[idxCT].realPower, ITOA_BASE10) - 1u;
+        insLen = utilFtoa(tmpBuf, pData->CT[idxCT].realPower);
         charCnt += insLen;
         if (charCnt <= n)
         {
@@ -110,7 +110,7 @@ dataPackage(const ECMSet_t *pData, char *pDst)
      */
     cursor = utilStrInsert(pDst, ",Vrms:", cursor, 6);
     charCnt += 6u;
-    insLen = utilFtoa(tmpBuf, (pData->rmsV[0])) - 1u;
+    insLen = utilFtoa(tmpBuf, (pData->rmsV[0]));
     charCnt += insLen;
     cursor = utilStrInsert(pDst, tmpBuf, cursor, insLen);
 
@@ -124,7 +124,7 @@ dataPackage(const ECMSet_t *pData, char *pDst)
         cursor = utilStrInsert(pDst, tmpBuf, cursor, insLen);
         cursor = utilStrInsert(pDst, ":", cursor, 1);
         charCnt += 1u;
-        insLen = utilItoa(tmpBuf, pData->CT[idxCT].realPower, ITOA_BASE10) - 1u;
+        insLen = utilFtoa(tmpBuf, pData->CT[idxCT].realPower);
         charCnt += insLen;
         cursor = utilStrInsert(pDst, tmpBuf, cursor, insLen);
         cursor = utilStrInsert(pDst, ",E", cursor, 2);
