@@ -28,8 +28,11 @@
 
 MEMORY
 {
-  flash (rx) : ORIGIN = 0x00000000, LENGTH = 0x4000 /* 16k */
-  ram  (rwx) : ORIGIN = 0x20000000, LENGTH = 0x1000 /* 4k */
+  /* 16K flash, 4K RAM */
+  flash (rx) : ORIGIN = 0x00000000, LENGTH = 0x4000
+  /* Offset flash 1K if using USB bootloader */
+  /* flash (rx) : ORIGIN = 0x00000400, LENGTH = 0x4000 */
+  ram  (rwx) : ORIGIN = 0x20000000, LENGTH = 0x1000
 }
 
 __top_flash = ORIGIN(flash) + LENGTH(flash);
