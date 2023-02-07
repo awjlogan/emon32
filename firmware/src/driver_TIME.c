@@ -151,7 +151,7 @@ irq_handler_sys_tick()
      */
     if (EMON_STATE_CONFIG == emon32StateGet())
     {
-        wdtKick();
+        wdtFeed();
     }
 }
 

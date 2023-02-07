@@ -25,10 +25,8 @@
 #define ZC_HYST             3u      /* Zero crossing hysteresis */
 #define EQUIL_CYCLES        5u      /* Number of cycles to discard at POR */
 
-/* Pulse count setup.
- * TODO Implement pulse counter
- */
-#define NUM_PULSECOUNT      0
+/* Pulse count setup */
+#define NUM_PULSECOUNT      1
 
 /* Precalculate the size of the EEPROM storage required to capture cumulative
  * energy and pulse count values. 2 bytes for CRC, 1 for valid
@@ -111,7 +109,8 @@ typedef enum {
     EVT_ECM_SET_CMPL    = 8u,
     EVT_SAVE_RESET      = 9u,
     EVT_DMAC_I2C_CMPL   = 10u,
-    EVT_TIMER_MC        = 11u
+    EVT_TIMER_MC        = 11u,
+    EVT_EIC_PULSE       = 12u
 } INTSRC_t;
 
 /* SingleSampleSet_t contains a single set of V + CT ADC samples */

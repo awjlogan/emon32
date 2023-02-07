@@ -23,8 +23,8 @@ typedef enum {
  */
 void wdtSetup(WDT_PER_t per);
 
-/*! @brief Kick the watchdog to reset
+/*! @brief Feed the watchdog to reset
  */
-void wdtKick();
+void wdtFeed();
 
 #endif

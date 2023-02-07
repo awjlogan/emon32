@@ -91,7 +91,7 @@ loadConfiguration(Emon32Config_t *pCfg)
 
         if (evtPend & (1u << EVT_SYSTICK_1KHz))
         {
-            wdtKick();
+            wdtFeed();
             emon32ClrEvent(EVT_SYSTICK_1KHz);
             systickCnt++;
 
@@ -140,6 +140,8 @@ loadCumulative(eepromPktWL_t *pPkt, ECMSet_t *pData)
     {
         pData->CT[idxCT].wattHour = data.report.wattHour[idxCT];
     }
+
+    pData->pulseCnt = data.report.pulseCnt;
 }
 
 /*! @brief Store cumulative energy and pulse values
@@ -156,6 +158,8 @@ storeCumulative(eepromPktWL_t *pPkt, const ECMSet_t *pData)
     {
         data.report.wattHour[idxCT] = pData->CT[idxCT].wattHour;
     }
+    data.report.pulseCnt = pData->pulseCnt;
+
     data.crc = crc16_ccitt(&data.report, sizeof(Emon32Report_t));
 
     eepromWriteWL(pPkt);
@@ -168,20 +172,10 @@ storeCumulative(eepromPktWL_t *pPkt, const ECMSet_t *pData)
 static void
 evtKiloHertz()
 {
-    static unsigned int swStateTime;
-
-    /* If switch is pressed >= SW_TIME_RESET, save state and reset */
-    swStateTime = (SW_CLOSED == uiSWUpdate()) ? swStateTime + 1u : 0;
-
-    if (SW_TIME_RESET <= swStateTime)
-    {
-        emon32SetEvent(EVT_SAVE_RESET);
-    }
-
     /* Kick watchdog - placed in the event handler to allow reset of stuck
      * processing rather than entering the interrupt reliably
      */
-    wdtKick();
+    wdtFeed();
 }
 
 
@@ -217,6 +211,7 @@ setup_uc()
     sercomSetup();
     adcSetup();
     evsysSetup();
+    eicSetup();
     wdtSetup(WDT_PER_4K);
 };
 
@@ -229,6 +224,7 @@ main()
     uint32_t            lastStoredWh;
     uint32_t            latestWh;
     char                txBuffer[64]; /* TODO Check size of buffer */
+    uint32_t            pulseTimeSince = 0;
 
     setup_uc();
 
@@ -264,6 +260,10 @@ main()
             if (evtPending(EVT_SYSTICK_1KHz))
             {
                 evtKiloHertz();
+                if (0 != pulseTimeSince)
+                {
+                    pulseTimeSince--;
+                }
                 emon32ClrEvent(EVT_SYSTICK_1KHz);
             }
 
@@ -272,6 +272,15 @@ main()
             {
                 ecmProcessCycle();
                 emon32ClrEvent(EVT_ECM_CYCLE_CMPL);
+            }
+
+            /* Pulse count interrupt */
+            if (evtPending(EVT_EIC_PULSE))
+            {
+                if (0 == pulseTimeSince)
+                {
+                    dataset.pulseCnt++;
+                }
             }
 
             /* Report period elapsed; generate, pack, and send */
@@ -320,7 +329,7 @@ main()
                 }
             }
 
-            /* Start writing the next EEROM block. If complete, disconnect
+            /* Start writing the next EEPROM block. If complete, disconnect
              * timer from the NVIC.
              */
             if (evtPending(EVT_TIMER_MC))

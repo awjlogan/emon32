@@ -60,6 +60,15 @@
 
 #define SERCOM_UART_DBG_NVIC_IRQn   SERCOM0_IRQn
 
+/* Pulse counting */
+#define PULSE_MIN_PERIOD_MS 100u    /* Minimum period between pulses */
+#define PULSE_EIC_MAP       3u
+#define PULSE_EIC_FILTER    EIC_CONFIG_FILTEN3
+#define PULSE_EIC_RISING    EIC_CONFIG_SENSE3_RISE
+#define PULSE_EIC_INTFLAG   EIC_INTFLAG_EXTINT3
+#define PULSE_EIC_INTENSET  EIC_INTENSET_EXTINT3
+#define PULSE_EIC_INTENCLR  EIC_INTENCLR_EXTINT3
+
 /* Pin assignments (nb. logical, not physical) */
 #define PIN_EXTINT          24u
 #define PIN_GEN_STATUS      25u

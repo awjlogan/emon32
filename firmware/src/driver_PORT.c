@@ -7,11 +7,6 @@ portSetup()
     portPinDir(PIN_EXTINT, PIN_DIR_OUT);
     portPinDir(PIN_GEN_STATUS, PIN_DIR_OUT);
     portPinDir(PIN_LED, PIN_DIR_OUT);
-    portPinDir(PIN_SW, PIN_DIR_IN);
-
-    /* Pull up on switch pin */
-    portPinCfg(PIN_SW, PORT_PINCFG_PULLEN, PIN_CFG_SET);
-    portPinDrv(PIN_SW, PIN_DRV_SET);
 
     /* Unused pins: input, pull down (Table 2201) */
     const uint8_t pinsUnused[3] = {22u, 34u, 25u};

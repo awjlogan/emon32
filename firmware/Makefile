@@ -38,6 +38,7 @@ SRCS += \
   ./src/driver_CLK.c \
   ./src/driver_ADC.c \
   ./src/driver_PORT.c \
+  ./src/driver_EIC.c \
   ./src/driver_TIME.c \
   ./src/driver_SERCOM.c \
   ./src/driver_DMAC.c \
@@ -46,7 +47,6 @@ SRCS += \
   ./src/eeprom.c \
   ./src/emon_CM.c \
   ./src/util.c \
-  ./src/ui.c \
   ./src/data.c \
   ./src/configuration.c
 

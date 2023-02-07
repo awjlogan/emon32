@@ -18,7 +18,7 @@ wdtSetup(WDT_PER_t per)
 }
 
 void
-wdtKick()
+wdtFeed()
 {
     /* Write key (17.6.2.4) and synchronise (17.6.5) */
     WDT->CLEAR.reg = WDT_CLEAR_CLEAR_KEY;
