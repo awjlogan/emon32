@@ -102,7 +102,10 @@ irq_handler_dmac()
         /* Restart DMA for ADC and inject sample */
         ecmSwapDataBuffer();
         adcStartDMAC((uint32_t)ecmDataBuffer());
-        ecmInjectSample();
+        if (ECM_CYCLE_COMPLETE == ecmInjectSample())
+        {
+            emon32SetEvent(EVT_ECM_CYCLE_CMPL);
+        }
         DMAC->CHINTFLAG.reg = DMAC_CHINTFLAG_TCMPL;
     }
 

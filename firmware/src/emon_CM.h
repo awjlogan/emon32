@@ -9,15 +9,15 @@
  *****************************************************************************/
 
 typedef enum {
-    INIT_SUCCESS,           // Init was successful
-    INIT_FAIL_ENABLED,      // Init failed as currently enabled
-    ENABLE_SUCCESS,
-    ENABLE_FAIL_ENABLED,
+    ECM_INIT_SUCCESS,           /* Init was successful */
+    ECM_INIT_FAIL_ENABLED,      /* Init failed as currently enabled */
+    ECM_ENABLE_SUCCESS,
+    ECM_ENABLE_FAIL_ENABLED,
+    ECM_CYCLE_ONGOING,          /* A mains cycle is being accumulated */
+    ECM_CYCLE_COMPLETE,         /* A full mains cycle has completed */
+    ECM_REPORT_ONGOING,         /* A full set is accumulating */
+    ECM_REPORT_COMPLETE         /* A full set to report is complete */
 } ECM_STATUS_t;
-
-typedef struct {
-    unsigned int reportCycles;  /* Number of cycles before reporting */
-} ECMConfig_t;
 
 typedef enum {
     POL_POS,
@@ -92,15 +92,11 @@ void ecmFilterSample(SampleSet_t *pDst);
 
 /*! @brief Injects a raw sample from the ADC into the accumulators.
  */
-#ifndef HOSTED
-    void ecmInjectSample();
-#else
-    uint32_t ecmInjectSample();
-#endif
+ECM_STATUS_t ecmInjectSample();
 
 /*! @brief Processes a whole cycle
  */
-void ecmProcessCycle();
+ECM_STATUS_t ecmProcessCycle();
 
 /*! @brief Processes a whole data set
  *  @param [in] pSet : pointer to the processed data structure

@@ -1,4 +1,3 @@
-// #include "emon32_samd.h"
 #include "emon_CM.h"
 #include <string.h>
 
@@ -356,11 +355,7 @@ ecmFilterSample(SampleSet_t *pDst)
 #endif
 }
 
-#ifndef HOSTED
-    void
-#else
-    uint32_t
-#endif
+ECM_STATUS_t
 ecmInjectSample()
 {
     SampleSet_t smpProc;
@@ -404,7 +399,7 @@ ecmInjectSample()
 
         if (0 == discardCycles)
         {
-            emon32SetEvent(EVT_ECM_CYCLE_CMPL);
+            return ECM_CYCLE_COMPLETE;
         }
         else
         {
@@ -425,12 +420,7 @@ ecmInjectSample()
 
         if (EQUIL_CYCLES == discardCycles)
         {
-            #ifndef HOSTED
-                emon32SetEvent(EVT_ECM_CYCLE_CMPL);
-            #else
-                idxInject = (idxInject + 1u) & (PROC_DEPTH - 1u);
-                return 1;
-            #endif
+            return ECM_CYCLE_COMPLETE;
         }
         else
         {
@@ -438,12 +428,10 @@ ecmInjectSample()
         }
     }
 
-    #ifdef HOSTED
-        return 0;
-    #endif
+    return ECM_CYCLE_ONGOING;
 }
 
-void
+ECM_STATUS_t
 ecmProcessCycle()
 {
     ecmCycle.cycleCount++;
@@ -477,8 +465,9 @@ ecmProcessCycle()
 
     if (ecmCycle.cycleCount >= pCfg->baseCfg.reportCycles)
     {
-        emon32SetEvent(EVT_ECM_SET_CMPL);
+        return ECM_REPORT_COMPLETE;
     }
+    return ECM_REPORT_ONGOING;
 }
 
 void
