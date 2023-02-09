@@ -1,9 +1,15 @@
 #include "emon_CM.h"
 #include <string.h>
 
+#ifdef HOSTED
+#include <stdio.h>
+#include <assert.h>
+#include <stdlib.h>
+#endif /* HOSTED */
+
 /******** FIXED POINT MATHS FUNCTIONS ********
  *
- * Adapted from Arm CMSIS-DSP: https://arm-software.github.io/CMSIS-DSP/
+ * Adapted from Arm CMSIS-DSP: https://github.com/ARM-software/CMSIS-DSP
  */
 
 #define Q12QUARTER  0x2000
@@ -47,6 +53,7 @@ __SSAT(int32_t val)
     {
         return min;
     }
+    return val;
 }
 
 /*! @brief Count the number of leading 0s
@@ -199,7 +206,6 @@ static ECMCycle_t       ecmCycle;
 int
 zeroCrossing(q15_t smpV)
 {
-    #ifndef ZERO_CROSSING_HW
     Polarity_t          polarity_now;
     static Polarity_t   polarity_last = POL_POS;
     static int          hystCnt = ZC_HYST;
@@ -225,8 +231,6 @@ zeroCrossing(q15_t smpV)
     }
 
     return 0;
-
-    #endif /* ZERO_CROSSING_HW */
 }
 
 /*! @brief Unpack and optionally low pass filter the raw sample
@@ -265,27 +269,29 @@ ecmFilterSample(SampleSet_t *pDst)
      * b_0 | b_2 | .. | b_2 | b_0
      */
 
-    static unsigned int idxInj = 0u;
-    static RawSampleSetUnpacked_t smpBuffer[DOWNSAMPLE_TAPS];
-    int32_t intRes[VCT_TOTAL] = {0};
-    const unsigned int numCoeffUnique = 6u;
-    const int16_t firCoeffs[6] = {
-        92,
-        -279,
-        957,
-        -2670,
-        10113,
-        16339
-    };
+    static int callcnt = 0;
+    static unsigned int idxInj = 0;
+    static              RawSampleSetUnpacked_t smpBuffer[DOWNSAMPLE_TAPS];
+    int32_t             intRes[VCT_TOTAL] = {0};
+    const unsigned int  numCoeffUnique = 6u;
+    const int16_t       firCoeffs[6] = {
+                                        92,
+                                        -279,
+                                        957,
+                                        -2670,
+                                        10113,
+                                        16339
+                                        };
 
     const unsigned int downsample_taps = DOWNSAMPLE_TAPS;
     const unsigned int idxInjPrev =   (0 == idxInj)
                                     ? (downsample_taps - 1u)
                                     : (idxInj - 1u);
+
     /* Copy the packed raw ADC value into the unpacked buffer; index 1 is the
      * most recent sample.
      */
-    for (unsigned int idxSmp = 0; idxSmp < (NUM_V + NUM_CT); idxSmp++)
+    for (unsigned int idxSmp = 0; idxSmp < VCT_TOTAL; idxSmp++)
     {
         smpBuffer[idxInj].smp[idxSmp] = adc_active->samples[1].smp[idxSmp];
         smpBuffer[idxInjPrev].smp[idxSmp] = adc_active->samples[0].smp[idxSmp];
@@ -293,16 +299,14 @@ ecmFilterSample(SampleSet_t *pDst)
 
     /* For an ODD number of taps, take the unique middle value to start. As
      * the filter is symmetric, this is the final element in the array */
-    if (0 != downsample_taps % 2)
-    {
-        const q15_t coeff = firCoeffs[numCoeffUnique - 1u];
-        unsigned int idxSmp = idxInj + (downsample_taps / 2);
-        if (idxSmp >= downsample_taps) idxSmp -= downsample_taps;
 
-        for (unsigned int idxChannel = 0; idxChannel < VCT_TOTAL; idxChannel++)
-        {
-            intRes[idxChannel] += coeff * smpBuffer[idxSmp].smp[idxChannel];
-        }
+    const           q15_t coeff = firCoeffs[numCoeffUnique - 1u];
+    unsigned int    idxMid = idxInj + (downsample_taps / 2) + 1u;
+    if (idxMid >= downsample_taps) idxMid -= downsample_taps;
+
+    for (unsigned int idxChannel = 0; idxChannel < VCT_TOTAL; idxChannel++)
+    {
+        intRes[idxChannel] += coeff * smpBuffer[idxMid].smp[idxChannel];
     }
 
     /* Loop over the FIR coefficients, sub loop through channels. The filter
@@ -349,7 +353,7 @@ ecmFilterSample(SampleSet_t *pDst)
     idxInj += 2u;
     if (idxInj > (downsample_taps - 1))
     {
-        idxInj -= (downsample_taps - 1);
+        idxInj -= (downsample_taps);
     }
 
 #endif
@@ -403,30 +407,12 @@ ecmInjectSample()
         }
         else
         {
-            discardCycles++;
+            discardCycles--;
         }
     }
 
     /* Advance injection point, masking for overflow */
     idxInject = (idxInject + 1u) & (PROC_DEPTH - 1u);
-
-    static uint8_t count = 0;
-    count++;
-    if (48 == count)
-    {
-        count = 0;
-        ecmSwapPtr((void *)accum_collecting, (void *)accum_processing);
-        memset((void *)accum_collecting, 0, sizeof(Accumulator_t));
-
-        if (EQUIL_CYCLES == discardCycles)
-        {
-            return ECM_CYCLE_COMPLETE;
-        }
-        else
-        {
-            discardCycles++;
-        }
-    }
 
     return ECM_CYCLE_ONGOING;
 }
