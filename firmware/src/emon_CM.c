@@ -140,11 +140,11 @@ sqrt_q15(q15_t in)
 /*! @brief Swap pointers to buffers
  */
 static void
-ecmSwapPtr(void *pIn1, void *pIn2)
+ecmSwapPtr(void **pIn1, void **pIn2)
 {
-    void *tmp = pIn1;
-    pIn1 = pIn2;
-    pIn2 = tmp;
+    void *tmp = *pIn1;
+    *pIn1 = *pIn2;
+    *pIn2 = tmp;
 }
 
 /******************************************************************************
@@ -170,7 +170,7 @@ static volatile RawSampleSetPacked_t *volatile adc_proc = adc_samples + 1;
 void
 ecmSwapDataBuffer()
 {
-    ecmSwapPtr((void *)adc_active, (void *)adc_proc);
+    ecmSwapPtr((void **)&adc_active, (void **)&adc_proc);
 }
 
 volatile RawSampleSetPacked_t *
@@ -269,7 +269,6 @@ ecmFilterSample(SampleSet_t *pDst)
      * b_0 | b_2 | .. | b_2 | b_0
      */
 
-    static int callcnt = 0;
     static unsigned int idxInj = 0;
     static              RawSampleSetUnpacked_t smpBuffer[DOWNSAMPLE_TAPS];
     int32_t             intRes[VCT_TOTAL] = {0};
@@ -366,7 +365,7 @@ ecmInjectSample()
     SampleSet_t *pSmpProc = &smpProc;
 
     static unsigned int idxInject;
-    static unsigned int discardCycles = 5u;
+    static unsigned int discardCycles = 3u;
 
     /* Copy the pre-processed sample data into the ring buffer */
     ecmFilterSample(pSmpProc);
@@ -398,7 +397,7 @@ ecmInjectSample()
     /* Check for zero crossing, swap buffers and pend event */
     if (1 == zeroCrossing(thisV))
     {
-        ecmSwapPtr((void *)accum_collecting, (void *)accum_processing);
+        ecmSwapPtr((void **)&accum_collecting, (void **)&accum_processing);
         memset((void *)accum_collecting, 0, sizeof(Accumulator_t));
 
         if (0 == discardCycles)
@@ -423,21 +422,31 @@ ecmProcessCycle()
     ecmCycle.cycleCount++;
 
     /* Reused constants */
-    const uint32_t numSamples = accum_processing->num_samples;
-    const uint32_t numSamplesSqr = numSamples * numSamples;
+    const uint32_t numSamples       = accum_processing->num_samples;
+    const uint32_t numSamplesSqr    = numSamples * numSamples;
 
     /* RMS for V channels */
     for (unsigned int idxV = 0; idxV < NUM_V; idxV++)
     {
-        ecmCycle.rmsV[idxV] +=   sqrt_q15(((accum_processing->processV[idxV].sumV_sqr / numSamples)
-                               - ((accum_processing->processV[idxV].sumV_deltas * accum_processing->processV[idxV].sumV_deltas) / (numSamplesSqr))));
+        /* Truncate and calculate RMS, subtracting off fine offset */
+        accum_processing->processV[idxV].sumV_sqr       = __STRUNCATE(accum_processing->processV[idxV].sumV_sqr);
+        accum_processing->processV[idxV].sumV_deltas    *= accum_processing->processV[idxV].sumV_deltas;
+        accum_processing->processV[idxV].sumV_deltas    = __STRUNCATE(accum_processing->processV[idxV].sumV_deltas);
+
+        q15_t thisRms = sqrt_q15(
+                        (accum_processing->processV[idxV].sumV_sqr / numSamples)
+                      - (accum_processing->processV[idxV].sumV_deltas / (numSamplesSqr)));
+        ecmCycle.rmsV[idxV] += thisRms;
     }
 
     /* CT channels */
     for (unsigned int idxCT = 0; idxCT < NUM_CT; idxCT++)
     {
-        const int32_t sumI_deltas_sqr =   accum_processing->processCT[idxCT].sumI_deltas
-                                        * accum_processing->processCT[idxCT].sumI_deltas;
+        accum_processing->processCT[idxCT].sumI_sqr    = __STRUNCATE(accum_processing->processCT[idxCT].sumI_sqr);
+        int32_t sumI_deltas_sqr =   accum_processing->processCT[idxCT].sumI_deltas
+                                  * accum_processing->processCT[idxCT].sumI_deltas;
+        sumI_deltas_sqr = __STRUNCATE(sumI_deltas_sqr);
+
 
         /* Apply phase calibration for CT interpolated between V samples */
         int32_t sumRealPower =   accum_processing->processCT[idxCT].sumPA * pCfg->ctCfg[idxCT].phaseX

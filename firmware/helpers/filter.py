@@ -112,3 +112,4 @@ ax1.set_ylabel('Magnitude (dB)')
 ax1.set_xlabel('Normalized Frequency (radians)')
 ax1.set_title('Half Band Filter Frequency Response')
 fig.savefig('hb_rsp.png')
+
