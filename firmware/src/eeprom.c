@@ -146,7 +146,6 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
 
         /* Copy data into the write packet's data section */
         writeSetup((DmacDescriptor *)dmacDesc, &wrLocal, align_bytes);
-
         return EEPROM_WR_PEND;
     }
 
@@ -180,10 +179,10 @@ eepromRead(unsigned int addr, void *pDst, unsigned int n)
     volatile DmacDescriptor *dmacDesc = dmacGetDescriptor(DMA_CHAN_I2CM);
 
     /* Set the addres to read from in the EEPROM. This is a select write,
-     * followed by the byte low address. */
+     * followed by the byte low address. Bit 8 in select == 1 for read */
     addrHigh =   EEPROM_BASE_ADDR
                | (addr >> 8);
-    addrHigh <<= 1u;
+    addrHigh = (addrHigh << 1u) + 1u;
     addrLow = addr & 0xFFu;
 
     /* Send address, wait for ack, then send low byte of address */

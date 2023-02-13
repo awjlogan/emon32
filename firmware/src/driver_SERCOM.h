@@ -84,4 +84,5 @@ void spiWriteByte(Sercom *sercom, const spiPkt_t *pPkt);
  *  @param [in] pPkt : pointer to SPI packet
  */
 void spiReadByte(Sercom *sercom, spiPkt_t *pPkt);
+
 #endif

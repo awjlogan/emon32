@@ -45,7 +45,15 @@ sercomSetup()
                         | GCLK_CLKCTRL_GEN(3u)
                         | GCLK_CLKCTRL_CLKEN;
 
-    /* TODO configure baud rate */
+    /* For 400 kHz I2C, SCL T_high >= 0.6 us, T_low >= 1.3 us, with
+     * (T_high + T_low) <= 2.5 us, and T_low / T_high ~ 1.8.
+     * From I2C->Clock generation (27.6.2.4):
+     * BAUD.BAUDLOW = (T_low * f_clk) - 5 (1.625 us -> 8 @ 8 MHz)
+     * BAUD.BAUD = (T_high * f_clk) - 5 (0.875 us -> 2 @ 8 MHz)
+     */
+    SERCOM_I2CM->I2CM.BAUD.reg =   SERCOM_I2CM_BAUD_BAUDLOW(8u)
+                                 | SERCOM_I2CM_BAUD_BAUD(2u);
+
     /* Configure the master I2C SERCOM for external EEPROM */
     SERCOM_I2CM->I2CM.CTRLA.reg =   SERCOM_I2CM_CTRLA_MODE_I2C_MASTER
                                   /* Table 27.11 : 300-600 ns SDA hold */
@@ -80,7 +88,7 @@ sercomSetup()
 
     portPinMux(PIN_UART_DATA_TX, PORT_PMUX_PMUXE_D);
 
-    const uint32_t baud_data = UART_DBG_BAUD;
+    const uint32_t baud_data = UART_DATA_BAUD;
     const uint64_t br_data = (uint64_t)65536 * (F_PERIPH - 16 * baud_data) / F_PERIPH;
 
     /* Configure clocks - runs from the OSC8M clock on gen 3 */
@@ -108,6 +116,12 @@ sercomSetup()
 #endif /* TRANSMIT_ESP8266 */
 
 }
+
+/*
+ * =====================================
+ * UART Functions
+ * =====================================
+ */
 
 void
 uartPutcBlocking(Sercom *sercom, char c)
@@ -179,6 +193,12 @@ uartInterruptClear(Sercom *sercom, uint32_t interrupt)
     sercom->USART.INTFLAG.reg |= interrupt;
 }
 
+/*
+ * =====================================
+ * I2C Functions
+ * =====================================
+ */
+
 void
 i2cActivate(Sercom *sercom, unsigned int addr, unsigned int dma, unsigned int len)
 {
@@ -192,4 +212,22 @@ i2cActivate(Sercom *sercom, unsigned int addr, unsigned int dma, unsigned int le
                                 | SERCOM_I2CM_ADDR_LEN(len)
                                 | SERCOM_I2CM_ADDR_LENEN;
     }
+}
+
+/*
+ * =====================================
+ * SPI Functions
+ * =====================================
+ */
+
+void
+spiWriteByte(Sercom *sercom, const spiPkt_t *pPkt)
+{
+
+}
+
+void
+spiReadByte(Sercom *sercom, spiPkt_t *pPkt)
+{
+
 }
