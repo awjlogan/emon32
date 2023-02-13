@@ -1,5 +1,5 @@
+#include <string.h>
 #ifdef HOSTED
-    #include <string.h>
     #include <stdio.h>
     #include "configuration.h"
     #include "util.h"
@@ -50,7 +50,7 @@ getUniqueID(unsigned int idx)
 static void
 enterConfigText()
 {
-    uartPutsBlocking(SERCOM_UART_DBG, "Enter the channel index to configure\r\n\r\n");
+    uartPutsBlocking(SERCOM_UART_DBG, "Enter the channel index to configure. (b)ack\r\n");
 }
 
 static char
@@ -70,6 +70,8 @@ getInputStr()
     char            *pBuf = genBuf;
     unsigned int    charCnt = 0;
     char            c = 0;
+
+    memset(genBuf, 0, GENBUF_W);
 
     /* Exit when # is received, or out of bounds */
     while ('#' != c && (charCnt < GENBUF_W))
@@ -120,6 +122,7 @@ putValueEnd()
 static void
 putValueEnd_10(unsigned int val)
 {
+//     memset(genBuf, 0, GENBUF_W);
     (void)utilItoa(genBuf, val, ITOA_BASE10);
     putValueEnd();
 }
@@ -164,6 +167,7 @@ menuVoltageChan(unsigned int chanV)
         /* (Currently) only a single option for Voltage channel */
         if ('0' == c)
         {
+            valChanged = 1;
             pCfg->voltageCfg[chanV].voltageCal = getValue_float();
 
         }
@@ -221,7 +225,7 @@ menuCTChan(unsigned int chanCT)
         putValueEnd_Float(pCfg->ctCfg[chanCT].ctCal);
         uartPutsBlocking(SERCOM_UART_DBG, "1: Phase calibration X: ");
         putValueEnd_10(pCfg->ctCfg[chanCT].phaseX);
-        uartPutsBlocking(SERCOM_UART_DBG, "1: Phase calibration Y: ");
+        uartPutsBlocking(SERCOM_UART_DBG, "2: Phase calibration Y: ");
         putValueEnd_10(pCfg->ctCfg[chanCT].phaseY);
         infoEdit();
 
@@ -403,7 +407,7 @@ menuBase()
         /* Clear terminal and print menu */
         clearTerm();
 
-        uartPutsBlocking(SERCOM_UART_DBG, "--- emon32 ---\r\n\r\n");
+        uartPutsBlocking(SERCOM_UART_DBG, "== Energy Monitor 32 ==\r\n\r\n");
         uartPutsBlocking(SERCOM_UART_DBG, "  0: About\r\n");
         uartPutsBlocking(SERCOM_UART_DBG, "  1: Configuration\r\n");
         uartPutsBlocking(SERCOM_UART_DBG, "  2: Voltage\r\n");
@@ -412,11 +416,11 @@ menuBase()
 
         if (valChanged)
         {
-            uartPutsBlocking(SERCOM_UART_DBG, " do not save, or (s)ave and exit.");
+            uartPutsBlocking(SERCOM_UART_DBG, " do not save, or (s)ave and exit.\r\n");
         }
         else
         {
-            uartPutcBlocking(SERCOM_UART_DBG, '.');
+            uartPutsBlocking(SERCOM_UART_DBG, "\r\n");
         }
 
         #ifdef HOSTED
@@ -452,10 +456,10 @@ menuBase()
     }
 
     /* Warn if the changes are going to be discarded */
-    if (0 != valChanged && 'e' == c)
+    if ((0 != valChanged) && ('e' == c))
     {
-        uartPutsBlocking(SERCOM_UART_DBG, "Discard changes? (y/n)");
-        while ('y' != c && 'n' != c)
+        uartPutsBlocking(SERCOM_UART_DBG, "Discard changes? (y/n)\r\n");
+        while (('y' != c) && ('n' != c))
         {
             #ifdef HOSTED
                 c = getchar();
@@ -473,7 +477,8 @@ menuBase()
     if ('s' == c)
     {
         #ifndef HOSTED
-            eepromWrite(EEPROM_BASE_ADDR, pCfg, sizeof(Emon32Config_t));
+            uartPutsBlocking(SERCOM_UART_DBG, "Would save here...\r\n");
+            // eepromWrite(EEPROM_BASE_ADDR, pCfg, sizeof(Emon32Config_t));
         #endif
     }
 }

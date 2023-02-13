@@ -56,7 +56,7 @@ typedef int32_t     q31_t;
 typedef struct __attribute__((__packed__)) {
     uint8_t         nodeID;         /* ID for report*/
     uint8_t         mainsFreq;      /* Mains frequency */
-    unsigned int    reportCycles;   /* Cycle count before reporting */
+    uint16_t        reportCycles;   /* Cycle count before reporting */
 } BaseCfg_t;
 
 typedef struct __attribute__((__packed__)) {

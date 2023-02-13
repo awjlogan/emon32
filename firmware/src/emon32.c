@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <string.h>
 
 #include "board_def.h"
 #include "emon32.h"
@@ -46,11 +47,12 @@ emon32StateGet()
 
 /*! @brief The default configuration state of the system */
 static inline void
-defaultConfiguration(Emon32Config_t *pCfg, Emon32Cumulative_t *pRes)
+defaultConfiguration(Emon32Config_t *pCfg)
 {
     /* Default configuration: single phase, 50 Hz, 240 VAC */
-    pCfg->baseCfg.mainsFreq = 50u;      /* Mains frequency */
-    pCfg->baseCfg.reportCycles = 500u;  /* 10 s @ 50 Hz */
+    pCfg->baseCfg.nodeID        = 17u;  /* Node ID to transmit */
+    pCfg->baseCfg.mainsFreq     = 50u;  /* Mains frequency */
+    pCfg->baseCfg.reportCycles  = 500u; /* 10 s @ 50 Hz */
 
     for (unsigned int idxV = 0u; idxV < NUM_V; idxV++)
     {
@@ -63,9 +65,7 @@ defaultConfiguration(Emon32Config_t *pCfg, Emon32Cumulative_t *pRes)
         pCfg->ctCfg[idxCT].ctCal = 90.91;
         pCfg->ctCfg[idxCT].phaseX = 13495;
         pCfg->ctCfg[idxCT].phaseY = 19340;
-        pRes->report.wattHour[idxCT] = 0;
     }
-    pRes->report.pulseCnt = 0;
 }
 
 /*! @brief This function handles loading of configuration data
@@ -133,6 +133,8 @@ loadCumulative(eepromPktWL_t *pPkt, ECMSet_t *pData)
 {
     Emon32Cumulative_t data;
     pPkt->pData = &data;
+
+    memset(&data, 0, sizeof(Emon32Cumulative_t));
     eepromReadWL(pPkt);
 
     /* Store into current result set */
@@ -241,6 +243,7 @@ main()
     eepromPkt.dataSize = sizeof(Emon32Cumulative_t);
     eepromPkt.idxNextWrite = -1;
 
+    defaultConfiguration(&e32Config);
     loadConfiguration(&e32Config);
     loadCumulative(&eepromPkt, &dataset);
     lastStoredWh = totalEnergy(&dataset);
