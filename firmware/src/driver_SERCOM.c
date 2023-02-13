@@ -38,7 +38,7 @@ sercomSetup()
 
     /* I2C Setup */
     portPinMux(PIN_I2C_SDA, PORT_PMUX_PMUXE_C);
-    portPinMux(PIN_I2C_SCL, PORT_PMUX_PMUXO_C);
+    portPinMux(PIN_I2C_SCL, PORT_PMUX_PMUXE_C);
 
     PM->APBCMASK.reg |= SERCOM_I2CM_APBCMASK;
     GCLK->CLKCTRL.reg =   GCLK_CLKCTRL_ID(SERCOM_I2CM_GCLK_ID)
@@ -200,18 +200,30 @@ uartInterruptClear(Sercom *sercom, uint32_t interrupt)
  */
 
 void
-i2cActivate(Sercom *sercom, unsigned int addr, unsigned int dma, unsigned int len)
+i2cActivate(Sercom *sercom, uint8_t addr)
 {
-    if (0 == dma)
-    {
-        sercom->I2CM.ADDR.reg = SERCOM_I2CM_ADDR_ADDR(addr);
-    }
-    else
-    {
-        sercom->I2CM.ADDR.reg =   SERCOM_I2CM_ADDR_ADDR(addr)
-                                | SERCOM_I2CM_ADDR_LEN(len)
-                                | SERCOM_I2CM_ADDR_LENEN;
-    }
+    sercom->I2CM.ADDR.reg = SERCOM_I2CM_ADDR_ADDR(addr);
+    while (!(sercom->I2CM.INTFLAG.reg & (SERCOM_I2CM_INTFLAG_MB | SERCOM_I2CM_INTFLAG_SB)));
+}
+
+void
+i2cAck(Sercom *sercom, uint32_t ack, uint32_t cmd)
+{
+    sercom->I2CM.CTRLB.reg = ack | cmd;
+}
+
+void
+i2cDataWrite(Sercom *sercom, uint8_t data)
+{
+    sercom->I2CM.DATA.reg = data;
+    while (!(sercom->I2CM.INTFLAG.reg & SERCOM_I2CM_INTFLAG_MB));
+}
+
+uint8_t
+i2cDataRead(Sercom *sercom)
+{
+    while (!(sercom->I2CM.INTFLAG.reg & (SERCOM_I2CM_INTFLAG_MB | SERCOM_I2CM_INTFLAG_SB)));
+    return sercom->I2CM.DATA.reg;
 }
 
 /*

@@ -74,8 +74,23 @@ defaultConfiguration(Emon32Config_t *pCfg)
 static inline void
 loadConfiguration(Emon32Config_t *pCfg)
 {
-    unsigned int systickCnt = 0u;
-    unsigned int seconds = 3u;
+    unsigned int    systickCnt = 0u;
+    unsigned int    seconds = 3u;
+    uint8_t         firstByte;
+
+    /* Load configuration from "static" part of EEPROM
+     * If the 1st byte is 0xFF, then the EEPROM is blank, so write default
+     * configuration to EEPROM. Otherwise, read config from EEPROM.
+     */
+    eepromRead(0, (void *)&firstByte, 1u);
+    if (0xFF == firstByte)
+    {
+        /* TODO Write config */
+    }
+    else
+    {
+        eepromRead(0, (void *)pCfg, sizeof(Emon32Config_t));
+    }
 
     /* Wait for 3 s, if a key is pressed then enter configuration */
     uartPutsBlocking(SERCOM_UART_DBG, "\r\n> Hit any key to enter configuration ");
@@ -214,7 +229,7 @@ setup_uc()
     adcSetup();
     evsysSetup();
     eicSetup();
-    wdtSetup(WDT_PER_4K);
+//     wdtSetup(WDT_PER_4K);
 };
 
 int
@@ -236,6 +251,14 @@ main()
     uartInterruptEnable(SERCOM_UART_DBG, SERCOM_USART_INTENSET_ERROR);
 
     uartPutsBlocking(SERCOM_UART_DBG, "\ec== Energy Monitor 32 ==\r\n");
+
+    uint32_t data;
+    uartPutsBlocking(SERCOM_UART_DBG, "Read from EEPROM: ");
+    eepromRead(0, (void *)&data, 4);
+    (void)utilItoa(txBuffer, data, ITOA_BASE10);
+
+    uartPutsBlocking(SERCOM_UART_DBG, txBuffer);
+    while(1);
 
     /* Load stored values from non-volatile memory */
     eepromPkt.addr_base = EEPROM_WL_OFFSET;

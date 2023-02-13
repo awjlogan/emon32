@@ -68,10 +68,27 @@ void uartInterruptClear(Sercom *sercom, uint32_t interrupt);
  *         or received.
  *  @param [in] sercom : SERCOM instance
  *  @param [in] addr : address and RW bit
- *  @param [in] dma  : send packet by DMA
- *  @param [in] len  : number of bytes to send
  */
-void i2cActivate(Sercom *sercom, unsigned int addr, unsigned int dma, unsigned int len);
+void i2cActivate(Sercom *sercom, uint8_t addr);
+
+/*! @brief Requester acknowledge command
+ *  @param [in] sercom : SERCOM instance
+ *  @param [in] ack : 0: ACK, 1: NACK
+ *  @param [in] cmd : command
+ */
+void i2cAck(Sercom *sercom, uint32_t ack, uint32_t cmd);
+
+/*! @brief Write to completer
+ *  @param [in] sercom : SERCOM instance
+ *  @param [in] data : data byte
+ */
+void i2cDataWrite(Sercom *sercom, uint8_t data);
+
+/*! @brief Read byte from I2C completer
+ *  @param [in] : sercom : SERCOM instance
+ *  @return : read data
+ */
+uint8_t i2cDataRead(Sercom *sercom);
 
 /*! @brief Write a byte to a configured SPI channel
  *  @param [in] sercom : SERCOM instance

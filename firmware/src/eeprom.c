@@ -16,35 +16,12 @@ typedef struct {
     uint8_t         *pData;
 } wrLocal_t;
 
-static unsigned int dmaInitFlag;
-
-/*! @brief Get the DMAC descriptor, and set up initial values */
-static void
-dmaInit()
-{
-    volatile DmacDescriptor * dmacDesc = dmacGetDescriptor(DMA_CHAN_I2CM);
-    dmacDesc->BTCTRL.reg =   DMAC_BTCTRL_VALID
-                           | DMAC_BTCTRL_BLOCKACT_NOACT
-                           | DMAC_BTCTRL_STEPSIZE_X1
-                           | DMAC_BTCTRL_STEPSEL_SRC
-                           | DMAC_BTCTRL_SRCINC
-                           | DMAC_BTCTRL_BEATSIZE_BYTE;
-
-    dmacDesc->DSTADDR.reg = (uint32_t)&SERCOM_I2CM->I2CM.DATA;
-    dmacDesc->DESCADDR.reg = 0u;
-
-    dmacEnableChannelInterrupt(DMA_CHAN_I2CM);
-
-    dmaInitFlag = 1u;
-}
-
 /*! @brief Send n bytes over I2C using DMA
- *  @param [in] dmacDesc : pointer to DMAC descriptor struct
  *  @param [in] wr : pointer to local address, data, and remaining bytes
  *  @param [in] n : number of bytes to send in this chunk
  */
 static void
-writeSetup(DmacDescriptor *dmacDesc, wrLocal_t *wr, uint8_t n)
+writeSetup(wrLocal_t *wr, uint8_t n)
 {
     /* Construct the address bytes. Top half of the EEPROM address is in the
        device select packet. Bottom half is the first byte sent */
@@ -55,13 +32,7 @@ writeSetup(DmacDescriptor *dmacDesc, wrLocal_t *wr, uint8_t n)
 
     /* Copy data from the source into the write buffer */
     memcpy((wr->pPkt + 1u), wr->pData, n);
-
-    /* Need to send an extra byte (n + 1) for the low address */
-    dmacDesc->SRCADDR.reg = (uint32_t)wr->pPkt + (n + 1u);
-    dmacDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
-    dmacDesc->BTCNT.reg = n + 1u;
-    dmacStartTransfer(DMA_CHAN_I2CM);
-    i2cActivate(SERCOM_I2CM, i2cBase, 1u, (n + 1u));
+    i2cActivate(SERCOM_I2CM, i2cBase);
 
     wr->addr += n;
     wr->n -= n;
@@ -69,10 +40,8 @@ writeSetup(DmacDescriptor *dmacDesc, wrLocal_t *wr, uint8_t n)
 }
 
 eepromWrStatus_t
-eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
+eepromWrite(uint16_t addr, const void *pSrc, unsigned int n)
 {
-    #ifndef EEPROM_EMULATED
-
     writePkt_t          wrPkt;
     /* Make byte count and address static to allow re-entrant writes */
     static wrLocal_t    wrLocal;
@@ -80,26 +49,6 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
 
     /* If all parameters are 0, then this is a continuation from ISR */
     const unsigned int  continueBlock = (0 == addr) && (0 == pSrc) && (0 == n);
-
-    const DMACCfgCh_t ctrlb_i2c_wr = {.ctrlb =   DMAC_CHCTRLB_LVL(1u)
-                                               | DMAC_CHCTRLB_TRIGACT_BEAT
-                                               | DMAC_CHCTRLB_TRIGSRC(SERCOM_I2CM_DMAC_ID_TX)};
-    volatile DmacDescriptor *dmacDesc = dmacGetDescriptor(DMA_CHAN_I2CM);
-
-    if (0 == dmaInitFlag)
-    {
-        dmaInit();
-    }
-
-    dmacDesc->BTCTRL.reg =   DMAC_BTCTRL_BLOCKACT_NOACT
-                           | DMAC_BTCTRL_STEPSIZE_X1
-                           | DMAC_BTCTRL_STEPSEL_SRC
-                           | DMAC_BTCTRL_SRCINC
-                           | DMAC_BTCTRL_BEATSIZE_BYTE;
-    dmacDesc->DSTADDR.reg = (uint32_t)&SERCOM_I2CM->I2CM.DATA;
-    dmacDesc->DESCADDR.reg = 0u;
-
-    dmacChannelConfigure(DMA_CHAN_I2CM, &ctrlb_i2c_wr);
 
     /* If no ongoing transaction:
      *   - if it is a continuation, then return complete
@@ -124,13 +73,6 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
         {
             return EEPROM_WR_BUSY;
         }
-        else
-        {
-            if (0 != dmacChannelBusy(DMA_CHAN_I2CM))
-            {
-                return EEPROM_WR_BUSY;
-            }
-        }
     }
 
     /* Writes can not go over EEPROM_PAGE_SIZE byte pages. Align the first
@@ -145,82 +87,57 @@ eepromWrite(unsigned int addr, const void *pSrc, unsigned int n)
         }
 
         /* Copy data into the write packet's data section */
-        writeSetup((DmacDescriptor *)dmacDesc, &wrLocal, align_bytes);
+        writeSetup(&wrLocal, align_bytes);
         return EEPROM_WR_PEND;
     }
 
     /* Write any whole pages */
     while (n > EEPROM_PAGE_SIZE)
     {
-        writeSetup((DmacDescriptor *)dmacDesc, &wrLocal, EEPROM_PAGE_SIZE);
+        writeSetup(&wrLocal, EEPROM_PAGE_SIZE);
         return EEPROM_WR_PEND;
     }
 
     /* Mop up residual data */
-    writeSetup((DmacDescriptor *)dmacDesc, &wrLocal, wrLocal.n);
+    writeSetup(&wrLocal, wrLocal.n);
     return EEPROM_WR_PEND;
-
-    #endif /* EEPROM_EMULATED */
 }
 
 void
-eepromRead(unsigned int addr, void *pDst, unsigned int n)
+eepromRead(uint16_t addr, void *pDst, unsigned int n)
 {
-    #ifndef EEPROM_EMULATED
-
     uint8_t addrHigh;
     uint8_t addrLow;
+    uint8_t *pData = pDst;
 
-    uint8_t *pData = (uint8_t *)pDst;
-    const DMACCfgCh_t ctrlb_i2c_wr = {.ctrlb =   DMAC_CHCTRLB_LVL(1u)
-                                               | DMAC_CHCTRLB_TRIGACT_BEAT
-                                               | DMAC_CHCTRLB_TRIGSRC(SERCOM_I2CM_DMAC_ID_RX)};
-
-    volatile DmacDescriptor *dmacDesc = dmacGetDescriptor(DMA_CHAN_I2CM);
-
-    /* Set the addres to read from in the EEPROM. This is a select write,
-     * followed by the byte low address. Bit 8 in select == 1 for read */
+    /* Set the address to read from in the EEPROM. This is a select write,
+     * followed by the byte low address.*/
     addrHigh =   EEPROM_BASE_ADDR
                | (addr >> 8);
-    addrHigh = (addrHigh << 1u) + 1u;
+    addrHigh = (addrHigh << 1u);
     addrLow = addr & 0xFFu;
 
-    /* Send address, wait for ack, then send low byte of address */
     /* TODO handle timeouts and other errors gracefully */
-    i2cActivate(SERCOM_I2CM, addrHigh, 0u, 0u);
-    while (!(SERCOM_I2CM->I2CM.INTFLAG.reg & SERCOM_I2CM_INTFLAG_MB));
+    /* Write select and address high and ack with another start, then send low
+     * byte of address */
+    i2cActivate(SERCOM_I2CM, addrHigh);
+    i2cDataWrite(SERCOM_I2CM, addrLow);
+    i2cAck(SERCOM_I2CM, SERCOM_I2CM_CTRLB_ACKACT, SERCOM_I2CM_CTRLB_CMD(3u));
 
-    if (!(SERCOM_I2CM->I2CM.STATUS.reg & SERCOM_I2CM_STATUS_RXNACK))
-    {
-        SERCOM_I2CM->I2CM.DATA.reg = addrLow;
-    }
-
-    if (0 == dmaInitFlag)
-    {
-        dmaInit();
-    }
-
-    dmacDesc->BTCTRL.reg =   DMAC_BTCTRL_BLOCKACT_NOACT
-                           | DMAC_BTCTRL_STEPSIZE_X1
-                           | DMAC_BTCTRL_STEPSEL_DST
-                           | DMAC_BTCTRL_DSTINC
-                           | DMAC_BTCTRL_BEATSIZE_BYTE;
-    dmacDesc->SRCADDR.reg = (uint32_t)&SERCOM_I2CM->I2CM.DATA;
-    dmacDesc->DESCADDR.reg = 0u;
-
-    dmacChannelConfigure(DMA_CHAN_I2CM, &ctrlb_i2c_wr);
-
-    dmacDesc->BTCTRL.reg |= DMAC_BTCTRL_VALID;
-    dmacDesc->BTCNT.reg = n;
-    dmacDesc->DSTADDR.reg = (uint32_t)pData;
-    dmacStartTransfer(DMA_CHAN_I2CM);
-
-    /* Now ready to read sequentially, issue Select packet, and DMA will fill
-     * the pData buffer. The DMAC will raise an interrupt when complete */
+    /* Send select with read, and then continue to read until complete. On
+     * final byte, respond with NACK */
     addrHigh = (EEPROM_BASE_ADDR << 1u) + 1u;
-    i2cActivate(SERCOM_I2CM, addr, 1u, n);
-
-    #endif /* EEPROM_EMULATED */
+    i2cActivate(SERCOM_I2CM, addrHigh);
+    i2cAck(SERCOM_I2CM, 0, SERCOM_I2CM_CTRLB_CMD(2u));
+    while (n--)
+    {
+        *pData++ = i2cDataRead(SERCOM_I2CM);
+        if (0 != n)
+        {
+            i2cAck(SERCOM_I2CM, 0, SERCOM_I2CM_CTRLB_CMD(2u));
+        }
+    }
+    i2cAck(SERCOM_I2CM, SERCOM_I2CM_CTRLB_ACKACT, SERCOM_I2CM_CTRLB_CMD(3u));
 }
 
 /*! @brief Find the index of the last valid write to a wear levelled block

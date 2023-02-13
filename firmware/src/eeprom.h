@@ -28,14 +28,14 @@ typedef enum {
  *            EEPROM_WR_BUSY -> tried to send data while previous pending
  *            EEPROM_WR_COMPLETE -> tried to continue, but all data sent
  */
-eepromWrStatus_t eepromWrite(unsigned int addr, const void *pSrc, unsigned int n);
+eepromWrStatus_t eepromWrite(uint16_t addr, const void *pSrc, unsigned int n);
 
 /*! @brief Read data from EEPROM
  *  @param [in] addr : base address of EEPROM
  *  @param [in] pDst : pointer to read destination
  *  @param [in] n : number of bytes to read
  */
-void eepromRead(unsigned int addr, void *pDst, unsigned int n);
+void eepromRead(uint16_t addr, void *pDst, unsigned int n);
 
 /*! @brief Save data to EEPROM with wear leveling.
  *  @param [in] pPktWr : pointer to write packet
