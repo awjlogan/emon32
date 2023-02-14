@@ -2,17 +2,10 @@
 
 #include "emon32_samd.h"
 
-/* A write including the lower address byte */
-typedef struct __attribute__((__packed__)) {
-    uint8_t         addrLow;
-    uint8_t         data[EEPROM_PAGE_SIZE];
-} writePkt_t;
-
 /* Local data for interrupt driven EEPROM write */
 typedef struct {
     uint16_t        addr;
-    unsigned int    n;
-    writePkt_t      *pPkt;
+    unsigned int    n_residual;
     uint8_t         *pData;
 } wrLocal_t;
 
@@ -21,28 +14,39 @@ typedef struct {
  *  @param [in] n : number of bytes to send in this chunk
  */
 static void
-writeSetup(wrLocal_t *wr, uint8_t n)
+writeBytes(wrLocal_t *wr, uint8_t n)
 {
     /* Construct the address bytes. Top half of the EEPROM address is in the
-       device select packet. Bottom half is the first byte sent */
-    uint8_t i2cBase = EEPROM_BASE_ADDR;
-    i2cBase |= (wr->addr >> 8);
-    i2cBase <<= 1u;
-    *(uint8_t *)wr->pPkt = (wr->addr & 0xFFu);
+       device select packet. Bottom half is the first byte sent. */
+    uint8_t addrHigh = EEPROM_BASE_ADDR;
+    uint8_t addrLow = wr->addr & 0xFFu;
 
-    /* Copy data from the source into the write buffer */
-    memcpy((wr->pPkt + 1u), wr->pData, n);
-    i2cActivate(SERCOM_I2CM, i2cBase);
+    addrHigh |= (wr->addr >> 8);
+    addrHigh <<= 1u;
 
+    /* Setup next transaction */
     wr->addr += n;
-    wr->n -= n;
-    wr->pData += n;
+    wr->n_residual -= n;
+
+    /* Write to select, then lower address, then ACK */
+    i2cActivate(SERCOM_I2CM, addrHigh);
+    i2cDataWrite(SERCOM_I2CM, addrLow);
+    i2cAck(SERCOM_I2CM, I2CM_ACK, I2CM_ACK_CMD_CONTINUE);
+    while (n--)
+    {
+        i2cDataWrite(SERCOM_I2CM, *wr->pData++);
+        if (0 != n)
+        {
+            i2cAck(SERCOM_I2CM, I2CM_ACK, I2CM_ACK_CMD_CONTINUE);
+        }
+    }
+    /* Finish transaction with ACK and Stop */
+    i2cAck(SERCOM_I2CM, I2CM_ACK, I2CM_ACK_CMD_STOP);
 }
 
 eepromWrStatus_t
 eepromWrite(uint16_t addr, const void *pSrc, unsigned int n)
 {
-    writePkt_t          wrPkt;
     /* Make byte count and address static to allow re-entrant writes */
     static wrLocal_t    wrLocal;
     uint8_t             align_bytes;
@@ -54,15 +58,14 @@ eepromWrite(uint16_t addr, const void *pSrc, unsigned int n)
      *   - if it is a continuation, then return complete
      *   - otherwise capture required details
      */
-    if (0 == wrLocal.n)
+    if (0 == wrLocal.n_residual)
     {
         if (0 != continueBlock)
         {
             return EEPROM_WR_COMPLETE;
         }
 
-        wrLocal.n = n;
-        wrLocal.pPkt = &wrPkt;
+        wrLocal.n_residual = n;
         wrLocal.pData = (uint8_t *)pSrc;
         wrLocal.addr = addr;
     }
@@ -81,25 +84,25 @@ eepromWrite(uint16_t addr, const void *pSrc, unsigned int n)
     align_bytes = (EEPROM_PAGE_SIZE - (wrLocal.addr & (EEPROM_PAGE_SIZE - 1u))) % EEPROM_PAGE_SIZE;
     if (0 != align_bytes)
     {
-        if (align_bytes > n)
+        if (align_bytes > wrLocal.n_residual)
         {
-                align_bytes = n;
+            align_bytes = wrLocal.n_residual;
         }
 
         /* Copy data into the write packet's data section */
-        writeSetup(&wrLocal, align_bytes);
+        writeBytes(&wrLocal, align_bytes);
         return EEPROM_WR_PEND;
     }
 
     /* Write any whole pages */
-    while (n > EEPROM_PAGE_SIZE)
+    while (wrLocal.n_residual > EEPROM_PAGE_SIZE)
     {
-        writeSetup(&wrLocal, EEPROM_PAGE_SIZE);
+        writeBytes(&wrLocal, EEPROM_PAGE_SIZE);
         return EEPROM_WR_PEND;
     }
 
     /* Mop up residual data */
-    writeSetup(&wrLocal, wrLocal.n);
+    writeBytes(&wrLocal, wrLocal.n_residual);
     return EEPROM_WR_PEND;
 }
 
@@ -122,22 +125,22 @@ eepromRead(uint16_t addr, void *pDst, unsigned int n)
      * byte of address */
     i2cActivate(SERCOM_I2CM, addrHigh);
     i2cDataWrite(SERCOM_I2CM, addrLow);
-    i2cAck(SERCOM_I2CM, SERCOM_I2CM_CTRLB_ACKACT, SERCOM_I2CM_CTRLB_CMD(3u));
+    i2cAck(SERCOM_I2CM, I2CM_NACK, I2CM_ACK_CMD_START); /* Was a STOP before */
 
     /* Send select with read, and then continue to read until complete. On
      * final byte, respond with NACK */
     addrHigh = (EEPROM_BASE_ADDR << 1u) + 1u;
     i2cActivate(SERCOM_I2CM, addrHigh);
-    i2cAck(SERCOM_I2CM, 0, SERCOM_I2CM_CTRLB_CMD(2u));
+    i2cAck(SERCOM_I2CM, I2CM_ACK, I2CM_ACK_CMD_CONTINUE);
     while (n--)
     {
         *pData++ = i2cDataRead(SERCOM_I2CM);
         if (0 != n)
         {
-            i2cAck(SERCOM_I2CM, 0, SERCOM_I2CM_CTRLB_CMD(2u));
+            i2cAck(SERCOM_I2CM, I2CM_ACK, I2CM_ACK_CMD_CONTINUE);
         }
     }
-    i2cAck(SERCOM_I2CM, SERCOM_I2CM_CTRLB_ACKACT, SERCOM_I2CM_CTRLB_CMD(3u));
+    i2cAck(SERCOM_I2CM, I2CM_NACK, I2CM_ACK_CMD_STOP);
 }
 
 /*! @brief Find the index of the last valid write to a wear levelled block

@@ -4,6 +4,17 @@
 #include "samd10.h"
 #include <stdint.h>
 
+typedef enum {
+    I2CM_ACK    = 0u,
+    I2CM_NACK   = 1u
+} I2CM_Ack_t;
+
+typedef enum {
+    I2CM_ACK_CMD_START      = 0u,
+    I2CM_ACK_CMD_CONTINUE   = 1u,
+    I2CM_ACK_CMD_STOP       = 2u
+} I2CM_AckCmd_t;
+
 typedef struct {
     uint8_t addr;
     uint8_t data;
@@ -76,7 +87,7 @@ void i2cActivate(Sercom *sercom, uint8_t addr);
  *  @param [in] ack : 0: ACK, 1: NACK
  *  @param [in] cmd : command
  */
-void i2cAck(Sercom *sercom, uint32_t ack, uint32_t cmd);
+void i2cAck(Sercom *sercom, I2CM_Ack_t ack, I2CM_AckCmd_t cmd);
 
 /*! @brief Write to completer
  *  @param [in] sercom : SERCOM instance

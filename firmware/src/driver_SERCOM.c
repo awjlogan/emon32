@@ -207,9 +207,10 @@ i2cActivate(Sercom *sercom, uint8_t addr)
 }
 
 void
-i2cAck(Sercom *sercom, uint32_t ack, uint32_t cmd)
+i2cAck(Sercom *sercom, I2CM_Ack_t ack, I2CM_AckCmd_t cmd)
 {
-    sercom->I2CM.CTRLB.reg = ack | cmd;
+    sercom->I2CM.CTRLB.reg =   (ack << SERCOM_I2CM_CTRLB_ACKACT_Pos)
+                             | SERCOM_I2CM_CTRLB_CMD(cmd);
 }
 
 void
