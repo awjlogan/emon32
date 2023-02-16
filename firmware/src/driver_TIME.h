@@ -8,9 +8,10 @@ void timerSetup();
 
 /*! @brief  Non-blocking delay.
  *  @param [in] delay : period in us
+ *  @param [in] cb : pointer to function for callback
  *  @return : -1 if the timer is already in use.
  */
-int timerDelayNB_us(uint32_t delay);
+int timerDelayNB_us(uint32_t delay, void (*cb)());
 
 /*! @brief Disable the non-blocking timer.
  */

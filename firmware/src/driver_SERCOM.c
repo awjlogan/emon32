@@ -52,18 +52,10 @@ sercomSetup()
      * BAUD.BAUD = (T_high * f_clk) - 5 (0.875 us -> 2 @ 8 MHz)
      */
     SERCOM_I2CM->I2CM.BAUD.reg =   SERCOM_I2CM_BAUD_BAUDLOW(8u)
-                                 | SERCOM_I2CM_BAUD_BAUD(2u);
+                                | SERCOM_I2CM_BAUD_BAUD(2u);
 
-    /* Configure the master I2C SERCOM for external EEPROM */
-    SERCOM_I2CM->I2CM.CTRLA.reg =   SERCOM_I2CM_CTRLA_MODE_I2C_MASTER
-                                  /* Table 27.11 : 300-600 ns SDA hold */
-                                  | SERCOM_I2CM_CTRLA_SDAHOLD(0x2u);
-
-    /* Enable Smart Mode to issue (N)ACK automatically (27.6.3.2)
-     * Wait for synchronisation on write to CTRLB (27.8.2.8)
-     */
-    SERCOM_I2CM->I2CM.CTRLB.reg |= SERCOM_I2CM_CTRLB_SMEN;
-    while (SERCOM_I2CM->I2CM.SYNCBUSY.reg & SERCOM_I2CM_SYNCBUSY_SYSOP);
+    /* Configure the master I2C SERCOM */
+    SERCOM_I2CM->I2CM.CTRLA.reg =   SERCOM_I2CM_CTRLA_MODE_I2C_MASTER;
 
     /* Enable SERCOM, with sync */
     SERCOM_I2CM->I2CM.CTRLA.reg |= SERCOM_I2CM_CTRLA_ENABLE;
@@ -76,7 +68,8 @@ sercomSetup()
     while (SERCOM_I2CM->I2CM.SYNCBUSY.reg & SERCOM_I2CM_SYNCBUSY_SYSOP);
 
     SERCOM_I2CM->I2CM.INTENSET.reg =   SERCOM_I2CM_INTENSET_MB
-                                     | SERCOM_I2CM_INTENSET_SB;
+                                     | SERCOM_I2CM_INTENSET_SB
+                                     | SERCOM_I2CM_INTENSET_ERROR;
 
 #endif /* EEPROM_EMULATED */
 
@@ -211,6 +204,7 @@ i2cAck(Sercom *sercom, I2CM_Ack_t ack, I2CM_AckCmd_t cmd)
 {
     sercom->I2CM.CTRLB.reg =   (ack << SERCOM_I2CM_CTRLB_ACKACT_Pos)
                              | SERCOM_I2CM_CTRLB_CMD(cmd);
+    while(sercom->I2CM.SYNCBUSY.reg & SERCOM_I2CM_SYNCBUSY_SYSOP);
 }
 
 void

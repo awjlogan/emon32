@@ -180,6 +180,7 @@ storeCumulative(eepromPktWL_t *pPkt, const ECMSet_t *pData)
     data.crc = crc16_ccitt(&data.report, sizeof(Emon32Report_t));
 
     eepromWriteWL(pPkt);
+    timerDelayNB_us(EEPROM_WR_TIME, &eepromWriteCB);
 }
 
 /*! @brief This function is called when the 1 ms timer overflows (SYSTICK).
@@ -229,7 +230,7 @@ setup_uc()
     adcSetup();
     evsysSetup();
     eicSetup();
-//     wdtSetup(WDT_PER_4K);
+    wdtSetup(WDT_PER_4K);
 };
 
 int
@@ -251,14 +252,6 @@ main()
     uartInterruptEnable(SERCOM_UART_DBG, SERCOM_USART_INTENSET_ERROR);
 
     uartPutsBlocking(SERCOM_UART_DBG, "\ec== Energy Monitor 32 ==\r\n");
-
-    uint32_t data;
-    uartPutsBlocking(SERCOM_UART_DBG, "Read from EEPROM: ");
-    eepromRead(0, (void *)&data, 4);
-    (void)utilItoa(txBuffer, data, ITOA_BASE10);
-
-    uartPutsBlocking(SERCOM_UART_DBG, txBuffer);
-    while(1);
 
     /* Load stored values from non-volatile memory */
     eepromPkt.addr_base = EEPROM_WL_OFFSET;
@@ -341,38 +334,6 @@ main()
                     lastStoredWh = latestWh;
                 }
                 emon32ClrEvent(EVT_ECM_SET_CMPL);
-            }
-
-            /* When the EEPROM page buffer has been filled, start the write
-             * timer to ensure that the write completes successfully. Retry if
-             * the timer is in use.
-             */
-            if (evtPending(EVT_DMAC_I2C_CMPL))
-            {
-                if (-1 != timerDelayNB_us(EEPROM_WR_TIME))
-                {
-                    emon32ClrEvent(EVT_DMAC_I2C_CMPL);
-                }
-            }
-
-            /* Start writing the next EEPROM block. If complete, disconnect
-             * timer from the NVIC.
-             */
-            if (evtPending(EVT_TIMER_MC))
-            {
-                if (EEPROM_WR_COMPLETE == eepromWrite(0, NULL, 0))
-                {
-                    NVIC_DisableIRQ(TC2_IRQn);
-                    timerDisable();
-                }
-                emon32ClrEvent(EVT_TIMER_MC);
-            }
-
-            /* Save and reset requested */
-            if (evtPending(EVT_SAVE_RESET))
-            {
-                storeCumulative(&eepromPkt, &dataset);
-                NVIC_SystemReset();
             }
         }
         /* Sleep if nothing pending */

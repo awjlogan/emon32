@@ -473,14 +473,18 @@ menuBase()
         c = ('y' == c) ? 'e' : 's';
     }
 
-    /* Save configuration */
+    /* Save configuration if requested, then let watchdog reset the sytem */
     if ('s' == c)
     {
         #ifndef HOSTED
-            uartPutsBlocking(SERCOM_UART_DBG, "Would save here...\r\n");
-            // eepromWrite(EEPROM_BASE_ADDR, pCfg, sizeof(Emon32Config_t));
+        eepromWrite(EEPROM_BASE_ADDR, pCfg, sizeof(Emon32Config_t));
+        while (EEPROM_WR_COMPLETE != eepromWrite(0, 0, 0))
+        {
+            timerDelay_us(EEPROM_WR_TIME);
+        }
         #endif
     }
+    emon32StateSet(EMON_STATE_ACTIVE);
 }
 
 void

@@ -10,9 +10,10 @@ typedef enum {
 } I2CM_Ack_t;
 
 typedef enum {
-    I2CM_ACK_CMD_START      = 0u,
-    I2CM_ACK_CMD_CONTINUE   = 1u,
-    I2CM_ACK_CMD_STOP       = 2u
+    I2CM_ACK_CMD_NONE       = 0u,
+    I2CM_ACK_CMD_START      = 1u,
+    I2CM_ACK_CMD_CONTINUE   = 2u,
+    I2CM_ACK_CMD_STOP       = 3u
 } I2CM_AckCmd_t;
 
 typedef struct {

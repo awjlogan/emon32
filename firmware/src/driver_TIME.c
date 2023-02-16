@@ -1,5 +1,7 @@
 #include "emon32_samd.h"
 
+void (*tc2_cb)();
+
 void
 timerSetup()
 {
@@ -66,11 +68,13 @@ void
 timerDisable()
 {
     TC2->COUNT32.CTRLA.reg &= ~TC_CTRLA_ENABLE;
+    NVIC_DisableIRQ(TC2_IRQn);
 }
 
 int
-timerDelayNB_us(uint32_t delay)
+timerDelayNB_us(uint32_t delay, void (*cb)())
 {
+    tc2_cb = cb;
     if (TC2->COUNT32.CTRLA.reg & TC_CTRLA_ENABLE)
     {
         return -1;
@@ -155,11 +159,13 @@ irq_handler_sys_tick()
     }
 }
 
-/*! @brief On delay timer (TC2), set event for consumption in main loop
+/*! @brief On delay timer (TC2) expiration, call the callback function
  */
 void
 irq_handler_tc2()
 {
-    emon32SetEvent(EVT_TIMER_MC);
-    TC2->COUNT32.INTFLAG.reg |= TC_INTFLAG_MC0;
+    if (0 != tc2_cb)
+    {
+        tc2_cb();
+    }
 }

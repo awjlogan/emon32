@@ -30,6 +30,10 @@ typedef enum {
  */
 eepromWrStatus_t eepromWrite(uint16_t addr, const void *pSrc, unsigned int n);
 
+/*! @brief Callback function for allow async write to EEPROM from timer
+ */
+void eepromWriteCB();
+
 /*! @brief Read data from EEPROM
  *  @param [in] addr : base address of EEPROM
  *  @param [in] pDst : pointer to read destination

@@ -28,20 +28,28 @@ writeBytes(wrLocal_t *wr, uint8_t n)
     wr->addr += n;
     wr->n_residual -= n;
 
-    /* Write to select, then lower address, then ACK */
+    /* Write to select, then lower address */
     i2cActivate(SERCOM_I2CM, addrHigh);
     i2cDataWrite(SERCOM_I2CM, addrLow);
-    i2cAck(SERCOM_I2CM, I2CM_ACK, I2CM_ACK_CMD_CONTINUE);
     while (n--)
     {
         i2cDataWrite(SERCOM_I2CM, *wr->pData++);
-        if (0 != n)
-        {
-            i2cAck(SERCOM_I2CM, I2CM_ACK, I2CM_ACK_CMD_CONTINUE);
-        }
     }
-    /* Finish transaction with ACK and Stop */
     i2cAck(SERCOM_I2CM, I2CM_ACK, I2CM_ACK_CMD_STOP);
+}
+
+void
+eepromWriteCB()
+{
+    const eepromWrStatus_t wrStatus = eepromWrite(0, 0, 0);
+    if (EEPROM_WR_COMPLETE != wrStatus)
+    {
+        while(-1 != timerDelayNB_us(EEPROM_WR_TIME, &eepromWriteCB));
+    }
+    else
+    {
+        timerDisable();
+    }
 }
 
 eepromWrStatus_t
@@ -121,17 +129,16 @@ eepromRead(uint16_t addr, void *pDst, unsigned int n)
     addrLow = addr & 0xFFu;
 
     /* TODO handle timeouts and other errors gracefully */
-    /* Write select and address high and ack with another start, then send low
+    /* Write select with address high and ack with another start, then send low
      * byte of address */
     i2cActivate(SERCOM_I2CM, addrHigh);
     i2cDataWrite(SERCOM_I2CM, addrLow);
-    i2cAck(SERCOM_I2CM, I2CM_NACK, I2CM_ACK_CMD_START); /* Was a STOP before */
 
     /* Send select with read, and then continue to read until complete. On
      * final byte, respond with NACK */
-    addrHigh = (EEPROM_BASE_ADDR << 1u) + 1u;
+    addrHigh += 1u;
+
     i2cActivate(SERCOM_I2CM, addrHigh);
-    i2cAck(SERCOM_I2CM, I2CM_ACK, I2CM_ACK_CMD_CONTINUE);
     while (n--)
     {
         *pData++ = i2cDataRead(SERCOM_I2CM);
