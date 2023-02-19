@@ -1,8 +1,9 @@
 #ifndef DRIVER_SERCOM_H
 #define DRIVER_SERCOM_H
 
-#include "samd10.h"
 #include <stdint.h>
+
+#include "samd10.h"
 
 typedef enum {
     I2CM_ACK    = 0u,

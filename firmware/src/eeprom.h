@@ -51,4 +51,12 @@ void eepromWriteWL(eepromPktWL_t *pPktWr);
  */
 void eepromReadWL(eepromPktWL_t *pPktRd);
 
+/*! @brief Set all data within a block to uniform value
+ *  @param [in] startAddr : start address, must be on 16 byte boundary
+ *  @param [in] val : value to write
+ *  @param [in] n : number of bytes to return
+ *  @return : 0 for success, -1 if startAddress is unaligned, or n too large
+ */
+int eepromInitBlocking(const uint16_t startAddr, const uint8_t val, const unsigned int n);
+
 #endif

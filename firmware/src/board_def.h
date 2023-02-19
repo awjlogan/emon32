@@ -29,21 +29,23 @@
  * #define EEPROM_EMULATED
  */
 /* Top of EEPROM address, not including R/W bit */
-#define EEPROM_BASE_ADDR    0b1010000
+#define EEPROM_BASE_ADDR    0x50
 /* Maximum number of bytes in a single page */
 #define EEPROM_PAGE_SIZE    16u
 /* Worst case EEPROM write time (microseconds) */
 #define EEPROM_WR_TIME      5000ul
+/* Size (bytes) of EEPROM */
+#define EEPROM_SIZE_BYTES   512u
 /* Size (bytes) of wear levelled portion */
-#define EEPROM_WL_SIZE      384
+#define EEPROM_WL_SIZE      384u
 /* Offset of wear levelled area */
-#define EEPROM_WL_OFFSET    128
+#define EEPROM_WL_OFFSET    (EEPROM_SIZE_BYTES - EEPROM_WL_SIZE)
 
 /* SERCOM peripheral defines */
-#define SERCOM_UART_DBG     SERCOM0
-#define SERCOM_I2CM         SERCOM1
-#define SERCOM_UART_DATA    SERCOM2
-#define SERCOM_SPI_DATA     SERCOM2
+#define SERCOM_UART_DBG             SERCOM0
+#define SERCOM_I2CM                 SERCOM1
+#define SERCOM_UART_DATA            SERCOM2
+#define SERCOM_SPI_DATA             SERCOM2
 
 #define SERCOM_UART_DBG_APBCMASK    PM_APBCMASK_SERCOM0
 #define SERCOM_I2CM_APBCMASK        PM_APBCMASK_SERCOM1
@@ -61,13 +63,13 @@
 #define SERCOM_UART_DBG_NVIC_IRQn   SERCOM0_IRQn
 
 /* Pulse counting */
-#define PULSE_MIN_PERIOD_MS 100u    /* Minimum period between pulses */
-#define PULSE_EIC_MAP       3u
-#define PULSE_EIC_FILTER    EIC_CONFIG_FILTEN3
-#define PULSE_EIC_RISING    EIC_CONFIG_SENSE3_RISE
-#define PULSE_EIC_INTFLAG   EIC_INTFLAG_EXTINT3
-#define PULSE_EIC_INTENSET  EIC_INTENSET_EXTINT3
-#define PULSE_EIC_INTENCLR  EIC_INTENCLR_EXTINT3
+#define PULSE_MIN_PERIOD_MS         100u    /* Minimum period between pulses */
+#define PULSE_EIC_MAP               3u
+#define PULSE_EIC_FILTER            EIC_CONFIG_FILTEN3
+#define PULSE_EIC_RISING            EIC_CONFIG_SENSE3_RISE
+#define PULSE_EIC_INTFLAG           EIC_INTFLAG_EXTINT3
+#define PULSE_EIC_INTENSET          EIC_INTENSET_EXTINT3
+#define PULSE_EIC_INTENCLR          EIC_INTENCLR_EXTINT3
 
 /* Pin assignments (nb. logical, not physical) */
 #define PIN_EXTINT          24u

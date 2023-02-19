@@ -80,12 +80,18 @@ loadConfiguration(Emon32Config_t *pCfg)
 
     /* Load configuration from "static" part of EEPROM
      * If the 1st byte is 0xFF, then the EEPROM is blank, so write default
-     * configuration to EEPROM. Otherwise, read config from EEPROM.
+     * configuration to EEPROM, and zero wear levelled portion.
+     * Otherwise, read config from EEPROM.
      */
     eepromRead(0, (void *)&firstByte, 1u);
     if (0xFF == firstByte)
     {
-        /* TODO Write config */
+        eepromWrite(EEPROM_BASE_ADDR, pCfg, sizeof(Emon32Config_t));
+        while (EEPROM_WR_COMPLETE != eepromWrite(0, 0, 0))
+        {
+            timerDelay_us(EEPROM_WR_TIME);
+        }
+        (void)eepromInitBlocking(EEPROM_WL_OFFSET, 0, EEPROM_WL_SIZE);
     }
     else
     {

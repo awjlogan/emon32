@@ -1,6 +1,10 @@
 #include <string.h>
 
+#ifndef HOSTED
 #include "emon32_samd.h"
+#else
+#include "test_eeprom.h"
+#endif /* HOSTED */
 
 /* Local data for interrupt driven EEPROM write */
 typedef struct {
@@ -9,6 +13,25 @@ typedef struct {
     uint8_t         *pData;
 } wrLocal_t;
 
+typedef struct {
+    uint8_t         msb;
+    uint8_t         lsb;
+} Address_t;
+
+static Address_t
+calcAddress (const uint16_t addrFull)
+{
+    Address_t address;
+
+    address.msb = EEPROM_BASE_ADDR | (addrFull >> 8);
+    address.msb <<= 1u;
+
+    address.lsb = addrFull & 0xFFu;
+
+    return address;
+}
+
+
 /*! @brief Send n bytes over I2C using DMA
  *  @param [in] wr : pointer to local address, data, and remaining bytes
  *  @param [in] n : number of bytes to send in this chunk
@@ -16,21 +39,15 @@ typedef struct {
 static void
 writeBytes(wrLocal_t *wr, uint8_t n)
 {
-    /* Construct the address bytes. Top half of the EEPROM address is in the
-       device select packet. Bottom half is the first byte sent. */
-    uint8_t addrHigh = EEPROM_BASE_ADDR;
-    uint8_t addrLow = wr->addr & 0xFFu;
-
-    addrHigh |= (wr->addr >> 8);
-    addrHigh <<= 1u;
+    Address_t address = calcAddress(wr->addr);
 
     /* Setup next transaction */
     wr->addr += n;
     wr->n_residual -= n;
 
     /* Write to select, then lower address */
-    i2cActivate(SERCOM_I2CM, addrHigh);
-    i2cDataWrite(SERCOM_I2CM, addrLow);
+    i2cActivate(SERCOM_I2CM, address.msb);
+    i2cDataWrite(SERCOM_I2CM, address.lsb);
     while (n--)
     {
         i2cDataWrite(SERCOM_I2CM, *wr->pData++);
@@ -117,28 +134,20 @@ eepromWrite(uint16_t addr, const void *pSrc, unsigned int n)
 void
 eepromRead(uint16_t addr, void *pDst, unsigned int n)
 {
-    uint8_t addrHigh;
-    uint8_t addrLow;
-    uint8_t *pData = pDst;
-
-    /* Set the address to read from in the EEPROM. This is a select write,
-     * followed by the byte low address.*/
-    addrHigh =   EEPROM_BASE_ADDR
-               | (addr >> 8);
-    addrHigh = (addrHigh << 1u);
-    addrLow = addr & 0xFFu;
+    uint8_t     *pData = pDst;
+    Address_t   address = calcAddress(addr);
 
     /* TODO handle timeouts and other errors gracefully */
     /* Write select with address high and ack with another start, then send low
      * byte of address */
-    i2cActivate(SERCOM_I2CM, addrHigh);
-    i2cDataWrite(SERCOM_I2CM, addrLow);
+    i2cActivate(SERCOM_I2CM, address.msb);
+    i2cDataWrite(SERCOM_I2CM, address.lsb);
 
     /* Send select with read, and then continue to read until complete. On
      * final byte, respond with NACK */
-    addrHigh += 1u;
+    address.msb += 1u;
 
-    i2cActivate(SERCOM_I2CM, addrHigh);
+    i2cActivate(SERCOM_I2CM, address.msb);
     while (n--)
     {
         *pData++ = i2cDataRead(SERCOM_I2CM);
@@ -167,8 +176,9 @@ wlFindLast(eepromPktWL_t *pPkt)
     eepromRead(pPkt->addr_base, &firstByte, 1u);
     for (unsigned int idxBlk = 1u; idxBlk < pPkt->blkCnt; idxBlk++)
     {
-        uint8_t validByte;
-        unsigned int addrRd = pPkt->addr_base + (pPkt->dataSize * idxBlk);
+        uint8_t         validByte;
+        unsigned int    addrRd = pPkt->addr_base + (pPkt->dataSize * idxBlk);
+
         eepromRead(addrRd, &validByte, 1u);
         idxNextWr++;
 
@@ -177,26 +187,17 @@ wlFindLast(eepromPktWL_t *pPkt)
             break;
         }
     }
-
-    /* TODO Compare checksum of packet to ensure that it is not corrupted */
-    pPkt->idxNextWrite = (idxNextWr == (pPkt->blkCnt - 1u)) ? 0 : idxNextWr;
+    /* TODO Compare checksum of packet */
+    pPkt->idxNextWrite =   (idxNextWr == (pPkt->blkCnt - 1u))
+                          ? 0
+                          : idxNextWr;
 }
 
-void
-eepromWriteWL(eepromPktWL_t *pPktWr)
+uint8_t
+nextValidByte(const uint8_t currentValid)
 {
-    /* Check for correct indexing, find if not yet set. Write output to new
-     * levelled position, and increment index.
-     */
-    uint8_t     validByte;
-    int8_t      idxWr;
-    uint16_t    addrWr;
 
-    if (-1 == pPktWr->idxNextWrite) wlFindLast(pPktWr);
-
-    /* Calculate the next valid byte, and store packet */
-    addrWr = pPktWr->addr_base + (pPktWr->idxNextWrite * pPktWr->dataSize);
-    eepromRead((addrWr - pPktWr->dataSize), &validByte, 1u);
+    uint8_t validByte = currentValid;
 
     /* The valid byte is calculated to have even bit 0/1 writes. */
     /* Start filling with 1s */
@@ -218,7 +219,25 @@ eepromWriteWL(eepromPktWL_t *pPktWr)
     {
         validByte <<= 1;
     }
-    *(uint8_t *)pPktWr->pData = validByte;
+
+    return validByte;
+}
+
+void
+eepromWriteWL(eepromPktWL_t *pPktWr)
+{
+    /* Check for correct indexing, find if not yet set. Write output to new
+     * levelled position, and increment index.
+     */
+    uint8_t     validByte;
+    int8_t      idxWr;
+    uint16_t    addrWr;
+
+    if (-1 == pPktWr->idxNextWrite) wlFindLast(pPktWr);
+
+    /* Calculate the next valid byte, and store packet */
+    addrWr = pPktWr->addr_base + (pPktWr->idxNextWrite * pPktWr->dataSize);
+    eepromRead((addrWr - pPktWr->dataSize), &validByte, 1u);
 
     (void)eepromWrite(addrWr, pPktWr->pData, pPktWr->dataSize);
 
@@ -226,6 +245,7 @@ eepromWriteWL(eepromPktWL_t *pPktWr)
     if (idxWr == pPktWr->blkCnt)
     {
         idxWr = 0;
+        *(uint8_t *)pPktWr->pData = nextValidByte(validByte);
     }
     pPktWr->idxNextWrite = idxWr;
 }
@@ -247,4 +267,29 @@ eepromReadWL(eepromPktWL_t *pPktRd)
     }
     addrRd = pPktRd->addr_base + (idxRd * pPktRd->dataSize);
     eepromRead(addrRd, pPktRd->pData, pPktRd->dataSize);
+}
+
+int
+eepromInitBlocking(const uint16_t startAddr, const uint8_t val, const unsigned int n)
+{
+    Address_t address;
+
+    if ((0 != (startAddr & 0xFF)) || ((startAddr + n) > EEPROM_SIZE_BYTES))
+    {
+        return -1;
+    }
+
+    address = calcAddress(startAddr);
+    while (n)
+    {
+        i2cActivate(SERCOM_I2CM, address.msb);
+        i2cDataWrite(SERCOM_I2CM, address.lsb);
+        for (unsigned int i = 0; i < 16; i++)
+        {
+            i2cDataWrite(SERCOM_I2CM, val);
+        }
+        i2cAck(SERCOM_I2CM, I2CM_ACK, I2CM_ACK_CMD_STOP);
+        while (-1 == timerDelay_us(EEPROM_WR_TIME));
+    }
+    return 0;
 }

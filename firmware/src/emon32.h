@@ -76,8 +76,8 @@ typedef struct __attribute__((__packed__)) {
 } Emon32Config_t;
 
 typedef struct __attribute__((__packed__)) {
-    uint32_t wattHour[NUM_CT];
-    uint32_t pulseCnt;
+    uint32_t        wattHour[NUM_CT];
+    uint32_t        pulseCnt;
 } Emon32Report_t;
 
 typedef struct __attribute__((__packed__)) {
