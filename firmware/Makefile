@@ -89,7 +89,7 @@ build/qfpio.o: src/qfpio.s src/qfpio.h
 	@echo AS $@
 	@$(CC) $(CFLAGS) src/qfpio.s -c -o $@
 
-%.o:
+%.o: src/qfpio.h src/qfplib.h
 	@echo CC $@
 	@$(CC) $(CFLAGS) $(filter %/$(subst .o,.c,$(notdir $@)), $(SRCS)) -c -o $@
 
