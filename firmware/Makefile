@@ -2,6 +2,13 @@
 BUILD = build
 BIN = emon32
 
+# Qfplib-M0 floating point library
+# https://www.quinapalus.com/qfplib-m0-tiny.html
+QFPLIB_VER=20200617
+QFPLIB_BUNDLE=qfplib-$(QFPLIB_VER)
+QFPLIB_ARC=$(QFPLIB_BUNDLE).tar.gz
+QFPLIB_URL=https://www.quinapalus.com/$(QFPLIB_ARC)
+
 ##############################################################################
 .PHONY: all directory clean size
 
@@ -17,7 +24,7 @@ else
   MKDIR = mkdir
 endif
 
-CFLAGS += -W -Wall --std=gnu99 -Os
+CFLAGS += -W -Wall -Wpedantic --std=gnu99 -Os
 CFLAGS += -fno-diagnostics-show-caret
 CFLAGS += -fdata-sections -ffunction-sections
 CFLAGS += -funsigned-char -funsigned-bitfields
@@ -58,6 +65,7 @@ DEFINES += \
 CFLAGS += $(INCLUDES) $(DEFINES)
 
 OBJS = $(addprefix $(BUILD)/, $(notdir %/$(subst .c,.o, $(SRCS))))
+OBJS += build/qfplib.o build/qfpio.o
 
 all: directory $(BUILD)/$(BIN).elf $(BUILD)/$(BIN).hex $(BUILD)/$(BIN).bin size
 
@@ -72,6 +80,14 @@ $(BUILD)/$(BIN).hex: $(BUILD)/$(BIN).elf
 $(BUILD)/$(BIN).bin: $(BUILD)/$(BIN).elf
 	@echo OBJCOPY $@
 	@$(OBJCOPY) -O binary $^ $@
+
+build/qfplib.o: src/qfplib.s src/qfplib.h
+	@echo AS $@
+	@$(CC) $(CFLAGS) src/qfplib.s -c -o $@
+
+build/qfpio.o: src/qfpio.s src/qfpio.h
+	@echo AS $@
+	@$(CC) $(CFLAGS) src/qfpio.s -c -o $@
 
 %.o:
 	@echo CC $@
@@ -90,3 +106,20 @@ clean:
 
 -include $(wildcard $(BUILD)/*.d)
 
+# Fetch Qfplib
+$(QFPLIB_ARC):
+	curl -O $(QFPLIB_URL)
+$(QFPLIB_BUNDLE): $(QFPLIB_ARC)
+	tar xvf $(QFPLIB_ARC)
+$(QFPLIB_BUNDLE)/qfplib.s:	$(QFPLIB_BUNDLE)
+$(QFPLIB_BUNDLE)/qfplib.h:	$(QFPLIB_BUNDLE)
+$(QFPLIB_BUNDLE)/qfpio.s:	$(QFPLIB_BUNDLE)
+$(QFPLIB_BUNDLE)/qfpio.h:	$(QFPLIB_BUNDLE)
+src/qfplib.s:	$(QFPLIB_BUNDLE)/qfplib.s
+	ln -sf ../$(QFPLIB_BUNDLE)/qfplib.s ./src/
+src/qfplib.h:	$(QFPLIB_BUNDLE)/qfplib.h
+	ln -sf ../$(QFPLIB_BUNDLE)/qfplib.h ./src/
+src/qfpio.s:	$(QFPLIB_BUNDLE)/qfpio.s
+	ln -sf ../$(QFPLIB_BUNDLE)/qfpio.s ./src/
+src/qfpio.h:	$(QFPLIB_BUNDLE)/qfpio.h
+	ln -sf ../$(QFPLIB_BUNDLE)/qfpio.h ./src/

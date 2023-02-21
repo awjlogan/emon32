@@ -20,7 +20,16 @@
         (void)Sercom;
         printf("%c", c);
     }
+
+    void
+    emon32StateSet(EmonState_t state)
+    {
+        (void)state;
+    }
+
 #else
+    #include "qfplib.h"
+    #include "qfpio.h"
     #include "emon32_samd.h"
 #endif
 
@@ -101,8 +110,10 @@ getValue()
 static float
 getValue_float()
 {
+    float f;
     getInputStr();
-    return utilAtof(genBuf);
+    qfp_str2float(&f, genBuf, 0);
+    return f;
 }
 
 static void
@@ -130,7 +141,7 @@ putValueEnd_10(unsigned int val)
 static void
 putValueEnd_Float(float val)
 {
-    (void)utilFtoa(genBuf, val);
+    qfp_float2str(val, genBuf, 0);
     putValueEnd();
 }
 

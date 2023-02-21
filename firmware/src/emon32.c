@@ -237,7 +237,7 @@ setup_uc()
     evsysSetup();
     eicSetup();
     wdtSetup(WDT_PER_4K);
-};
+}
 
 int
 main()

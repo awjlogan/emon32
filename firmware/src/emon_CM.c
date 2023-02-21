@@ -1,5 +1,9 @@
-#include "emon_CM.h"
 #include <string.h>
+
+#include "qfplib.h"
+#include "emon_CM.h"
+
+
 
 #ifdef HOSTED
 #include <stdio.h>
@@ -473,7 +477,8 @@ ecmProcessSet(ECMSet_t *set)
     /* Mean value for each RMS voltage */
     for (unsigned int idxV = 0; idxV < NUM_V; idxV++)
     {
-        set->rmsV[idxV] = (ecmCycle.rmsV[idxV] / ecmCycle.cycleCount) * pCfg->voltageCfg[idxV].voltageCal;
+        set->rmsV[idxV] = qfp_fdiv(ecmCycle.rmsV[idxV], (float)ecmCycle.cycleCount);
+        set->rmsV[idxV] = qfp_fmul(set->rmsV[idxV], pCfg->voltageCfg[idxV].voltageCal);
     }
 
     /* CT channels */
@@ -483,15 +488,17 @@ ecmProcessSet(ECMSet_t *set)
         float   energyNow;
         float   scaledPower;
 
-        scaledPower =   ecmCycle.valCT[idxCT].powerNow
-                      * (pCfg->voltageCfg[0].voltageCal * pCfg->ctCfg[idxCT].ctCal);
-        set->CT[idxCT].realPower = scaledPower + 0.5f;
+        scaledPower =   qfp_fmul(qfp_fmul(ecmCycle.valCT[idxCT].powerNow,
+                                          pCfg->voltageCfg[0].voltageCal),
+                                 pCfg->ctCfg[idxCT].ctCal);
+        set->CT[idxCT].realPower = qfp_fadd(scaledPower, 0.5f);
 
         /* TODO add frequency deviation scaling */
-        energyNow = scaledPower + set->CT[idxCT].residualEnergy;
-        wattHoursRecent = energyNow / 3600;
+        energyNow = qfp_fadd(scaledPower, set->CT[idxCT].residualEnergy);
+        wattHoursRecent = (int)energyNow / 3600;
         set->CT[idxCT].wattHour += wattHoursRecent;
-        set->CT[idxCT].residualEnergy = energyNow - (wattHoursRecent * 3600.0f);
+        set->CT[idxCT].residualEnergy = qfp_fsub(energyNow,
+                                                 qfp_fmul(wattHoursRecent, 3600.0f));
     }
 
     /* Zero out cycle accummulator */

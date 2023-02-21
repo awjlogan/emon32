@@ -1,4 +1,5 @@
 #include "data.h"
+#include "qfpio.h"
 
 unsigned int
 dataPackage_n(const ECMSet_t *pData, char *pDst, unsigned int n)
@@ -29,7 +30,8 @@ dataPackage_n(const ECMSet_t *pData, char *pDst, unsigned int n)
     {
         cursor = utilStrInsert(pDst, ",Vrms:", cursor, 6);
     }
-    insLen = utilFtoa(tmpBuf, pData->rmsV[0]) ;
+    qfp_float2str(pData->rmsV[0], tmpBuf, 0);
+    insLen = utilStrlen(tmpBuf);
     charCnt += insLen;
     if (charCnt <= n)
     {
@@ -55,7 +57,8 @@ dataPackage_n(const ECMSet_t *pData, char *pDst, unsigned int n)
         {
             cursor = utilStrInsert(pDst, ":", cursor, 1);
         }
-        insLen = utilFtoa(tmpBuf, pData->CT[idxCT].realPower);
+        qfp_float2str(pData->CT[idxCT].realPower, tmpBuf, 0);
+        insLen = utilStrlen(tmpBuf);
         charCnt += insLen;
         if (charCnt <= n)
         {
@@ -110,7 +113,8 @@ dataPackage(const ECMSet_t *pData, char *pDst)
      */
     cursor = utilStrInsert(pDst, ",Vrms:", cursor, 6);
     charCnt += 6u;
-    insLen = utilFtoa(tmpBuf, (pData->rmsV[0]));
+    qfp_float2str(pData->rmsV[0], tmpBuf, 0);
+    insLen = utilStrlen(tmpBuf);
     charCnt += insLen;
     cursor = utilStrInsert(pDst, tmpBuf, cursor, insLen);
 
@@ -124,7 +128,8 @@ dataPackage(const ECMSet_t *pData, char *pDst)
         cursor = utilStrInsert(pDst, tmpBuf, cursor, insLen);
         cursor = utilStrInsert(pDst, ":", cursor, 1);
         charCnt += 1u;
-        insLen = utilFtoa(tmpBuf, pData->CT[idxCT].realPower);
+        qfp_float2str(pData->CT[idxCT].realPower, tmpBuf, 0);
+        insLen = utilStrlen(tmpBuf);
         charCnt += insLen;
         cursor = utilStrInsert(pDst, tmpBuf, cursor, insLen);
         cursor = utilStrInsert(pDst, ",E", cursor, 2);
