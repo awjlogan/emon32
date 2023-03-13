@@ -478,10 +478,10 @@
       (net 15 "/V_MID") (pintype "passive") (tstamp 09321a8a-8333-41a7-8701-54d7a626382a))
     (pad "TN" thru_hole oval locked (at 0 11.6 180) (size 2.8 1.8) (drill oval 2 1) (layers *.Cu *.Mask)
       (net 23 "unconnected-(J2-PadTN)") (pintype "passive+no_connect") (tstamp b2650be7-9d6a-4115-ad98-4dab0f68acc0))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_Audio.3dshapes/Jack_3.5mm_CUI_SJ1-3535NG_Horizontal.wrl"
-      (offset (xyz 0 0 0))
+    (model "${KIPRJMOD}/CUI_DEVICES_SJ1-3533NG.step"
+      (offset (xyz 1 5.5 7))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz 0 180 90))
     )
   )
 
@@ -536,10 +536,10 @@
       (net 15 "/V_MID") (pintype "passive") (tstamp e2427541-ff98-4107-bc79-0d9b0db4a052))
     (pad "TN" thru_hole oval locked (at 0 11.6 180) (size 2.8 1.8) (drill oval 2 1) (layers *.Cu *.Mask)
       (net 20 "unconnected-(J1-PadTN)") (pintype "passive+no_connect") (tstamp ed204e6e-f7dc-403d-8298-17c29bef22fd))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_Audio.3dshapes/Jack_3.5mm_CUI_SJ1-3535NG_Horizontal.wrl"
-      (offset (xyz 0 0 0))
+    (model "${KIPRJMOD}/CUI_DEVICES_SJ1-3533NG.step"
+      (offset (xyz 1 5.5 7))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz 0 -180 90))
     )
   )
 
@@ -750,7 +750,7 @@
     (pad "6" smd rect locked (at 4.4 -2.6) (size 2 2.5) (layers "F.Cu" "F.Paste" "F.Mask") (tstamp 9356369a-426b-4770-865b-d39301b74bb1))
     (pad "6" smd rect locked (at 4.4 2.9) (size 2 2.5) (layers "F.Cu" "F.Paste" "F.Mask") (tstamp ae378d81-351a-4986-a1a4-851a1e243cdf))
     (pad "6" smd rect locked (at -4.4 -2.6) (size 2 2.5) (layers "F.Cu" "F.Paste" "F.Mask") (tstamp f88b8ea5-9164-4450-952b-bdd4463d3042))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_USB.3dshapes/USB_Mini-B_Wuerth_65100516121_Horizontal.wrl"
+    (model "${KICAD6_3DMODEL_DIR}/Connector_USB.3dshapes/USB_Mini-B_Lumberg_2486_01_Horizontal.step"
       (offset (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
@@ -1715,10 +1715,10 @@
       (net 15 "/V_MID") (pintype "passive") (tstamp 0e32fe88-9730-4f38-bb56-a3df77ac32c0))
     (pad "TN" thru_hole oval locked (at 0 11.6 180) (size 2.8 1.8) (drill oval 2 1) (layers *.Cu *.Mask)
       (net 29 "unconnected-(J4-PadTN)") (pintype "passive+no_connect") (tstamp 7fa98a6c-7617-4de4-a51b-c51f58a7e58a))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_Audio.3dshapes/Jack_3.5mm_CUI_SJ1-3535NG_Horizontal.wrl"
-      (offset (xyz 0 0 0))
+    (model "${KIPRJMOD}/CUI_DEVICES_SJ1-3533NG.step"
+      (offset (xyz 1 5.5 7))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz 0 -180 90))
     )
   )
 
@@ -3050,10 +3050,10 @@
       (net 15 "/V_MID") (pintype "passive") (tstamp e2451b42-29e7-4214-93cb-c04ff65581c5))
     (pad "TN" thru_hole oval locked (at 0 11.6 180) (size 2.8 1.8) (drill oval 2 1) (layers *.Cu *.Mask)
       (net 26 "unconnected-(J3-PadTN)") (pintype "passive+no_connect") (tstamp 1a851a9d-a0f7-4510-ba7d-c54a02b72e61))
-    (model "${KICAD6_3DMODEL_DIR}/Connector_Audio.3dshapes/Jack_3.5mm_CUI_SJ1-3535NG_Horizontal.wrl"
-      (offset (xyz 0 0 0))
+    (model "${KIPRJMOD}/CUI_DEVICES_SJ1-3533NG.step"
+      (offset (xyz 1 5.5 7))
       (scale (xyz 1 1 1))
-      (rotate (xyz 0 0 0))
+      (rotate (xyz 0 -180 90))
     )
   )
 
