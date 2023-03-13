@@ -148,14 +148,13 @@ eepromRead(uint16_t addr, void *pDst, unsigned int n)
     address.msb += 1u;
 
     i2cActivate(SERCOM_I2CM, address.msb);
-    while (n--)
+
+    do
     {
         *pData++ = i2cDataRead(SERCOM_I2CM);
-        if (0 != n)
-        {
-            i2cAck(SERCOM_I2CM, I2CM_ACK, I2CM_ACK_CMD_CONTINUE);
-        }
-    }
+        i2cAck(SERCOM_I2CM, I2CM_ACK, I2CM_ACK_CMD_CONTINUE);
+        n--;
+    } while (n);
     i2cAck(SERCOM_I2CM, I2CM_NACK, I2CM_ACK_CMD_STOP);
 }
 

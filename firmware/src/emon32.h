@@ -10,6 +10,10 @@
 /* UI timing */
 #define SW_TIME_RESET       2048u   /* time in ms to press switch to reset */
 
+/* Configuration key - indicates that the configuration is the default or
+ * has been retrieved from non-volatile storage */
+#define CONFIG_NVM_KEY      0xca55e77eul
+
 /* Voltage and CT setup - this is configurable, but constrained per board. For
  * example, NUM_CT can't be greater than the number of physical channels, but
  * can be less.
@@ -60,16 +64,17 @@ typedef struct __attribute__((__packed__)) {
 } BaseCfg_t;
 
 typedef struct __attribute__((__packed__)) {
-   float           voltageCal;
+   float           voltageCal;      /* Conversion to real V value */
 } VoltageCfg_t;
 
 typedef struct __attribute__((__packed__)) {
-    float           ctCal;
-    q15_t           phaseX;
+    float           ctCal;          /* Conversion to real I value */
+    q15_t           phaseX;         /* Phase calibrations for interpolation */
     q15_t           phaseY;
 } CTCfg_t;
 
 typedef struct __attribute__((__packed__)) {
+    uint32_t        key;
     BaseCfg_t       baseCfg;
     VoltageCfg_t    voltageCfg[NUM_V];
     CTCfg_t         ctCfg[NUM_CT];

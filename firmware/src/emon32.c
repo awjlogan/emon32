@@ -49,6 +49,8 @@ emon32StateGet()
 static inline void
 defaultConfiguration(Emon32Config_t *pCfg)
 {
+    pCfg->key = CONFIG_NVM_KEY;
+
     /* Default configuration: single phase, 50 Hz, 240 VAC */
     pCfg->baseCfg.nodeID        = 17u;  /* Node ID to transmit */
     pCfg->baseCfg.mainsFreq     = 50u;  /* Mains frequency */
@@ -74,24 +76,27 @@ defaultConfiguration(Emon32Config_t *pCfg)
 static inline void
 loadConfiguration(Emon32Config_t *pCfg)
 {
-    unsigned int    systickCnt = 0u;
-    unsigned int    seconds = 3u;
-    uint8_t         firstByte;
+    unsigned int    systickCnt  = 0u;
+    unsigned int    seconds     = 3u;
+    uint32_t        key         = 0u;
 
-    /* Load configuration from "static" part of EEPROM
-     * If the 1st byte is 0xFF, then the EEPROM is blank, so write default
-     * configuration to EEPROM, and zero wear levelled portion.
-     * Otherwise, read config from EEPROM.
+    /* Load configuration key from "static" part of EEPROM. If the key does
+     * not match CONFIG_NVM_KEY, write the default configuration to the
+     * EEPROM, and zero wear levelled portion. Otherwise, read configuration
+     * from EEPROM.
      */
-    eepromRead(0, (void *)&firstByte, 1u);
-    if (0xFF == firstByte)
+    eepromRead(0, (void *)&key, 4u);
+
+    if (CONFIG_NVM_KEY != key)
     {
-        eepromWrite(EEPROM_BASE_ADDR, pCfg, sizeof(Emon32Config_t));
+        uartPutsBlocking(SERCOM_UART_DBG, "> Initialising NVM... ");
+        eepromWrite(0, pCfg, sizeof(Emon32Config_t));
         while (EEPROM_WR_COMPLETE != eepromWrite(0, 0, 0))
         {
             timerDelay_us(EEPROM_WR_TIME);
         }
         (void)eepromInitBlocking(EEPROM_WL_OFFSET, 0, EEPROM_WL_SIZE);
+        uartPutsBlocking(SERCOM_UART_DBG, "Done\r\n");
     }
     else
     {
@@ -128,6 +133,7 @@ loadConfiguration(Emon32Config_t *pCfg)
             }
         }
     }
+    uartPutsBlocking(SERCOM_UART_DBG, "\r\n");
 }
 
 /*! @brief Total energy across all CTs
@@ -196,8 +202,8 @@ storeCumulative(eepromPktWL_t *pPkt, const ECMSet_t *pData)
 static void
 evtKiloHertz()
 {
-    /* Kick watchdog - placed in the event handler to allow reset of stuck
-     * processing rather than entering the interrupt reliably
+    /* Feed watchdog - placed in the event handler to allow reset of stuck
+     * processing rather than entering the interrupt reliably.
      */
     wdtFeed();
 }
@@ -260,15 +266,17 @@ main()
     uartPutsBlocking(SERCOM_UART_DBG, "\ec== Energy Monitor 32 ==\r\n");
 
     /* Load stored values from non-volatile memory */
-    eepromPkt.addr_base = EEPROM_WL_OFFSET;
-    eepromPkt.blkCnt = EEPROM_WL_NUM_BLK;
-    eepromPkt.dataSize = sizeof(Emon32Cumulative_t);
-    eepromPkt.idxNextWrite = -1;
+    eepromPkt.addr_base     = EEPROM_WL_OFFSET;
+    eepromPkt.blkCnt        = EEPROM_WL_NUM_BLK;
+    eepromPkt.dataSize      = sizeof(Emon32Cumulative_t);
+    eepromPkt.idxNextWrite  = -1;
 
     defaultConfiguration(&e32Config);
     loadConfiguration(&e32Config);
     loadCumulative(&eepromPkt, &dataset);
     lastStoredWh = totalEnergy(&dataset);
+
+    uartPutsBlocking(SERCOM_UART_DBG, "> Start monitoring...\r\n");
 
     emon32StateSet(EMON_STATE_ACTIVE);
     ecmInit(&e32Config);
