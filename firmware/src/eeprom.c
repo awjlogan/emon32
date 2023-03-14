@@ -164,9 +164,9 @@ eepromRead(uint16_t addr, void *pDst, unsigned int n)
 void
 wlFindLast(eepromPktWL_t *pPkt)
 {
-    /* Step through from the base address is (data) sized steps. The first
-     * byte that is different to the 0-th byte is the stalest block. If all
-     * blocks are the same, then the 0-th index is the next to be written
+    /* Step through from the base address in (data) sized steps. The first
+     * byte that is different to the 0-th byte is the oldest block. If all
+     * blocks are the same, then the 0-th index is the next to be written.
      */
 
     uint8_t idxNextWr = 0;
@@ -209,11 +209,13 @@ nextValidByte(const uint8_t currentValid)
     {
         validByte <<= 1;
     }
+    /* Continue filling with 1s */
     else if (1u == (validByte & 0x1u))
     {
         validByte <<= 1;
         validByte += 1u;
     }
+    /* Continue filling with 0s */
     else
     {
         validByte <<= 1;
@@ -225,8 +227,8 @@ nextValidByte(const uint8_t currentValid)
 void
 eepromWriteWL(eepromPktWL_t *pPktWr)
 {
-    /* Check for correct indexing, find if not yet set. Write output to new
-     * levelled position, and increment index.
+    /* Check for correct indexing, find if not yet set; this is indicated by
+     * idxNextWrite == -1. Write output to new levelled position.
      */
     uint8_t     validByte;
     int8_t      idxWr;
@@ -259,6 +261,7 @@ eepromReadWL(eepromPktWL_t *pPktRd)
     uint16_t    addrRd;
 
     if (-1 == pPktRd->idxNextWrite) wlFindLast(pPktRd);
+
     idxRd = pPktRd->idxNextWrite - 1u;
     if (idxRd < 0)
     {
@@ -273,7 +276,10 @@ eepromInitBlocking(const uint16_t startAddr, const uint8_t val, const unsigned i
 {
     Address_t address;
 
-    if ((0 != (startAddr & 0xFF)) || ((startAddr + n) > EEPROM_SIZE_BYTES))
+    /* Return a fault if the start address is not on a 16byte boundary, or the
+     * wear levelled portion would not fit in the NVM
+     */
+    if ((0 != (startAddr & 0xF)) || ((startAddr + n) > EEPROM_SIZE_BYTES))
     {
         return -1;
     }
@@ -288,6 +294,8 @@ eepromInitBlocking(const uint16_t startAddr, const uint8_t val, const unsigned i
             i2cDataWrite(SERCOM_I2CM, val);
         }
         i2cAck(SERCOM_I2CM, I2CM_ACK, I2CM_ACK_CMD_STOP);
+
+        /* Wait until the non-blocking timer is free. */
         while (-1 == timerDelay_us(EEPROM_WR_TIME));
     }
     return 0;

@@ -5,9 +5,9 @@ void (*tc2_cb)();
 void
 timerSetup()
 {
-    /* SysTick is used as the general purpose 1 kHz timer
-     * The tick value is reloaded on underflow
-     * SysTick is part of CMSIS so should be portable across Cortex-M cores
+    /* SysTick is used as the general purpose 1 kHz timer. The tick value is
+     * reloaded on underflow SysTick is part of CMSIS so should be portable
+     * across Cortex-M cores
      */
     const uint32_t tickkHz = (F_CORE / 1000u) - 1u;
     SysTick_Config(tickkHz);
@@ -30,7 +30,7 @@ timerSetup()
     /* TC1 is running at 1 MHz, each tick is 1 us
      * PER, COUNT, and Enable require synchronisation (28.6.6)
      */
-    const unsigned int cntPer = F_TC1 / SAMPLE_RATE / (NUM_V + NUM_CT);
+    const unsigned int cntPer = F_TC1 / SAMPLE_RATE / (VCT_TOTAL);
     TC1->COUNT8.PER.reg = (uint8_t)cntPer;
     while (TC1->COUNT8.STATUS.reg & TC_STATUS_SYNCBUSY);
     TC1->COUNT8.COUNT.reg = 0u;

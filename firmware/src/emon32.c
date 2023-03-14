@@ -64,9 +64,9 @@ defaultConfiguration(Emon32Config_t *pCfg)
     /* 4.2 degree shift @ 50 Hz, 4 CTs */
     for (unsigned int idxCT = 0u; idxCT < NUM_CT; idxCT++)
     {
-        pCfg->ctCfg[idxCT].ctCal = 90.91;
-        pCfg->ctCfg[idxCT].phaseX = 13495;
-        pCfg->ctCfg[idxCT].phaseY = 19340;
+        pCfg->ctCfg[idxCT].ctCal    = 90.91;
+        pCfg->ctCfg[idxCT].phaseX   = 13495;
+        pCfg->ctCfg[idxCT].phaseY   = 19340;
     }
 }
 
@@ -103,7 +103,7 @@ loadConfiguration(Emon32Config_t *pCfg)
         eepromRead(0, (void *)pCfg, sizeof(Emon32Config_t));
     }
 
-    /* Wait for 3 s, if a key is pressed then enter configuration */
+    /* Wait for 3 s, if a key is pressed then enter interactive configuration */
     uartPutsBlocking(SERCOM_UART_DBG, "\r\n> Hit any key to enter configuration ");
     while (systickCnt < 4095)
     {
@@ -164,7 +164,6 @@ loadCumulative(eepromPktWL_t *pPkt, ECMSet_t *pData)
     memset(&data, 0, sizeof(Emon32Cumulative_t));
     eepromReadWL(pPkt);
 
-    /* Store into current result set */
     for (unsigned int idxCT = 0; idxCT < NUM_CT; idxCT++)
     {
         pData->CT[idxCT].wattHour = data.report.wattHour[idxCT];
@@ -265,7 +264,10 @@ main()
 
     uartPutsBlocking(SERCOM_UART_DBG, "\ec== Energy Monitor 32 ==\r\n");
 
-    /* Load stored values from non-volatile memory */
+    /* Load stored values (configuration and accumulated energy) from
+     * non-volatile memory (NVM). If the NVM has not been used before then
+     * store default configuration and 0 energy accumulator area.
+     */
     eepromPkt.addr_base     = EEPROM_WL_OFFSET;
     eepromPkt.blkCnt        = EEPROM_WL_NUM_BLK;
     eepromPkt.dataSize      = sizeof(Emon32Cumulative_t);
@@ -276,11 +278,12 @@ main()
     loadCumulative(&eepromPkt, &dataset);
     lastStoredWh = totalEnergy(&dataset);
 
-    uartPutsBlocking(SERCOM_UART_DBG, "> Start monitoring...\r\n");
 
+    /* Set up buffers for ADC data, and configure energy monitor */
     emon32StateSet(EMON_STATE_ACTIVE);
     ecmInit(&e32Config);
     adcStartDMAC((uint32_t)ecmDataBuffer());
+    uartPutsBlocking(SERCOM_UART_DBG, "> Start monitoring...\r\n");
 
     for (;;)
     {
@@ -300,7 +303,7 @@ main()
                 emon32ClrEvent(EVT_SYSTICK_1KHz);
             }
 
-            /* Full cycle complete */
+            /* A full mains cycle has completed. Calculate power/energy */
             if (evtPending(EVT_ECM_CYCLE_CMPL))
             {
                 ecmProcessCycle();
@@ -316,7 +319,10 @@ main()
                 }
             }
 
-            /* Report period elapsed; generate, pack, and send */
+            /* Report period elapsed; generate, pack, and send. If the energy
+             * used since the last storage is > DELTA_WH_STORE, then save the
+             * accumulated energy use in NVM.
+             */
             if (evtPending(EVT_ECM_SET_CMPL))
             {
                 unsigned int pktLength;

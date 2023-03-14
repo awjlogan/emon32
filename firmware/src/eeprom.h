@@ -36,7 +36,7 @@ void eepromWriteCB();
 
 /*! @brief Read data from EEPROM
  *  @param [in] addr : base address of EEPROM
- *  @param [in] pDst : pointer to read destination
+ *  @param [out] pDst : pointer to read destination
  *  @param [in] n : number of bytes to read
  */
 void eepromRead(uint16_t addr, void *pDst, unsigned int n);

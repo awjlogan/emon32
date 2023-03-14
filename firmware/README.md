@@ -34,6 +34,28 @@ To build the firmware:
 
 This will generate `firmware/build/emon32.elf` which can then be flashed to the microcontroller.
 
+### Bootloader
+
+It is possible to use a small USB bootloader with the ATSAMD11. This can be [found here](https://github.com/majbthrd/SAMDx1-USB-DFU-Bootloader). For the ATSAMD11, there is a limited number of pins available, so the USB functionality is muxed externally.
+
+#### Preparing the firmware
+
+The bootloader occupies the first 1KB of flash. The linker must be modified to account for the change of address. In `firmware/linker/samd11d14.ld`, in the `MEMORY` section, uncomment the line with `OFFSET = 0x00000400` and comment the line with `OFFSET = 0x00000000`. Recompile the firmware as normal. Note that the maximum size of the emon32 is now 1 KB less than without the bootloader.
+
+The new `emon32.elf` file must then be converted to a DFU file for upload.
+
+#### Uploading the firmware
+
+  1. Power off the emon32
+  2. Connect one end of the USB-C cable
+  3. While holding down the emon32's button, connect the other end of the USB cable
+  4. The emon32 will enter the bootloader, as indicated by XX.
+
+#### Installing the bootloader
+
+If your board does not come with the bootloader preflashed, after cloning the bootloader repository, copy `firmware/helpers/bootloader.patch` to the bootloader's directory. In that directory, run `git am bootloader.patch` to apply the changes. The bootloader
+
+
 ## Modifications 🔧
 
 ### Changing CT calibration
