@@ -47,16 +47,17 @@ void eepromRead(uint16_t addr, void *pDst, unsigned int n);
 void eepromWriteWL(eepromPktWL_t *pPktWr);
 
 /*! @brief Read data from EEPROM with wear leveling
- *  @param [in] pPktRd : pointer to read packet
+ *  @param [out] pPktRd : pointer to read packet
  */
 void eepromReadWL(eepromPktWL_t *pPktRd);
 
 /*! @brief Set all data within a block to uniform value
  *  @param [in] startAddr : start address, must be on 16 byte boundary
  *  @param [in] val : value to write
- *  @param [in] n : number of bytes to return
- *  @return : 0 for success, -1 if startAddress is unaligned, or n too large
+ *  @param [in] n : number of bytes to write
+ *  @return : 0 for success, -1 if startAddress is unaligned, n is not a
+ *            multiple of 16, or if n is too large.
  */
-int eepromInitBlocking(const uint16_t startAddr, const uint8_t val, const unsigned int n);
+int eepromInitBlocking(uint16_t startAddr, const uint8_t val, unsigned int n);
 
 #endif

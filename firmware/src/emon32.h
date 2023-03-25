@@ -7,6 +7,8 @@
 #define VERSION_FW_MAJ      0u
 #define VERSION_FW_MIN      1u
 
+#define NODE_ID             17u
+
 /* UI timing */
 #define SW_TIME_RESET       2048u   /* time in ms to press switch to reset */
 
@@ -37,10 +39,6 @@
  */
 #define EEPROM_WL_SIZE_BLK  (NUM_CT * 4) + (NUM_PULSECOUNT * 4) + 2 + 1
 
-/* Data transmitter configuration. Options are RFM69 or ESP8266. */
-// #define TRANSMIT_RFM69
-#define TRANSMIT_ESP8266
-
 /* Uncomment to downsample the sample rate by low pass filter
  * Otherwise, the second sample from each set will be discarded
  */
@@ -61,6 +59,7 @@ typedef struct __attribute__((__packed__)) {
     uint8_t         nodeID;         /* ID for report*/
     uint8_t         mainsFreq;      /* Mains frequency */
     uint16_t        reportCycles;   /* Cycle count before reporting */
+    uint16_t        whDeltaStore;   /* Minimum energy delta to store */
 } BaseCfg_t;
 
 typedef struct __attribute__((__packed__)) {
@@ -139,6 +138,11 @@ typedef struct SampleSet {
     q15_t smpV[NUM_V];
     q15_t smpCT[NUM_CT];
 } SampleSet_t;
+
+/*! @brief Get the default configuration values
+ *  @param [out] pCfg : pointer to configuration struct
+ */
+void emon32DefaultConfiguration(Emon32Config_t *pCfg);
 
 /*! @brief Set the pending event/interrupt flag for tasks that are not handled
  *         within an ISR

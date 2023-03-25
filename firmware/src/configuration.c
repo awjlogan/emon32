@@ -6,7 +6,9 @@
     #include "configuration.h"
     #include "util.h"
 
-    #define SERCOM_UART_DBG 0u
+    #define SERCOM_UART_DBG     0u
+    #define EEPROM_WL_OFFSET    0u
+    #define EEPROM_WL_SIZE      0u
 
     /* Override UART outputs */
     void
@@ -24,12 +26,6 @@
     }
 
     void
-    emon32StateSet(EmonState_t state)
-    {
-        (void)state;
-    }
-
-    void
     qfp_str2float(float *f, const char *s, char **endptr)
     {
         *f = strtof(s, endptr);
@@ -42,10 +38,33 @@
         (void)fmt;
     }
 
+    /* Dummy functions called from emon32 top level */
+    void
+    eepromInitBlocking(int a, int b, int c)
+    {
+        (void)a;
+        (void)b;
+        (void)c;
+    }
+
+    void
+    emon32StateSet(EmonState_t state)
+    {
+        (void)state;
+    }
+
+    void
+    emon32DefaultConfiguration()
+    {
+
+    }
+
 #else
+
     #include "qfplib.h"
     #include "qfpio.h"
     #include "emon32_samd.h"
+
 #endif
 
 #define GENBUF_W        16u
@@ -167,6 +186,69 @@ clearTerm()
 }
 
 static void
+menuReset()
+{
+    char c = 0;
+
+    while ('b' != c)
+    {
+        clearTerm();
+        uartPutsBlocking(SERCOM_UART_DBG, "---- RESET DEVICE ----\r\n");
+        uartPutsBlocking(SERCOM_UART_DBG, "0: Restore default configuration.\r\n");
+        uartPutsBlocking(SERCOM_UART_DBG, "1: Clear stored energy accumulators.\r\n");
+        uartPutsBlocking(SERCOM_UART_DBG, "(b)ack\r\n");
+
+        #ifdef HOSTED
+            c = getchar();
+            if ('\n' == c)
+                c = getchar();
+        #else
+            c = waitForChar();
+        #endif
+
+        if ('0' == c)
+        {
+            while ('Y' != c && 'N' == c)
+            {
+                uartPutsBlocking(SERCOM_UART_DBG, "Restore default configuration? (Y/N)\r\n");
+                #ifdef HOSTED
+                    c = getchar();
+                    if ('\n' == c)
+                        c = getchar();
+                #else
+                    c = waitForChar();
+                #endif
+            }
+
+            if ('Y' == c)
+            {
+                valChanged = 1u;
+                emon32DefaultConfiguration(pCfg);
+            }
+        }
+        else if ('1' == c)
+        {
+            while ('Y' != c && 'N' == c)
+            {
+                uartPutsBlocking(SERCOM_UART_DBG, "Clear stored energy accumulators? (Y/N)\r\n");
+                #ifdef HOSTED
+                    c = getchar();
+                    if ('\n' == c)
+                        c = getchar();
+                #else
+                    c = waitForChar();
+                #endif
+            }
+
+            if ('Y' == c)
+            {
+                (void)eepromInitBlocking(EEPROM_WL_OFFSET, 0, EEPROM_WL_SIZE);
+            }
+        }
+    }
+}
+
+static void
 menuVoltageChan(unsigned int chanV)
 {
     char c = 0;
@@ -195,7 +277,6 @@ menuVoltageChan(unsigned int chanV)
         {
             valChanged = 1;
             pCfg->voltageCfg[chanV].voltageCal = getValue_float();
-
         }
     }
 }
@@ -342,6 +423,8 @@ menuConfiguration()
         putValueEnd_10(pCfg->baseCfg.reportCycles);
         uartPutsBlocking(SERCOM_UART_DBG, "2: Mains frequency (Hz):     ");
         putValueEnd_10(pCfg->baseCfg.mainsFreq);
+        uartPutsBlocking(SERCOM_UART_DBG, "3: Energy delta to store:    ");
+        putValueEnd_10(pCfg->baseCfg.whDeltaStore);
         infoEdit();
 
         #ifdef HOSTED
@@ -358,21 +441,23 @@ menuConfiguration()
             idxChange = c - '0';
             val = getValue();
 
+            valChanged = 1u;
             switch (idxChange)
             {
                 case 0:
                     pCfg->baseCfg.nodeID = val;
-                    valChanged = 1u;
                     break;
                 case 1:
                     pCfg->baseCfg.reportCycles = val;
-                    valChanged = 1u;
                     break;
                 case 2:
                     pCfg->baseCfg.mainsFreq = val;
-                    valChanged = 1u;
+                    break;
+                case 3:
+                    pCfg->baseCfg.whDeltaStore = val;
                     break;
                 default:
+                    valChanged = 0;
                     break;
             }
         }
@@ -437,8 +522,9 @@ menuBase()
         uartPutsBlocking(SERCOM_UART_DBG, "  0: About\r\n");
         uartPutsBlocking(SERCOM_UART_DBG, "  1: Configuration\r\n");
         uartPutsBlocking(SERCOM_UART_DBG, "  2: Voltage\r\n");
-        uartPutsBlocking(SERCOM_UART_DBG, "  3: CT\r\n\r\n");
-        uartPutsBlocking(SERCOM_UART_DBG, "Enter number, or (e)xit");
+        uartPutsBlocking(SERCOM_UART_DBG, "  3: CT\r\n");
+        uartPutsBlocking(SERCOM_UART_DBG, "  9: Reset device");
+        uartPutsBlocking(SERCOM_UART_DBG, "\r\nEnter number, or (e)xit");
 
         if (valChanged)
         {
@@ -470,6 +556,9 @@ menuBase()
                 break;
             case '3':
                 menuCT();
+                break;
+            case '9':
+                menuReset();
                 break;
             /* Fall through save or exit */
             case 's':

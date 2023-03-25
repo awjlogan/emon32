@@ -73,11 +73,8 @@ sercomSetup()
 
 #endif /* EEPROM_EMULATED */
 
-    /* Data transmitter setup. When using RFM69 modules, this should be
-     * configured as SPI. If using ESP8266, then this should be a UART
+    /* Data transmitter setup. The RFM69 is driven by an SPI interface
      */
-
-#ifdef TRANSMIT_ESP8266
 
     portPinMux(PIN_UART_DATA_TX, PORT_PMUX_PMUXE_D);
 
@@ -105,8 +102,6 @@ sercomSetup()
     /* Enable requires synchronisation (25.6.6) */
     SERCOM_UART_DATA->USART.CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;
     while (SERCOM_UART_DATA->USART.STATUS.reg & SERCOM_USART_SYNCBUSY_ENABLE);
-
-#endif /* TRANSMIT_ESP8266 */
 
 }
 

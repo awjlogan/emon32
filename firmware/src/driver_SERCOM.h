@@ -109,9 +109,16 @@ uint8_t i2cDataRead(Sercom *sercom);
  */
 void spiWriteByte(Sercom *sercom, const spiPkt_t *pPkt);
 
+/*! @brief Write a set of bytes to a configured SPI channel
+ *  @param [in] sercom : SERCOM instance
+ *  @param [in] pBuf : pointer to data buffer
+ *  @param [in] n : size of data buffer
+ */
+void spiWriteBuffer(Sercom *sercom, const void *pBuf, const unsigned int n);
+
 /*! @brief Read a byte from a configured SPI channel
  *  @param [in] sercom : SERCOM instance
- *  @param [in] pPkt : pointer to SPI packet
+ *  @param [out] pPkt : pointer to SPI packet
  */
 void spiReadByte(Sercom *sercom, spiPkt_t *pPkt);
 

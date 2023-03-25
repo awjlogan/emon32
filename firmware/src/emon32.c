@@ -46,15 +46,16 @@ emon32StateGet()
 }
 
 /*! @brief The default configuration state of the system */
-static inline void
-defaultConfiguration(Emon32Config_t *pCfg)
+void
+emon32DefaultConfiguration(Emon32Config_t *pCfg)
 {
     pCfg->key = CONFIG_NVM_KEY;
 
     /* Default configuration: single phase, 50 Hz, 240 VAC */
-    pCfg->baseCfg.nodeID        = 17u;  /* Node ID to transmit */
+    pCfg->baseCfg.nodeID        = NODE_ID;  /* Node ID to transmit */
     pCfg->baseCfg.mainsFreq     = 50u;  /* Mains frequency */
     pCfg->baseCfg.reportCycles  = 500u; /* 10 s @ 50 Hz */
+    pCfg->baseCfg.whDeltaStore  = DELTA_WH_STORE; /* 200 */
 
     for (unsigned int idxV = 0u; idxV < NUM_V; idxV++)
     {
@@ -273,7 +274,7 @@ main()
     eepromPkt.dataSize      = sizeof(Emon32Cumulative_t);
     eepromPkt.idxNextWrite  = -1;
 
-    defaultConfiguration(&e32Config);
+    emon32DefaultConfiguration(&e32Config);
     loadConfiguration(&e32Config);
     loadCumulative(&eepromPkt, &dataset);
     lastStoredWh = totalEnergy(&dataset);
@@ -288,7 +289,7 @@ main()
     for (;;)
     {
         /* While there is an event pending (may be set while another is
-         * handled, keep looping. Enter sleep (WFI) when done.
+         * handled), keep looping. Enter sleep (WFI) when done.
          */
         while(0 != evtPend)
         {
@@ -319,9 +320,11 @@ main()
                 }
             }
 
-            /* Report period elapsed; generate, pack, and send. If the energy
-             * used since the last storage is > DELTA_WH_STORE, then save the
-             * accumulated energy use in NVM.
+            /* Report period elapsed; generate, pack, and send. This is echoed
+             * on the debug UART.
+             * If the energy used since the last storage is greater than the
+             * configured energy delta (baseCfg.whDeltaStore), then save the
+             * accumulated energy in NVM.
              */
             if (evtPending(EVT_ECM_SET_CMPL))
             {
@@ -332,14 +335,10 @@ main()
                 pktLength = dataPackage(&dataset, txBuffer);
                 uartPutsNonBlocking(DMA_CHAN_UART_DBG, txBuffer, pktLength);
 
-                #ifdef TRANSMIT_ESP8266
-                uartPutsNonBlocking(DMA_CHAN_UART_DATA, txBuffer, pktLength);
-                #endif
-
                 /* Store cumulative values if over threshold */
                 latestWh = totalEnergy(&dataset);
 
-                /* Catch overflow of energy. This corresponds to 4 MWh(!), so
+                /* Catch overflow of energy. This corresponds to ~4 MWh(!), so
                  * unlikely to happen, but handle safely.
                  */
                 energyOverflow = (latestWh < lastStoredWh) ? 1u : 0;
@@ -348,7 +347,7 @@ main()
                     uartPutsBlocking(SERCOM_UART_DBG, "\r\n> Cumulative energy overflowed counter!");
                 }
 
-                if (((latestWh - lastStoredWh) > DELTA_WH_STORE) || energyOverflow)
+                if (((latestWh - lastStoredWh) > e32Config.baseCfg.whDeltaStore) || energyOverflow)
                 {
                     storeCumulative(&eepromPkt, &dataset);
                     lastStoredWh = latestWh;

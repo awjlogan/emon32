@@ -272,21 +272,25 @@ eepromReadWL(eepromPktWL_t *pPktRd)
 }
 
 int
-eepromInitBlocking(const uint16_t startAddr, const uint8_t val, const unsigned int n)
+eepromInitBlocking(uint16_t startAddr, const uint8_t val, unsigned int n)
 {
     Address_t address;
 
-    /* Return a fault if the start address is not on a 16byte boundary, or the
-     * wear levelled portion would not fit in the NVM
+    /* Return a fault if:
+     *  - the start address is not on a 16byte boundary
+     *  - n is not divisble by 16
+     *  - the write is larger than the NVM size
      */
-    if ((0 != (startAddr & 0xF)) || ((startAddr + n) > EEPROM_SIZE_BYTES))
+    if (   (0 != (startAddr & 0xF))
+        || (0 != (n & 0xF))
+        || ((startAddr + n) > EEPROM_SIZE_BYTES))
     {
         return -1;
     }
 
-    address = calcAddress(startAddr);
     while (n)
     {
+        address = calcAddress(startAddr);
         i2cActivate(SERCOM_I2CM, address.msb);
         i2cDataWrite(SERCOM_I2CM, address.lsb);
         for (unsigned int i = 0; i < 16; i++)
@@ -295,8 +299,9 @@ eepromInitBlocking(const uint16_t startAddr, const uint8_t val, const unsigned i
         }
         i2cAck(SERCOM_I2CM, I2CM_ACK, I2CM_ACK_CMD_STOP);
 
-        /* Wait until the non-blocking timer is free. */
-        while (-1 == timerDelay_us(EEPROM_WR_TIME));
+        timerDelay_us(EEPROM_WR_TIME);
+        startAddr += 16;
+        n -= 16;
     }
     return 0;
 }
