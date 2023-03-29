@@ -1,6 +1,8 @@
 #include <string.h>
 #ifdef HOSTED
     #include <stdio.h>
+    #include <stdlib.h>
+
     #include "configuration.h"
     #include "util.h"
 
@@ -25,6 +27,19 @@
     emon32StateSet(EmonState_t state)
     {
         (void)state;
+    }
+
+    void
+    qfp_str2float(float *f, const char *s, char **endptr)
+    {
+        *f = strtof(s, endptr);
+    }
+
+    void
+    qfp_float2str(float f, char *s, unsigned int fmt)
+    {
+        (void)snprintf(s, 16, "%f.2", f);
+        (void)fmt;
     }
 
 #else
@@ -148,7 +163,7 @@ putValueEnd_Float(float val)
 static inline void
 clearTerm()
 {
-    uartPutsBlocking(SERCOM_UART_DBG, "\ec");
+    uartPutsBlocking(SERCOM_UART_DBG, "\033c");
 }
 
 static void

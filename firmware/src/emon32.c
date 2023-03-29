@@ -262,7 +262,7 @@ main()
     uartInterruptEnable(SERCOM_UART_DBG, SERCOM_USART_INTENSET_RXC);
     uartInterruptEnable(SERCOM_UART_DBG, SERCOM_USART_INTENSET_ERROR);
 
-    uartPutsBlocking(SERCOM_UART_DBG, "\ec== Energy Monitor 32 ==\r\n");
+    uartPutsBlocking(SERCOM_UART_DBG, "\033c== Energy Monitor 32 ==\r\n");
 
     /* Load stored values (configuration and accumulated energy) from
      * non-volatile memory (NVM). If the NVM has not been used before then

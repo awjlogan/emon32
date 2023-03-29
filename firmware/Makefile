@@ -13,7 +13,7 @@ QFPLIB_URL=https://www.quinapalus.com/$(QFPLIB_ARC)
 .PHONY: all directory clean size
 
 # Path to toolchain, e.g. /path/to/bin/ Leave empty if already on path.
-TC_PATH = /opt/arm-gnu-toolchain-12.2.rel1-darwin-arm64-arm-none-eabi/bin/
+TC_PATH =
 CC = $(TC_PATH)arm-none-eabi-gcc
 OBJCOPY = $(TC_PATH)arm-none-eabi-objcopy
 SIZE = $(TC_PATH)arm-none-eabi-size
