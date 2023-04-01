@@ -21,5 +21,6 @@
 #include "configuration.h"
 #include "data.h"
 #include "eeprom.h"
+#include "rfm69.h"
 
 #endif

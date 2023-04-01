@@ -251,6 +251,7 @@ main()
     Emon32Config_t      e32Config;
     ECMSet_t            dataset;
     eepromPktWL_t       eepromPkt;
+    RFMPkt_t            rfmPkt;
     uint32_t            lastStoredWh;
     uint32_t            latestWh;
     char                txBuffer[64]; /* TODO Check size of buffer */
@@ -279,6 +280,13 @@ main()
     loadCumulative(&eepromPkt, &dataset);
     lastStoredWh = totalEnergy(&dataset);
 
+    /* Set up data transmission components for RFM69 */
+    rfmPkt.node         = e32Config.baseCfg.nodeID;
+    rfmPkt.grp          = 210u; /* Fixed for OEM */
+    rfmPkt.rf_pwr       = 0u;
+    rfmPkt.threshold    = 0u;
+    rfmPkt.timeout      = 1000u;
+    rfm_init(RF12_868MHz);
 
     /* Set up buffers for ADC data, and configure energy monitor */
     emon32StateSet(EMON_STATE_ACTIVE);
@@ -328,6 +336,9 @@ main()
              */
             if (evtPending(EVT_ECM_SET_CMPL))
             {
+                rfmPkt.n = 23u;
+                rfm_send(&rfmPkt);
+
                 unsigned int pktLength;
                 unsigned int energyOverflow;
 
@@ -355,7 +366,6 @@ main()
                 emon32ClrEvent(EVT_ECM_SET_CMPL);
             }
         }
-        /* Sleep if nothing pending */
         __WFI();
     };
 }

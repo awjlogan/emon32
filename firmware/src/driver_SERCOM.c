@@ -73,13 +73,14 @@ sercomSetup()
 
 #endif /* EEPROM_EMULATED */
 
-    /* Data transmitter setup. The RFM69 is driven by an SPI interface
-     */
+    /* Data transmitter setup. The RFM69 is driven by an SPI interface */
+    portPinMux(PIN_SPI_MISO, PORT_PMUX_PMUXE_D);
+    portPinMux(PIN_SPI_MOSI, PORT_PMUX_PMUXE_D);
+    portPinMux(PIN_SPI_SCK, PORT_PMUX_PMUXE_D);
 
-    portPinMux(PIN_UART_DATA_TX, PORT_PMUX_PMUXE_D);
-
-    const uint32_t baud_data = UART_DATA_BAUD;
-    const uint64_t br_data = (uint64_t)65536 * (F_PERIPH - 16 * baud_data) / F_PERIPH;
+    /* Table 24-2 - driven @ F_REF = F_PERIPH */
+    const uint32_t baud_data = SPI_DATA_BAUD;
+    const uint32_t br_data = ((uint32_t)F_PERIPH / (2 * baud_data) - 1u);
 
     /* Configure clocks - runs from the OSC8M clock on gen 3 */
     PM->APBCMASK.reg |= SERCOM_UART_DATA_APBCMASK;
@@ -87,22 +88,18 @@ sercomSetup()
                         | GCLK_CLKCTRL_GEN(3u)
                         | GCLK_CLKCTRL_CLKEN;
 
-    /* Configure the USART */
-    SERCOM_UART_DATA->USART.CTRLA.reg =   SERCOM_USART_CTRLA_DORD
-                                        | SERCOM_USART_CTRLA_MODE_USART_INT_CLK
-                                        | SERCOM_USART_CTRLA_TXPO(UART_DBG_PAD_TX);
+    SERCOM_SPI_DATA->SPI.BAUD.reg   = br_data;
 
-    /* TX/RX enable requires synchronisation */
-    SERCOM_UART_DATA->USART.CTRLB.reg =   SERCOM_USART_CTRLB_TXEN
-                                        | SERCOM_USART_CTRLB_CHSIZE(0);
-    while (SERCOM_UART_DATA->USART.STATUS.reg & SERCOM_USART_SYNCBUSY_CTRLB);
+    /* SPI mode 0: CPOL == 0, CPHA == 0 */
+    SERCOM_SPI_DATA->SPI.CTRLA.reg  = SERCOM_SPI_CTRLA_MODE_SPI_MASTER;
 
-    SERCOM_UART_DATA->USART.BAUD.reg = (uint16_t)br_data + 1u;
-
-    /* Enable requires synchronisation (25.6.6) */
-    SERCOM_UART_DATA->USART.CTRLA.reg |= SERCOM_USART_CTRLA_ENABLE;
-    while (SERCOM_UART_DATA->USART.STATUS.reg & SERCOM_USART_SYNCBUSY_ENABLE);
-
+    /* While disabled, RXEN will be set immediately. When the SPI SERCOM is
+     * enabled, this requires synchronisation before the SPI is ready. See
+     * field description in 26.8.2
+     */
+    SERCOM_SPI_DATA->SPI.CTRLB.reg = SERCOM_SPI_CTRLB_RXEN;
+    SERCOM_SPI_DATA->SPI.CTRLA.reg |= SERCOM_SPI_CTRLA_ENABLE;
+    while (0 != SERCOM_SPI_DATA->SPI.SYNCBUSY.reg);
 }
 
 /*
@@ -225,11 +222,45 @@ i2cDataRead(Sercom *sercom)
 void
 spiWriteByte(Sercom *sercom, const spiPkt_t *pPkt)
 {
-
+    portPinDrv(PIN_SPI_RFM_SS, PIN_DRV_CLR);
+    sercom->SPI.DATA.reg = pPkt->addr;
+    while (0 == (sercom->SPI.INTFLAG.reg & SERCOM_SPI_INTFLAG_TXC));
+    sercom->SPI.DATA.reg = pPkt->data;
+    while (0 == (sercom->SPI.INTFLAG.reg & SERCOM_SPI_INTFLAG_TXC));
+    portPinDrv(PIN_SPI_RFM_SS, PIN_DRV_SET);
 }
 
 void
 spiReadByte(Sercom *sercom, spiPkt_t *pPkt)
 {
+    /* Set address on first write, then send a dummy byte to provide clock
+     * for shifting out the data
+     */
+    portPinDrv(PIN_SPI_RFM_SS, PIN_DRV_CLR);
 
+    sercom->SPI.DATA.reg = pPkt->addr;
+    while (0 == (sercom->SPI.INTFLAG.reg & SERCOM_SPI_INTFLAG_TXC));
+
+    sercom->SPI.DATA.reg = 0;
+    while (0 == (sercom->SPI.INTFLAG.reg & SERCOM_SPI_INTFLAG_RXC));
+    pPkt->data = sercom->SPI.DATA.reg;
+
+    portPinDrv(PIN_SPI_RFM_SS, PIN_DRV_SET);
+}
+
+void
+spiWriteBuffer(Sercom *sercom, const void *pBuf, const unsigned int n)
+{
+    /* Send buffer byte-wise from pBuf. Address must be the first entries in
+     * pBuf
+     */
+    uint8_t *data = (uint8_t *)pBuf;
+
+    portPinDrv(PIN_SPI_RFM_SS, PIN_DRV_CLR);
+    for (unsigned int i = 0; i < n; i++)
+    {
+        sercom->SPI.DATA.reg = *data++;
+        while(0 == (sercom->SPI.INTFLAG.reg & SERCOM_SPI_INTFLAG_TXC));
+    }
+    portPinDrv(PIN_SPI_RFM_SS, PIN_DRV_SET);
 }

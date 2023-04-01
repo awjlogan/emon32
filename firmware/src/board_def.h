@@ -80,16 +80,18 @@
 #define PIN_UART_DBG_TX     8u
 #define PIN_I2C_SDA         22u
 #define PIN_I2C_SCL         23u
-#define PIN_UART_DATA_TX    17u
 
 /* Debug UART related defines */
 #define UART_DBG_PAD_RX     3u
 #define UART_DBG_PAD_TX     1u
 #define UART_DBG_BAUD       38400u
 
-/* Data UART related defines */
-#define UART_DATA_PAD_TX    1u
-#define UART_DATA_BAUD      115200ul
+/* SPI related defines */
+#define PIN_SPI_MISO        14u
+#define PIN_SPI_MOSI        15u
+#define PIN_SPI_SCK         16u
+#define PIN_SPI_RFM_SS      17u
+#define SPI_DATA_BAUD       4000000ul
 
 /* DMA defines */
 #define NUM_CHAN_DMA        4u

@@ -55,7 +55,8 @@ SRCS += \
   ./src/emon_CM.c \
   ./src/util.c \
   ./src/data.c \
-  ./src/configuration.c
+  ./src/configuration.c \
+  ./src/rfm69.c
 
 
 DEFINES += \
