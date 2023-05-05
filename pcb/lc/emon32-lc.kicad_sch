@@ -2335,7 +2335,7 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 4689b8e0-1fce-47d6-8004-1c32f7024b56)
   )
-  (label "UART_DBG_RX" (at 139.7 91.44 0)
+  (label "UART_DBG_RX" (at 139.7 88.9 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 4f9cee7a-2674-4291-ba64-3d4400065dc4)
   )
@@ -2419,7 +2419,7 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid b3302311-bf53-44da-bfe9-52ea4e65949e)
   )
-  (label "UART_DBG_TX" (at 139.7 88.9 0)
+  (label "UART_DBG_TX" (at 139.7 91.44 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid ba93ae2d-2094-4f69-9756-ae854ba58eaf)
   )
@@ -4167,6 +4167,9 @@
     (path "/00000000-0000-0000-0000-00005fa1e6fa"
       (reference "SW1") (unit 1) (value "SW_Push") (footprint "Button_Switch_SMD:SW_Push_1P1T_NO_CK_KMR2")
     )
+    (path "/00000000-0000-0000-0000-00005f9d8558/9b0fd944-1be1-4119-ab33-3408a03db8f9"
+      (reference "U1") (unit 1) (value "MCP1501-10xCH") (footprint "Package_TO_SOT_SMD:SOT-23-6")
+    )
     (path "/1b288fd6-808c-45f9-a4e3-2cd86772c113"
       (reference "U2") (unit 1) (value "AT24CS01-STUM") (footprint "Package_TO_SOT_SMD:SOT-23-5")
     )
@@ -4187,9 +4190,6 @@
     )
     (path "/00000000-0000-0000-0000-00005f9d8558/85a39a4c-9e3e-445e-ba69-0ee107acad87"
       (reference "U4") (unit 5) (value "MCP6004") (footprint "Package_SO:TSSOP-14_4.4x5mm_P0.65mm")
-    )
-    (path "/00000000-0000-0000-0000-00005f9d8558/00000000-0000-0000-0000-0000601e02e9"
-      (reference "U5") (unit 1) (value "REF3012") (footprint "Package_TO_SOT_SMD:SOT-23")
     )
     (path "/40c84522-bb6c-4723-8d08-8ecfeeb4840b"
       (reference "U6") (unit 1) (value "AP2112K-3.3") (footprint "Package_TO_SOT_SMD:SOT-23-5")
