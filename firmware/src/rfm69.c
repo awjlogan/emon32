@@ -29,28 +29,18 @@ crc16_update(uint16_t *crc, const uint8_t d)
 static void
 rfm_sleep()
 {
-    spiPkt_t pkt_w;
-    spiPkt_t pkt_r;
-
-    /* REG_OPMODE */
-    pkt_w.addr = 0x01u;
+    uint8_t tempRecv;
 
     /* REG_IRQFLAGS2: IRQ2_PACKETSENT */
-    pkt_r.addr = 0x28u;
-    pkt_r.data = 0;
-
-    spiReadByte(SERCOM_SPI_DATA, &pkt_r);
-    while (0 == (pkt_r.data & 0x08u))
+    while (0 == (spiReadByte(SERCOM_SPI_DATA, 0x28u) & 0x8u))
     {
         timerDelay_us(1000);
-        spiReadByte(SERCOM_SPI_DATA, &pkt_r);
     }
 
     /* REG_OPMODE */
-    pkt_r.addr = 0x01u;
-    spiReadByte(SERCOM_SPI_DATA, &pkt_r);
-    pkt_w.data = (pkt_r.data & 0xE3u) | 0x01u;
-    spiWriteByte(SERCOM_SPI_DATA, &pkt_w);
+    tempRecv = spiReadByte(SERCOM_SPI_DATA, 0x1u);
+    tempRecv = (tempRecv & 0xE3u) | 0x1u;
+    spiWriteByte(SERCOM_SPI_DATA, 0x1u, tempRecv);
 }
 
 void
@@ -83,33 +73,20 @@ rfm_init(RFM_Freq_t freq)
         {0xFF, 0}
     };
 
-    spiPkt_t pkt_w;
-    spiPkt_t pkt_r;
-
-    pkt_w.addr = 0x2F;
-    pkt_w.data = 0xAAu;
-    pkt_r.addr = 0x2F;
-    pkt_r.data = 0;
-
     /* Initialise RFM69 */
-    while (0xAA != pkt_r.data)
+    while (0xAA != spiReadByte(SERCOM_SPI_DATA, 0x2Fu))
     {
-        spiWriteByte(SERCOM_SPI_DATA, &pkt_w);
-        spiReadByte(SERCOM_SPI_DATA, &pkt_r);
+        spiWriteByte(SERCOM_SPI_DATA, 0x2Fu, 0xAAu);
     }
-    pkt_w.data = 0x55;
-    while (0x55 != pkt_r.data)
+    while (0x55u != spiReadByte(SERCOM_SPI_DATA, 0x2Fu))
     {
-        spiWriteByte(SERCOM_SPI_DATA, &pkt_w);
-        spiReadByte(SERCOM_SPI_DATA, &pkt_r);
+        spiWriteByte(SERCOM_SPI_DATA, 0x2Fu, 0x55u);
     }
 
     /* Configuration */
-    for (unsigned int idxCfg = 0; (255 != config[idxCfg][0]); idxCfg++)
+    for (unsigned int idxCfg = 0; (0xFF != config[idxCfg][0]); idxCfg++)
     {
-        pkt_w.addr = config[idxCfg][0];
-        pkt_w.data = config[idxCfg][1];
-        spiWriteByte(SERCOM_SPI_DATA, &pkt_w);
+        spiWriteByte(SERCOM_SPI_DATA, config[idxCfg][0], config[idxCfg][1]);
     }
 
     rfm_sleep();
@@ -122,8 +99,8 @@ rfm_send(RFMPkt_t *pPkt)
     int             success = 0;
     uint16_t        crc     = ~0;
     uint8_t         *data   = (uint8_t *)pPkt->data;
-    spiPkt_t        pkt_r;
-    spiPkt_t        pkt_w;
+    uint8_t         tempRecv;
+    uint8_t         writeByte;
 
     /* Wait for "clear" air to transmit in.
      * 1. Enter receive mode
@@ -134,10 +111,8 @@ rfm_send(RFMPkt_t *pPkt)
     {
         success = -1;
 
-        pkt_w.addr = 0x01u;
-        pkt_r.addr = 0x01u;
-        spiReadByte(SERCOM_SPI_DATA, &pkt_r);
-        pkt_w.data = (pkt_r.data & 0xE3) | 0x10;
+        tempRecv = spiReadByte(SERCOM_SPI_DATA, 0x1u);
+        tempRecv = (tempRecv & 0xE3) | 0x10;
 
         /* Non-blocking timer was busy */
         timedOut = 0;
@@ -148,35 +123,24 @@ rfm_send(RFMPkt_t *pPkt)
         while (0 == timedOut)
         {
             /* Wait for READY */
-            pkt_r.addr = 0x27u; /* REG_IRQFLAGS1 */
-            spiReadByte(SERCOM_SPI_DATA, &pkt_r);
-            while(0 == (pkt_r.data & 0x80))
-            {
-                spiReadByte(SERCOM_SPI_DATA, &pkt_r);
-            }
+            while(0 == (spiReadByte(SERCOM_SPI_DATA, 0x27) & 0x80));
 
-            pkt_w.addr = 0x23u; /* REG_RSSI_CONFIG */
-            pkt_w.data = 0x01u; /* RSSI_START */
-            spiWriteByte(SERCOM_SPI_DATA, &pkt_w);
-            pkt_r.addr = 0x23u;
-            spiReadByte(SERCOM_SPI_DATA, &pkt_r);
-            while (0 == (pkt_r.data & 0x02u)) /* RSSI_DONE */
-            {
-                spiReadByte(SERCOM_SPI_DATA, &pkt_r);
-            }
-            pkt_r.addr = 0x24u; /* REG_RSSI_VALUE */
-            spiReadByte(SERCOM_SPI_DATA, &pkt_r);
-            if (pkt_r.data > (pPkt->threshold * -2))
+            /* REG_RSSI_CONFIG: RSSI_START */
+            spiWriteByte(SERCOM_SPI_DATA, 0x23u, 0x1u);
+            /* RSSI_DONE */
+            while (0 == (spiReadByte(SERCOM_SPI_DATA, 0x23u) & 0x02u));
+
+            /* REG_RSSI_VALUE */
+            if (spiReadByte(SERCOM_SPI_DATA, 0x24u) > (pPkt->threshold * -2))
             {
                 success = 0;
                 break;
             }
             /* Restart receiver */
-            pkt_r.addr = 0x3Du; /* REG_PACKET_CONFIG2 */
-            pkt_w.addr = 0x3Du;
-            spiReadByte(SERCOM_SPI_DATA, &pkt_r);
-            pkt_w.data = (pkt_r.data & 0xFB) | 0x04u;
-            spiWriteByte(SERCOM_SPI_DATA, &pkt_w);
+            /* REG_PACKET_CONFIG2 */
+            tempRecv = spiReadByte(SERCOM_SPI_DATA, 0x3Du);
+            tempRecv = (tempRecv & 0xFB) | 0x4u;
+            spiWriteByte(SERCOM_SPI_DATA, 0x3Du, tempRecv);
         }
         timerDisable();
     }
@@ -192,25 +156,22 @@ rfm_send(RFMPkt_t *pPkt)
      * 3. Enter sleep mode
      */
     crc16_update(&crc, pPkt->grp);
-    pkt_r.addr = 0x28u;     /* IRQ_INTFLAG2 */
-    pkt_w.addr = 0x00u;     /* REG_FIFO */
     while (txState < 5)
     {
-        spiReadByte(SERCOM_SPI_DATA, &pkt_r);
-        if (0 == (pkt_r.data & 0x80u))
+        if (0 == (spiReadByte(SERCOM_SPI_DATA, 0x28u) & 0x80u))
         {
             switch (txState)
             {
                 case 0:
-                    pkt_w.data = pPkt->node & 0x1F;
+                    writeByte = pPkt->node & 0x1F;
                     txState++;
                     break;
                 case 1:
-                    pkt_w.data = pPkt->n;
+                    writeByte = pPkt->n;
                     txState++;
                     break;
                 case 2:
-                    pkt_w.data = *data++;
+                    writeByte = *data++;
                     pPkt->n--;
                     if (0 == pPkt->n)
                     {
@@ -218,36 +179,35 @@ rfm_send(RFMPkt_t *pPkt)
                     }
                     break;
                 case 3:
-                    pkt_w.data = (uint8_t)crc;
+                    writeByte = (uint8_t)crc;
                     txState++;
                     break;
                 case 4:
-                    pkt_w.data = (uint8_t)(crc >> 8);
+                    writeByte = (uint8_t)(crc >> 8);
                     txState++;
                     break;
             }
             if (txState < 4)
             {
-                crc16_update(&crc, pkt_w.data);
+                crc16_update(&crc, writeByte);
             }
-            spiWriteByte(SERCOM_SPI_DATA, &pkt_w);
+            spiWriteByte(SERCOM_SPI_DATA, 0x0u, writeByte);
         }
     }
-    pkt_w.data = 0xAA;
+
+    /* Pad FIFO out to minimum 17 bytes */
     while (txState < 17u)
     {
-        spiWriteByte(SERCOM_SPI_DATA, &pkt_w);
+        spiWriteByte(SERCOM_SPI_DATA, 0x0u, 0xAAu);
+        txState++;
     }
 
-    pkt_w.addr = 0x11u;
-    pkt_w.data = (pPkt->rf_pwr & 0x1F) | 0x80;
-    spiWriteByte(SERCOM_SPI_DATA, &pkt_w);
+    writeByte = (pPkt->rf_pwr & 0x1F) | 0x80;
+    spiWriteByte(SERCOM_SPI_DATA, 0x11u, writeByte);
 
-    pkt_w.addr = 0x01u;
-    pkt_r.addr = 0x01u;
-    spiReadByte(SERCOM_SPI_DATA, &pkt_r);
-    pkt_w.data = (pkt_r.data & 0xE3) | 0x0C;
-    spiWriteByte(SERCOM_SPI_DATA, &pkt_w);
+    tempRecv = spiReadByte(SERCOM_SPI_DATA, 0x1u);
+    tempRecv = (tempRecv & 0xE3) | 0xC;
+    spiWriteByte(SERCOM_SPI_DATA, 0x1u, tempRecv);
 
     rfm_sleep();
     return success;

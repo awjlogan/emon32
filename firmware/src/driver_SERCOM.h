@@ -106,9 +106,10 @@ uint8_t i2cDataRead(Sercom *sercom);
 /*! @brief Write a byte to a configured SPI channel. Blocks until transfer
  *         is complete.
  *  @param [in] sercom : SERCOM instance
- *  @param [in] pPkt : pointer to address and byte to write
+ *  @param [in] addr : address to write to
+ *  @param [in] data : data to write
  */
-void spiWriteByte(Sercom *sercom, const spiPkt_t *pPkt);
+void spiWriteByte(Sercom *sercom, const uint8_t addr, const uint8_t data);
 
 /* TODO: use DMA for transfer */
 /*! @brief Write a set of bytes to a configured SPI channel.
@@ -120,8 +121,9 @@ void spiWriteBuffer(Sercom *sercom, const void *pBuf, const unsigned int n);
 
 /*! @brief Read a byte from a configured SPI channel
  *  @param [in] sercom : SERCOM instance
- *  @param [out] pPkt : pointer to SPI packet
+ *  @param [in] addr : address to read from
+ *  @return : the byte that has been read
  */
-void spiReadByte(Sercom *sercom, spiPkt_t *pPkt);
+uint8_t spiReadByte(Sercom *sercom, const uint8_t addr);
 
 #endif

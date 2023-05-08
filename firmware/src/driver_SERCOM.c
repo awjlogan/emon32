@@ -220,32 +220,32 @@ i2cDataRead(Sercom *sercom)
  */
 
 void
-spiWriteByte(Sercom *sercom, const spiPkt_t *pPkt)
+spiWriteByte(Sercom *sercom, const uint8_t addr, const uint8_t data)
 {
     portPinDrv(PIN_SPI_RFM_SS, PIN_DRV_CLR);
-    sercom->SPI.DATA.reg = pPkt->addr;
+    sercom->SPI.DATA.reg = addr;
     while (0 == (sercom->SPI.INTFLAG.reg & SERCOM_SPI_INTFLAG_TXC));
-    sercom->SPI.DATA.reg = pPkt->data;
+    sercom->SPI.DATA.reg = data;
     while (0 == (sercom->SPI.INTFLAG.reg & SERCOM_SPI_INTFLAG_TXC));
     portPinDrv(PIN_SPI_RFM_SS, PIN_DRV_SET);
 }
 
-void
-spiReadByte(Sercom *sercom, spiPkt_t *pPkt)
+uint8_t
+spiReadByte(Sercom *sercom, const uint8_t addr)
 {
     /* Set address on first write, then send a dummy byte to provide clock
      * for shifting out the data
      */
     portPinDrv(PIN_SPI_RFM_SS, PIN_DRV_CLR);
 
-    sercom->SPI.DATA.reg = pPkt->addr;
+    sercom->SPI.DATA.reg = addr;
     while (0 == (sercom->SPI.INTFLAG.reg & SERCOM_SPI_INTFLAG_TXC));
 
     sercom->SPI.DATA.reg = 0;
     while (0 == (sercom->SPI.INTFLAG.reg & SERCOM_SPI_INTFLAG_RXC));
-    pPkt->data = sercom->SPI.DATA.reg;
-
     portPinDrv(PIN_SPI_RFM_SS, PIN_DRV_SET);
+
+    return sercom->SPI.DATA.reg;
 }
 
 void
