@@ -57,6 +57,7 @@
       ],
       "drc_exclusions": [
         "courtyards_overlap|120600001|129200001|51c9c4ba-e52d-4ff5-935f-d5a43eecb2e1|f03e31eb-f45c-4f89-850c-f996f6878e8d",
+        "courtyards_overlap|121590001|128040001|1015d13f-8b6b-494b-973d-788c0e169887|51c9c4ba-e52d-4ff5-935f-d5a43eecb2e1",
         "courtyards_overlap|124649999|127750001|1015d13f-8b6b-494b-973d-788c0e169887|51c9c4ba-e52d-4ff5-935f-d5a43eecb2e1"
       ],
       "meta": {
@@ -372,6 +373,27 @@
         "track_width": 0.25,
         "via_diameter": 0.8,
         "via_drill": 0.4,
+        "wire_width": 6.0
+      },
+      {
+        "bus_width": 12.0,
+        "clearance": 0.125,
+        "diff_pair_gap": 0.165,
+        "diff_pair_via_gap": 0.25,
+        "diff_pair_width": 0.23,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "USB",
+        "nets": [
+          "/USB_D+",
+          "/USB_D-"
+        ],
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.23,
+        "via_diameter": 0.6,
+        "via_drill": 0.2,
         "wire_width": 6.0
       }
     ],
