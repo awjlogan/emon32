@@ -4122,7 +4122,7 @@
       (reference "R7") (unit 1) (value "3K3") (footprint "Resistor_SMD:R_0402_1005Metric")
     )
     (path "/00000000-0000-0000-0000-00005f9d8558/d59380c0-fe50-4834-ba86-42204a25b355"
-      (reference "R8") (unit 1) (value "330R") (footprint "Resistor_SMD:R_0402_1005Metric")
+      (reference "R8") (unit 1) (value "22R") (footprint "Resistor_SMD:R_0402_1005Metric")
     )
     (path "/00000000-0000-0000-0000-00005f9d8558/00000000-0000-0000-0000-00005f9f10e0"
       (reference "R9") (unit 1) (value "22R") (footprint "Resistor_SMD:R_0402_1005Metric")
@@ -4194,16 +4194,16 @@
       (reference "R31") (unit 1) (value "3K3") (footprint "Resistor_SMD:R_0402_1005Metric")
     )
     (path "/00000000-0000-0000-0000-00005f9d8558/21ec4dad-fcf2-4cb4-a4de-ee4e523f295d"
-      (reference "R32") (unit 1) (value "330R") (footprint "Resistor_SMD:R_0402_1005Metric")
+      (reference "R32") (unit 1) (value "22R") (footprint "Resistor_SMD:R_0402_1005Metric")
     )
     (path "/00000000-0000-0000-0000-00005f9d8558/b119c5de-a3a2-41e9-81c4-84a20716f40e"
-      (reference "R33") (unit 1) (value "330R") (footprint "Resistor_SMD:R_0402_1005Metric")
+      (reference "R33") (unit 1) (value "22R") (footprint "Resistor_SMD:R_0402_1005Metric")
     )
     (path "/00000000-0000-0000-0000-00005f9d8558/8009b761-598c-439a-9be7-cdbc65a2b4db"
       (reference "R34") (unit 1) (value "3K3") (footprint "Resistor_SMD:R_0402_1005Metric")
     )
     (path "/00000000-0000-0000-0000-00005f9d8558/430d29b0-ac8c-4d83-8ce8-dd0993bee47e"
-      (reference "R35") (unit 1) (value "330R") (footprint "Resistor_SMD:R_0402_1005Metric")
+      (reference "R35") (unit 1) (value "22R") (footprint "Resistor_SMD:R_0402_1005Metric")
     )
     (path "/00000000-0000-0000-0000-00005fa1e6fa"
       (reference "SW1") (unit 1) (value "SW_Push") (footprint "Button_Switch_SMD:SW_Push_1P1T_NO_CK_KMR2")
