@@ -3,7 +3,7 @@
 void
 clkSetup()
 {
-    /* 48 MHz DFLL for core
+    /* 48 MHz DFLL for core - adapted from Arduino core library
      *  1. Set flash wait state to 1 for 48 MHz core
      *  2. Enable OSC32K clock (assuming no external crystal)
      *  3. Set GCLK Gen 1 source as OSC32K
@@ -16,8 +16,7 @@ clkSetup()
     NVMCTRL->CTRLB.bit.RWS = NVMCTRL_CTRLB_RWS_HALF_Val;
 
     /* 2. OSC32K setup */
-    const uint32_t calOsc32 = (CAL_REG_HIGH & CAL_OSC32_Msk) >> CAL_OSC32_Pos;
-    SYSCTRL->OSC32K.reg =   SYSCTRL_OSC32K_CALIB(calOsc32)
+    SYSCTRL->OSC32K.reg =   SYSCTRL_OSC32K_CALIB(samdCalibration(CAL_OSC32K))
                           | SYSCTRL_OSC32K_STARTUP(0x6u)
                           | SYSCTRL_OSC32K_EN32K
                           | SYSCTRL_OSC32K_ENABLE;

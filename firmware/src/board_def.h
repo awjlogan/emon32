@@ -5,6 +5,15 @@
  * extend this, the base SAMD10 configuration can be bracketed in IFDEF
  */
 
+/* Board identification number. Uncomment the line corresponding to the board
+ * in use. If a custom board is used, then this can be quoted in "dbgPutBoard"
+  */
+#define BOARD_ID_LC         0
+#define BOARD_ID_STANDARD   1
+#define BOARD_ID_DEV        255
+/* LC */
+#define BOARD_ID            BOARD_ID_DEV
+
 /* Online configuration takes around 2.5 KB of flash. Comment out this define to
  * save space, with only RO access to configuration values.
  */
@@ -25,9 +34,6 @@
 /* #define ZERO_CROSSING_HW */
 
 /* EEPROM */
-/* Uncomment to use the software EEPROM mode (not implemented yet)
- * #define EEPROM_EMULATED
- */
 /* Top of EEPROM address, not including R/W bit */
 #define EEPROM_BASE_ADDR    0x50
 /* Maximum number of bytes in a single page */
@@ -72,26 +78,39 @@
 #define PULSE_EIC_INTENCLR          EIC_INTENCLR_EXTINT3
 
 /* Pin assignments (nb. logical, not physical) */
+#if (BOARD_ID == BOARD_ID_DEV)
 #define PIN_EXTINT          24u
 #define PIN_GEN_STATUS      25u
 #define PIN_LED             16u
 #define PIN_SW              15u
-#define PIN_UART_DBG_RX     9u
-#define PIN_UART_DBG_TX     8u
+#endif /* BOARD_ID_DEV */
+
+/* I2C related defines */
+#define GRP_SERCOM_I2C      0u
 #define PIN_I2C_SDA         22u
 #define PIN_I2C_SCL         23u
 
 /* Debug UART related defines */
+#define GRP_SERCOM_UART_DBG 0u
+#define PIN_UART_DBG_RX     9u
+#define PIN_UART_DBG_TX     8u
 #define UART_DBG_PAD_RX     3u
 #define UART_DBG_PAD_TX     1u
 #define UART_DBG_BAUD       38400u
 
 /* SPI related defines */
+#define GRP_SERCOM_SPI      0u
 #define PIN_SPI_MISO        14u
 #define PIN_SPI_MOSI        15u
 #define PIN_SPI_SCK         16u
 #define PIN_SPI_RFM_SS      17u
 #define SPI_DATA_BAUD       4000000ul
+
+/* Data UART related defines */
+#define GRP_SERCOM_UART_DATA 0u
+#define UART_DATA_PAD_RX    3u
+#define UART_DATA_PAD_TX    1u
+#define UART_DATA_BAUD      115200u
 
 /* DMA defines */
 #define NUM_CHAN_DMA        4u
@@ -99,16 +118,5 @@
 #define DMA_CHAN_I2CM       2u
 #define DMA_CHAN_UART_DBG   1u
 #define DMA_CHAN_ADC        0u
-
-/* SAMD10 calibration values (NVM User Row Mapping Table 9-3) */
-#define CAL_REG_LOW         *(const volatile uint32_t *)(0x00806020)
-#define CAL_REG_HIGH        *(const volatile uint32_t *)(0x00806024)
-#define CAL_OSC32_Msk       0x1FC0u
-#define CAL_OSC32_Pos       6u
-#define CAL_ADC_BIAS_Msk    0x38u
-#define CAL_ADC_BIAS_Pos    3u
-#define CAL_ADC_LIN_L_Msk   0xF800u
-#define CAL_ADC_LIN_L_Pos   27u
-#define CAL_ADC_LIN_H_Msk   0x7u
 
 #endif

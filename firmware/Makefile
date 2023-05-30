@@ -13,7 +13,7 @@ QFPLIB_URL=https://www.quinapalus.com/$(QFPLIB_ARC)
 .PHONY: all directory clean size
 
 # Path to toolchain, e.g. /path/to/bin/ Leave empty if already on path.
-TC_PATH =
+TC_PATH = /opt/arm-gnu-toolchain-12.2.rel1-darwin-arm64-arm-none-eabi/bin/
 CC = $(TC_PATH)arm-none-eabi-gcc
 OBJCOPY = $(TC_PATH)arm-none-eabi-objcopy
 SIZE = $(TC_PATH)arm-none-eabi-size
@@ -40,23 +40,25 @@ INCLUDES += \
   -I./src/
 
 SRCS += \
-  ./src/emon32.c \
   ./src/startup_samd10.c \
   ./src/driver_CLK.c \
   ./src/driver_ADC.c \
   ./src/driver_PORT.c \
   ./src/driver_EIC.c \
   ./src/driver_TIME.c \
+  ./src/driver_SAMD.c \
   ./src/driver_SERCOM.c \
   ./src/driver_DMAC.c \
   ./src/driver_EVSYS.c \
   ./src/driver_WDT.c \
+  ./src/board_def.c \
+  ./src/configuration.c \
+  ./src/data.c \
   ./src/eeprom.c \
   ./src/emon_CM.c \
-  ./src/util.c \
-  ./src/data.c \
-  ./src/configuration.c \
-  ./src/rfm69.c
+  ./src/emon32.c \
+  ./src/rfm69.c \
+  ./src/util.c
 
 
 DEFINES += \

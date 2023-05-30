@@ -55,11 +55,17 @@ typedef int32_t     q31_t;
 /* Configurable options. All the structs are packed to allow simple write to
  * EEPROM as a contiguous set.
  */
+typedef enum {
+    DATATX_RFM69    = 0,
+    DATATX_UART     = 1
+} DataTx_t;
+
 typedef struct __attribute__((__packed__)) {
     uint8_t         nodeID;         /* ID for report*/
     uint8_t         mainsFreq;      /* Mains frequency */
     uint16_t        reportCycles;   /* Cycle count before reporting */
     uint16_t        whDeltaStore;   /* Minimum energy delta to store */
+    DataTx_t        dataTx;         /* Data transmission hardware type */
 } BaseCfg_t;
 
 typedef struct __attribute__((__packed__)) {

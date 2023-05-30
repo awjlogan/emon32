@@ -10,21 +10,6 @@
     #define EEPROM_WL_OFFSET    0u
     #define EEPROM_WL_SIZE      0u
 
-    /* Override UART outputs */
-    void
-    uartPutsBlocking(uint32_t Sercom, const char *pSrc)
-    {
-        (void)Sercom;
-        printf("%s", pSrc);
-    }
-
-    void
-    uartPutcBlocking(uint32_t Sercom, char c)
-    {
-        (void)Sercom;
-        printf("%c", c);
-    }
-
     void
     qfp_str2float(float *f, const char *s, char **endptr)
     {
@@ -54,9 +39,9 @@
     }
 
     void
-    emon32DefaultConfiguration()
+    emon32DefaultConfiguration(Emon32Config_t *pCfg)
     {
-
+        (void)pCfg;
     }
 
 #else
@@ -76,7 +61,7 @@ static char             genBuf[GENBUF_W];
 /*! @brief Fetch the board's unique ID, and place in genBuf
  *         For SAMD series, there is a unique value in the IC
  */
-static inline uint32_t
+static uint32_t
 getUniqueID(unsigned int idx)
 {
     #ifdef HOSTED
@@ -91,9 +76,30 @@ getUniqueID(unsigned int idx)
 }
 
 static void
+putString(const char *s)
+{
+    #ifndef HOSTED
+        uartPutsBlocking(SERCOM_UART_DBG, s);
+    #else
+        printf("%s", s);
+    #endif
+
+}
+
+static void
+putChar(const char c)
+{
+    #ifndef HOSTED
+        uartPutcBlocking(SERCOM_UART_DBG, c);
+    #else
+        printf("%c", c);
+    #endif
+}
+
+static void
 enterConfigText()
 {
-    uartPutsBlocking(SERCOM_UART_DBG, "Enter the channel index to configure. (b)ack\r\n");
+    putString("Enter the channel index to configure. (b)ack\r\n");
 }
 
 static char
@@ -103,7 +109,10 @@ waitForChar()
     while (0 == (uartInterruptStatus(SERCOM_UART_DBG) & SERCOM_USART_INTFLAG_RXC));
     return uartGetc(SERCOM_UART_DBG);
 #else
-    return getchar();
+    char c;
+    c = getchar();
+    if ('\n' == c) c = getchar();
+    return c;
 #endif
 }
 
@@ -119,13 +128,7 @@ getInputStr()
     /* Exit when # is received, or out of bounds */
     while ('#' != c && (charCnt < GENBUF_W))
     {
-        #ifdef HOSTED
-            c = getchar();
-            if ('\n' == c)
-                c = getchar();
-        #else
-            c = waitForChar();
-        #endif /* HOSTED */
+        c = waitForChar();
         if ('#' != c)
         {
             *pBuf++ = c;
@@ -153,15 +156,14 @@ getValue_float()
 static void
 infoEdit()
 {
-    uartPutsBlocking(SERCOM_UART_DBG, "\r\nTo edit, enter the index, the value (base 10), then #. Go (b)ack\r\n");
+    putString("\r\nTo edit, enter the index, the value (base 10), then #. Go (b)ack\r\n");
 }
 
 static void
 putValueEnd()
 {
-    uartPutsBlocking(SERCOM_UART_DBG, genBuf);
-    uartPutcBlocking(SERCOM_UART_DBG, '\r');
-    uartPutcBlocking(SERCOM_UART_DBG, '\n');
+    putString(genBuf);
+    putString("\r\n");
 }
 
 static void
@@ -179,10 +181,10 @@ putValueEnd_Float(float val)
     putValueEnd();
 }
 
-static inline void
+static void
 clearTerm()
 {
-    uartPutsBlocking(SERCOM_UART_DBG, "\033c");
+    putString("\033c");
 }
 
 static void
@@ -193,31 +195,19 @@ menuReset()
     while ('b' != c)
     {
         clearTerm();
-        uartPutsBlocking(SERCOM_UART_DBG, "---- RESET DEVICE ----\r\n");
-        uartPutsBlocking(SERCOM_UART_DBG, "0: Restore default configuration.\r\n");
-        uartPutsBlocking(SERCOM_UART_DBG, "1: Clear stored energy accumulators.\r\n");
-        uartPutsBlocking(SERCOM_UART_DBG, "(b)ack\r\n");
+        putString("---- RESET DEVICE ----\r\n");
+        putString("0: Restore default configuration.\r\n");
+        putString("1: Clear stored energy accumulators.\r\n");
+        putString("(b)ack\r\n");
 
-        #ifdef HOSTED
-            c = getchar();
-            if ('\n' == c)
-                c = getchar();
-        #else
-            c = waitForChar();
-        #endif
+        c = waitForChar();
 
         if ('0' == c)
         {
             while ('Y' != c && 'N' == c)
             {
-                uartPutsBlocking(SERCOM_UART_DBG, "Restore default configuration? (Y/N)\r\n");
-                #ifdef HOSTED
-                    c = getchar();
-                    if ('\n' == c)
-                        c = getchar();
-                #else
-                    c = waitForChar();
-                #endif
+                putString("Restore default configuration? (Y/N)\r\n");
+                c = waitForChar();
             }
 
             if ('Y' == c)
@@ -230,14 +220,8 @@ menuReset()
         {
             while ('Y' != c && 'N' == c)
             {
-                uartPutsBlocking(SERCOM_UART_DBG, "Clear stored energy accumulators? (Y/N)\r\n");
-                #ifdef HOSTED
-                    c = getchar();
-                    if ('\n' == c)
-                        c = getchar();
-                #else
-                    c = waitForChar();
-                #endif
+                putString("Clear stored energy accumulators? (Y/N)\r\n");
+                c = waitForChar();
             }
 
             if ('Y' == c)
@@ -256,21 +240,15 @@ menuVoltageChan(unsigned int chanV)
     while ('b' != c)
     {
         clearTerm();
-        uartPutsBlocking(SERCOM_UART_DBG, "---- VOLTAGE CHANNEL ");
+        putString("---- VOLTAGE CHANNEL ");
         (void)utilItoa(genBuf, chanV, ITOA_BASE10);
-        uartPutsBlocking(SERCOM_UART_DBG, genBuf);
-        uartPutsBlocking(SERCOM_UART_DBG, " ----\r\n\r\n");
-        uartPutsBlocking(SERCOM_UART_DBG, "0: Conversion factor: ");
+        putString(genBuf);
+        putString(" ----\r\n\r\n");
+        putString("0: Conversion factor: ");
         putValueEnd_Float(pCfg->voltageCfg[chanV].voltageCal);
         infoEdit();
 
-        #ifdef HOSTED
-            c = getchar();
-            if ('\n' == c)
-                c = getchar();
-        #else
-            c = waitForChar();
-        #endif
+        c = waitForChar();
 
         /* (Currently) only a single option for Voltage channel */
         if ('0' == c)
@@ -289,24 +267,18 @@ menuVoltage()
     while ('b' != c)
     {
         clearTerm();
-        uartPutsBlocking(SERCOM_UART_DBG, "---- VOLTAGE CHANNELS ----\r\n\r\n");
+        putString("---- VOLTAGE CHANNELS ----\r\n\r\n");
         for (unsigned int idxV = 0; idxV < NUM_V; idxV++)
         {
             (void)utilItoa(genBuf, idxV, ITOA_BASE10);
-            uartPutsBlocking(SERCOM_UART_DBG, genBuf);
-            uartPutsBlocking(SERCOM_UART_DBG, ": Voltage Channel ");
-            uartPutsBlocking(SERCOM_UART_DBG, genBuf);
-            uartPutsBlocking(SERCOM_UART_DBG, "\r\n");
+            putString(genBuf);
+            putString(": Voltage Channel ");
+            putString(genBuf);
+            putString("\r\n");
         }
         enterConfigText();
 
-        #ifdef HOSTED
-            c = getchar();
-            if ('\n' == c)
-                c = getchar();
-        #else
-            c = waitForChar();
-        #endif
+        c = waitForChar();
 
         if ('b' != c)
         {
@@ -324,25 +296,19 @@ menuCTChan(unsigned int chanCT)
     while ('b' != c)
     {
         clearTerm();
-        uartPutsBlocking(SERCOM_UART_DBG, "---- CT CHANNEL ");
+        putString("---- CT CHANNEL ");
         (void)utilItoa(genBuf, chanCT, ITOA_BASE10);
-        uartPutsBlocking(SERCOM_UART_DBG, genBuf);
-        uartPutsBlocking(SERCOM_UART_DBG, " ----\r\n\r\n");
-        uartPutsBlocking(SERCOM_UART_DBG, "0: Conversion factor:   ");
+        putString(genBuf);
+        putString(" ----\r\n\r\n");
+        putString("0: Conversion factor:   ");
         putValueEnd_Float(pCfg->ctCfg[chanCT].ctCal);
-        uartPutsBlocking(SERCOM_UART_DBG, "1: Phase calibration X: ");
+        putString("1: Phase calibration X: ");
         putValueEnd_10(pCfg->ctCfg[chanCT].phaseX);
-        uartPutsBlocking(SERCOM_UART_DBG, "2: Phase calibration Y: ");
+        putString("2: Phase calibration Y: ");
         putValueEnd_10(pCfg->ctCfg[chanCT].phaseY);
         infoEdit();
 
-        #ifdef HOSTED
-            c = getchar();
-            if ('\n' == c)
-                c = getchar();
-        #else
-            c = waitForChar();
-        #endif
+        c = waitForChar();
 
         if ('0' == c)
         {
@@ -381,24 +347,18 @@ menuCT()
     while ('b' != c)
     {
         clearTerm();
-        uartPutsBlocking(SERCOM_UART_DBG, "---- CT CHANNELS ----\r\n\r\n");
+        putString("---- CT CHANNELS ----\r\n\r\n");
         for (unsigned int idxCT = 0; idxCT < NUM_CT; idxCT++)
         {
             (void)utilItoa(genBuf, idxCT, ITOA_BASE10);
-            uartPutsBlocking(SERCOM_UART_DBG, genBuf);
-            uartPutsBlocking(SERCOM_UART_DBG, ": CT Channel ");
-            uartPutsBlocking(SERCOM_UART_DBG, genBuf);
-            uartPutsBlocking(SERCOM_UART_DBG, "\r\n");
+            putString(genBuf);
+            putString(": CT Channel ");
+            putString(genBuf);
+            putString("\r\n");
         }
         enterConfigText();
 
-        #ifdef HOSTED
-            c = getchar();
-            if ('\n' == c)
-                c = getchar();
-        #else
-            c = waitForChar();
-        #endif
+        c = waitForChar();
 
         if ('b' != c)
         {
@@ -416,24 +376,18 @@ menuConfiguration()
     while ('b' != c)
     {
         clearTerm();
-        uartPutsBlocking(SERCOM_UART_DBG, "---- CONFIGURATION ----\r\n\r\n");
-        uartPutsBlocking(SERCOM_UART_DBG, "0: Node ID:                  ");
+        putString("---- CONFIGURATION ----\r\n\r\n");
+        putString("0: Node ID:                  ");
         putValueEnd_10(pCfg->baseCfg.nodeID);
-        uartPutsBlocking(SERCOM_UART_DBG, "1: Cycles to report:         ");
+        putString("1: Cycles to report:         ");
         putValueEnd_10(pCfg->baseCfg.reportCycles);
-        uartPutsBlocking(SERCOM_UART_DBG, "2: Mains frequency (Hz):     ");
+        putString("2: Mains frequency (Hz):     ");
         putValueEnd_10(pCfg->baseCfg.mainsFreq);
-        uartPutsBlocking(SERCOM_UART_DBG, "3: Energy delta to store:    ");
+        putString("3: Energy delta to store:    ");
         putValueEnd_10(pCfg->baseCfg.whDeltaStore);
         infoEdit();
 
-        #ifdef HOSTED
-            c = getchar();
-            if ('\n' == c)
-                c = getchar();
-        #else
-            c = waitForChar();
-        #endif
+        c = waitForChar();
 
         if ((c >= '0') && (c <= '2'))
         {
@@ -470,41 +424,35 @@ menuAbout()
     char c = 0;
 
     clearTerm();
-    uartPutsBlocking(SERCOM_UART_DBG, "---- ABOUT ----\r\n\r\n");
-    uartPutsBlocking(SERCOM_UART_DBG, "Firmware version: ");
+    putString("---- ABOUT ----\r\n\r\n");
+    putString("Firmware version: ");
 
     (void)utilItoa(genBuf, VERSION_FW_MAJ, ITOA_BASE10);
-    uartPutsBlocking(SERCOM_UART_DBG, genBuf);
-    uartPutcBlocking(SERCOM_UART_DBG, '.');
+    putString(genBuf);
+    putChar('.');
     putValueEnd_10(VERSION_FW_MIN);
 
-    uartPutsBlocking(SERCOM_UART_DBG, "Serial number:    ");
+    putString("Serial number:    ");
     for (unsigned int i = 0; i < 4; i++)
     {
         utilItoa(genBuf, getUniqueID(i), ITOA_BASE16);
-        uartPutsBlocking(SERCOM_UART_DBG, genBuf);
+        putString(genBuf);
     }
-    uartPutsBlocking(SERCOM_UART_DBG, "\r\n\r\n");
+    putString("\r\n\r\n");
 
-    uartPutsBlocking(SERCOM_UART_DBG, "Voltage channels: ");
+    putString("Voltage channels: ");
     putValueEnd_10(NUM_V);
 
-    uartPutsBlocking(SERCOM_UART_DBG, "CT channels:      ");
+    putString("CT channels:      ");
     putValueEnd_10(NUM_CT);
 
-    uartPutsBlocking(SERCOM_UART_DBG, "\r\n(c) Angus Logan 2022-23\r\n");
-    uartPutsBlocking(SERCOM_UART_DBG, "For Bear and Moose\r\n\r\n");
-    uartPutsBlocking(SERCOM_UART_DBG, "(b)ack");
+    putString("\r\n(c) Angus Logan 2022-23\r\n");
+    putString("For Bear and Moose\r\n\r\n");
+    putString("(b)ack");
 
     while ('b' != c)
     {
-        #ifdef HOSTED
-            c = getchar();
-            if ('\n' == c)
-                c = getchar();
-        #else
-            c = waitForChar();
-        #endif
+        c = waitForChar();
     }
 }
 
@@ -518,30 +466,24 @@ menuBase()
         /* Clear terminal and print menu */
         clearTerm();
 
-        uartPutsBlocking(SERCOM_UART_DBG, "== Energy Monitor 32 ==\r\n\r\n");
-        uartPutsBlocking(SERCOM_UART_DBG, "  0: About\r\n");
-        uartPutsBlocking(SERCOM_UART_DBG, "  1: Configuration\r\n");
-        uartPutsBlocking(SERCOM_UART_DBG, "  2: Voltage\r\n");
-        uartPutsBlocking(SERCOM_UART_DBG, "  3: CT\r\n");
-        uartPutsBlocking(SERCOM_UART_DBG, "  9: Reset device");
-        uartPutsBlocking(SERCOM_UART_DBG, "\r\nEnter number, or (e)xit");
+        putString("== Energy Monitor 32 ==\r\n\r\n");
+        putString("  0: About\r\n");
+        putString("  1: Configuration\r\n");
+        putString("  2: Voltage\r\n");
+        putString("  3: CT\r\n");
+        putString("  9: Reset device");
+        putString("\r\nEnter number, or (e)xit");
 
         if (valChanged)
         {
-            uartPutsBlocking(SERCOM_UART_DBG, " do not save, or (s)ave and exit.\r\n");
+            putString(" do not save, or (s)ave and exit.\r\n");
         }
         else
         {
-            uartPutsBlocking(SERCOM_UART_DBG, "\r\n");
+            putString("\r\n");
         }
 
-        #ifdef HOSTED
-            c = getchar();
-            if ('\n' == c)
-                c = getchar();
-        #else
-            c = waitForChar();
-        #endif
+        c = waitForChar();
 
         switch (c)
         {
@@ -566,23 +508,17 @@ menuBase()
                 break;
             default:
                 /* Terminal ping/flash */
-                uartPutcBlocking(SERCOM_UART_DBG, '\a');
+                putChar('\a');
         }
     }
 
     /* Warn if the changes are going to be discarded */
     if ((0 != valChanged) && ('e' == c))
     {
-        uartPutsBlocking(SERCOM_UART_DBG, "Discard changes? (y/n)\r\n");
+        putString("Discard changes? (y/n)\r\n");
         while (('y' != c) && ('n' != c))
         {
-            #ifdef HOSTED
-                c = getchar();
-                if ('\n' == c)
-                    c = getchar();
-            #else
-                c = waitForChar();
-            #endif
+            c = waitForChar();
 
         }
         c = ('y' == c) ? 'e' : 's';

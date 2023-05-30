@@ -8,19 +8,20 @@
 
 #include "driver_ADC.h"
 #include "driver_CLK.h"
-#include "driver_PORT.h"
+#include "driver_DMAC.h"
 #include "driver_EIC.h"
+#include "driver_EVSYS.h"
+#include "driver_PORT.h"
+#include "driver_SAMD.h"
 #include "driver_SERCOM.h"
 #include "driver_TIME.h"
-#include "driver_DMAC.h"
-#include "driver_EVSYS.h"
 #include "driver_WDT.h"
 
-#include "emon_CM.h"
-#include "util.h"
 #include "configuration.h"
 #include "data.h"
 #include "eeprom.h"
+#include "emon_CM.h"
 #include "rfm69.h"
+#include "util.h"
 
 #endif

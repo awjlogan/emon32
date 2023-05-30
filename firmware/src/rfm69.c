@@ -2,9 +2,42 @@
 
 #include "emon32_samd.h"
 
-static volatile unsigned int timedOut = 0;
+/* Register definitions */
+typedef enum {
+    REG_FIFO            = 0x00,
+    REG_OPMODE          = 0x01,
+    REG_FRFMSB          = 0x07,
+    REG_AFCFEI          = 0x1E,
+    REG_RSSIVALUE       = 0x24,
+    REG_DIOMAPPING1     = 0x25,
+    REG_IRQFLAGS1       = 0x27,
+    REG_IRQFLAGS2       = 0x28,
+    REG_SYNCCONFIG      = 0x2E,
+    REG_SYNCVALUE1      = 0x2F,
+    REG_SYNCVALUE2      = 0x30,
+    REG_SYNCVALUE3      = 0x31,
+    REG_NODEADRS        = 0x39,
+    REG_PACKETCONFIG2   = 0x3D,
+    REG_AESKEY1         = 0x3E
+} RFM_register_t;
+
+/* Alias to SPI functions */
+static void
+rfmWriteReg(const RFM_register_t addr, const uint8_t data)
+{
+    /* Datasheet 5.2.1, Figure 24: "wnr is 1 for write" */
+    spiWriteByte(SERCOM_SPI_DATA, ((uint8_t)addr | 0x80), data);
+}
+
+static uint8_t
+rfmReadReg(const RFM_register_t addr)
+{
+    return spiReadByte(SERCOM_SPI_DATA, (uint8_t)addr);
+}
 
 /* Call back function for the non-blocking timer to set the timed out flag */
+static volatile unsigned int timedOut = 0;
+
 void
 setTimedOut()
 {
@@ -32,15 +65,14 @@ rfm_sleep()
     uint8_t tempRecv;
 
     /* REG_IRQFLAGS2: IRQ2_PACKETSENT */
-    while (0 == (spiReadByte(SERCOM_SPI_DATA, 0x28u) & 0x8u))
+    while (0 == (rfmReadReg(REG_IRQFLAGS2) & 0x8u))
     {
         timerDelay_us(1000);
     }
 
-    /* REG_OPMODE */
-    tempRecv = spiReadByte(SERCOM_SPI_DATA, 0x1u);
+    tempRecv = rfmReadReg(REG_OPMODE);
     tempRecv = (tempRecv & 0xE3u) | 0x1u;
-    spiWriteByte(SERCOM_SPI_DATA, 0x1u, tempRecv);
+    rfmWriteReg(REG_OPMODE, tempRecv);
 }
 
 void
@@ -74,19 +106,19 @@ rfm_init(RFM_Freq_t freq)
     };
 
     /* Initialise RFM69 */
-    while (0xAA != spiReadByte(SERCOM_SPI_DATA, 0x2Fu))
+    while (0xAA != rfmReadReg(REG_SYNCVALUE1))
     {
-        spiWriteByte(SERCOM_SPI_DATA, 0x2Fu, 0xAAu);
+        rfmWriteReg(REG_SYNCVALUE1, 0xAAu);
     }
-    while (0x55u != spiReadByte(SERCOM_SPI_DATA, 0x2Fu))
+    while (0x55u != rfmReadReg(REG_SYNCVALUE1))
     {
-        spiWriteByte(SERCOM_SPI_DATA, 0x2Fu, 0x55u);
+        rfmWriteReg(REG_SYNCVALUE1, 0x55u);
     }
 
     /* Configuration */
     for (unsigned int idxCfg = 0; (0xFF != config[idxCfg][0]); idxCfg++)
     {
-        spiWriteByte(SERCOM_SPI_DATA, config[idxCfg][0], config[idxCfg][1]);
+        rfmWriteReg(config[idxCfg][0], config[idxCfg][1]);
     }
 
     rfm_sleep();
@@ -111,7 +143,7 @@ rfm_send(RFMPkt_t *pPkt)
     {
         success = -1;
 
-        tempRecv = spiReadByte(SERCOM_SPI_DATA, 0x1u);
+        tempRecv = rfmReadReg(REG_OPMODE);
         tempRecv = (tempRecv & 0xE3) | 0x10;
 
         /* Non-blocking timer was busy */
@@ -123,24 +155,24 @@ rfm_send(RFMPkt_t *pPkt)
         while (0 == timedOut)
         {
             /* Wait for READY */
-            while(0 == (spiReadByte(SERCOM_SPI_DATA, 0x27) & 0x80));
+            while(0 == (rfmReadReg(0x27) & 0x80));
 
             /* REG_RSSI_CONFIG: RSSI_START */
-            spiWriteByte(SERCOM_SPI_DATA, 0x23u, 0x1u);
+            rfmWriteReg(0x23u, 0x1u);
             /* RSSI_DONE */
-            while (0 == (spiReadByte(SERCOM_SPI_DATA, 0x23u) & 0x02u));
+            while (0 == (rfmReadReg(0x23u) & 0x02u));
 
             /* REG_RSSI_VALUE */
-            if (spiReadByte(SERCOM_SPI_DATA, 0x24u) > (pPkt->threshold * -2))
+            if (rfmReadReg(0x24u) > (pPkt->threshold * -2))
             {
                 success = 0;
                 break;
             }
             /* Restart receiver */
             /* REG_PACKET_CONFIG2 */
-            tempRecv = spiReadByte(SERCOM_SPI_DATA, 0x3Du);
+            tempRecv = rfmReadReg(0x3Du);
             tempRecv = (tempRecv & 0xFB) | 0x4u;
-            spiWriteByte(SERCOM_SPI_DATA, 0x3Du, tempRecv);
+            rfmWriteReg(0x3Du, tempRecv);
         }
         timerDisable();
     }
@@ -158,7 +190,7 @@ rfm_send(RFMPkt_t *pPkt)
     crc16_update(&crc, pPkt->grp);
     while (txState < 5)
     {
-        if (0 == (spiReadByte(SERCOM_SPI_DATA, 0x28u) & 0x80u))
+        if (0 == (rfmReadReg(REG_IRQFLAGS2) & 0x80u))
         {
             switch (txState)
             {
@@ -191,23 +223,39 @@ rfm_send(RFMPkt_t *pPkt)
             {
                 crc16_update(&crc, writeByte);
             }
+<<<<<<< HEAD
             spiWriteByte(SERCOM_SPI_DATA, 0x0u, writeByte);
+=======
+            rfmWriteReg(REG_FIFO, writeByte);
+>>>>>>> fw-generic
         }
     }
 
     /* Pad FIFO out to minimum 17 bytes */
     while (txState < 17u)
     {
+<<<<<<< HEAD
         spiWriteByte(SERCOM_SPI_DATA, 0x0u, 0xAAu);
+=======
+        rfmWriteReg(REG_FIFO, 0xAAu);
+>>>>>>> fw-generic
         txState++;
     }
 
     writeByte = (pPkt->rf_pwr & 0x1F) | 0x80;
+<<<<<<< HEAD
     spiWriteByte(SERCOM_SPI_DATA, 0x11u, writeByte);
 
     tempRecv = spiReadByte(SERCOM_SPI_DATA, 0x1u);
     tempRecv = (tempRecv & 0xE3) | 0xC;
     spiWriteByte(SERCOM_SPI_DATA, 0x1u, tempRecv);
+=======
+    rfmWriteReg(0x11u, writeByte);
+
+    tempRecv = rfmReadReg(REG_OPMODE);
+    tempRecv = (tempRecv & 0xE3) | 0xC;
+    rfmWriteReg(REG_OPMODE, tempRecv);
+>>>>>>> fw-generic
 
     rfm_sleep();
     return success;

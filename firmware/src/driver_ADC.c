@@ -3,31 +3,20 @@
 void
 adcSetup()
 {
-    /* Set up ADC pins using WRCONFIG (22.8.11) */
-    PORT->Group[0].WRCONFIG.reg =   PORT_WRCONFIG_PINMASK(2u)
-                                  | PORT_WRCONFIG_PINMASK(3u)
-                                  | PORT_WRCONFIG_PINMASK(4u)
-                                  | PORT_WRCONFIG_PINMASK(5u)
-                                  | PORT_WRCONFIG_PINMASK(6u)
-                                  | PORT_WRCONFIG_PINMASK(7u)
-                                  | PORT_WRCONFIG_PINMASK(14u)
-                                  | PORT_WRCONFIG_WRPINCFG
-                                  | PORT_WRCONFIG_WRPMUX
-                                  | PORT_WRCONFIG_PMUXEN
-                                  | PORT_WRCONFIG_PMUX(PORT_PMUX_PMUXE_B_Val);
+    extern uint8_t pinsADC[][2];
+
+    for (unsigned int i = 0; pinsADC[i][0] != 0xFF; i++)
+    {
+        portPinMux(pinsADC[i][0], pinsADC[i][1], PORT_PMUX_PMUXE_B_Val);
+    }
 
     /* APB bus clock is enabled by default (Table 15-1). Connect GCLK 3 */
     GCLK->CLKCTRL.reg =   GCLK_CLKCTRL_ID(ADC_GCLK_ID)
                         | GCLK_CLKCTRL_GEN(3u)
                         | GCLK_CLKCTRL_CLKEN;
 
-    /* Calibration values - Table 9-4. Linearity split over 2 32bit words */
-    const uint32_t calADCbias = (CAL_REG_HIGH & CAL_ADC_BIAS_Msk) >> CAL_ADC_BIAS_Pos;
-    const uint32_t calADClin =   ((CAL_REG_LOW & CAL_ADC_LIN_L_Msk) >> CAL_ADC_LIN_L_Pos)
-                               | (CAL_REG_HIGH & CAL_ADC_LIN_H_Msk) << 5u;
-
-    ADC->CALIB.reg =   (uint16_t)calADCbias << 8u
-                     | (uint16_t)calADClin;
+    ADC->CALIB.reg =   (samdCalibration(CAL_ADC_BIAS) << 8u)
+                     | samdCalibration(CAL_ADC_LINEARITY);
 
     /* Enable reference buffer and set to external VREF
      * TODO Unclear if the buffer is for external ref, or only internal
@@ -52,7 +41,7 @@ adcSetup()
     ADC->INPUTCTRL.reg =   ADC_INPUTCTRL_MUXPOS_PIN2
                          | ADC_INPUTCTRL_MUXNEG_PIN0
                          /* INPUTSCAN is number of channels - 1 */
-                         | ADC_INPUTCTRL_INPUTSCAN(NUM_V + NUM_CT - 1u);
+                         | ADC_INPUTCTRL_INPUTSCAN(VCT_TOTAL - 1u);
     while (ADC->STATUS.reg & ADC_STATUS_SYNCBUSY);
 
     /* ADC is triggered by an event from TC1 with no CPU intervention */
@@ -63,7 +52,7 @@ adcSetup()
     dmacDesc->DESCADDR.reg = 0u;
     dmacDesc->SRCADDR.reg = (uint32_t)&ADC->RESULT;
     /* Likely to downsample / 2, so capture two sample sets before interrupt */
-    dmacDesc->BTCNT.reg = (NUM_V + NUM_CT) * 2u;
+    dmacDesc->BTCNT.reg = (VCT_TOTAL) * 2u;
     dmacDesc->BTCTRL.reg =   DMAC_BTCTRL_VALID
                            | DMAC_BTCTRL_BLOCKACT_NOACT
                            | DMAC_BTCTRL_BEATSIZE_HWORD

@@ -2,7 +2,7 @@
 #include "emon_CM.h"
 
 static volatile DmacDescriptor dmacs[NUM_CHAN_DMA];
-static DmacDescriptor dmacs_wb[NUM_CHAN_DMA];
+static          DmacDescriptor dmacs_wb[NUM_CHAN_DMA];
 
 /* Useful ref: https://aykevl.nl/2019/09/samd21-dma */
 

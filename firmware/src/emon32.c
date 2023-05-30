@@ -1,17 +1,33 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "board_def.h"
-#include "emon32.h"
-#include "eeprom.h"
 #include "emon32_samd.h"
-#include "emon_CM.h"
 
 #define EEPROM_WL_NUM_BLK   EEPROM_WL_SIZE / EEPROM_WL_SIZE_BLK
 
-/* Persistent state variables */
+/*************************************
+ * Persistent state variables
+ *************************************/
+
 static volatile uint32_t    evtPend;
 static volatile EmonState_t emonState = EMON_STATE_IDLE;
+
+/*************************************
+ * Function prototypes
+ *************************************/
+
+static void     loadConfiguration(Emon32Config_t *pCfg);
+static uint32_t totalEnergy(const ECMSet_t *pData);
+static void     loadCumulative(eepromPktWL_t *pPkt, ECMSet_t *pData);
+static void     storeCumulative(eepromPktWL_t *pPkt, const ECMSet_t *pData);
+static void     evtKiloHertz();
+static uint32_t evtPending(INTSRC_t evt);
+static void     dgbPutBoard();
+static void     setup_uc();
+
+/*************************************
+ * Functions
+ *************************************/
 
 void
 emon32SetEvent(INTSRC_t evt)
@@ -56,6 +72,7 @@ emon32DefaultConfiguration(Emon32Config_t *pCfg)
     pCfg->baseCfg.mainsFreq     = 50u;  /* Mains frequency */
     pCfg->baseCfg.reportCycles  = 500u; /* 10 s @ 50 Hz */
     pCfg->baseCfg.whDeltaStore  = DELTA_WH_STORE; /* 200 */
+    pCfg->baseCfg.dataTx        = DATATX_RFM69;
 
     for (unsigned int idxV = 0u; idxV < NUM_V; idxV++)
     {
@@ -74,7 +91,7 @@ emon32DefaultConfiguration(Emon32Config_t *pCfg)
 /*! @brief This function handles loading of configuration data
  *  @param [in] pCfg : pointer to the configuration struct
  */
-static inline void
+static void
 loadConfiguration(Emon32Config_t *pCfg)
 {
     unsigned int    systickCnt  = 0u;
@@ -141,7 +158,7 @@ loadConfiguration(Emon32Config_t *pCfg)
  *  @param [in] pData : pointer to data setup
  *  @return : sum of Wh for all CTs
  */
-uint32_t
+static uint32_t
 totalEnergy(const ECMSet_t *pData)
 {
     uint32_t totalEnergy = 0;
@@ -213,17 +230,40 @@ evtKiloHertz()
  *  @param [in] : event source to check
  *  @return : 1 if pending, 0 otherwise
  */
-static inline unsigned int
+static uint32_t
 evtPending(INTSRC_t evt)
 {
-    if (evtPend & (1u << evt))
+    return (evtPend & (1u << evt)) ? 1u : 0;
+}
+
+static void
+dgbPutBoard()
+{
+    char        wr_buf[8];
+    const int   board_id = BOARD_ID;
+
+    uartPutsBlocking(SERCOM_UART_DBG, "\033c== Energy Monitor 32 ==\r\n");
+    uartPutsBlocking(SERCOM_UART_DBG, "Board:    ");
+    switch (board_id)
     {
-        return 1u;
+        case (BOARD_ID_LC):
+            uartPutsBlocking(SERCOM_UART_DBG, "emon32 Low Cost");
+            break;
+        case (BOARD_ID_STANDARD):
+            uartPutsBlocking(SERCOM_UART_DBG, "emon32 Standard");
+            break;
+        default:
+            uartPutsBlocking(SERCOM_UART_DBG, "Unknown");
     }
-    else
-    {
-        return 0;
-    }
+    uartPutsBlocking(SERCOM_UART_DBG, "\r\n");
+
+    uartPutsBlocking(SERCOM_UART_DBG, "Firmware: ");
+    (void)utilItoa(wr_buf, VERSION_FW_MAJ, ITOA_BASE10);
+    uartPutsBlocking(SERCOM_UART_DBG, wr_buf);
+    uartPutcBlocking(SERCOM_UART_DBG, '.');
+    (void)utilItoa(wr_buf, VERSION_FW_MIN, ITOA_BASE10);
+    uartPutsBlocking(SERCOM_UART_DBG, wr_buf);
+    uartPutsBlocking(SERCOM_UART_DBG, "\r\n");
 }
 
 
@@ -231,7 +271,7 @@ evtPending(INTSRC_t evt)
  *         implementation must provide all the functions that are called.
  *         These can be empty if they are not used.
  */
-static inline void
+static void
 setup_uc()
 {
     clkSetup();
@@ -254,6 +294,7 @@ main()
     RFMPkt_t            rfmPkt;
     uint32_t            lastStoredWh;
     uint32_t            latestWh;
+    uint32_t            deltaWh;
     char                txBuffer[64]; /* TODO Check size of buffer */
     uint32_t            pulseTimeSince = 0;
 
@@ -264,11 +305,12 @@ main()
     uartInterruptEnable(SERCOM_UART_DBG, SERCOM_USART_INTENSET_RXC);
     uartInterruptEnable(SERCOM_UART_DBG, SERCOM_USART_INTENSET_ERROR);
 
-    uartPutsBlocking(SERCOM_UART_DBG, "\033c== Energy Monitor 32 ==\r\n");
+    dgbPutBoard();
 
     /* Load stored values (configuration and accumulated energy) from
      * non-volatile memory (NVM). If the NVM has not been used before then
      * store default configuration and 0 energy accumulator area.
+     * REVISIT add check that firmware version matches stored config
      */
     eepromPkt.addr_base     = EEPROM_WL_OFFSET;
     eepromPkt.blkCnt        = EEPROM_WL_NUM_BLK;
@@ -280,13 +322,31 @@ main()
     loadCumulative(&eepromPkt, &dataset);
     lastStoredWh = totalEnergy(&dataset);
 
-    /* Set up data transmission components for RFM69 */
-    rfmPkt.node         = e32Config.baseCfg.nodeID;
-    rfmPkt.grp          = 210u; /* Fixed for OEM */
-    rfmPkt.rf_pwr       = 0u;
-    rfmPkt.threshold    = 0u;
-    rfmPkt.timeout      = 1000u;
-    rfm_init(RF12_868MHz);
+    /* Set up data transmission interfaces and configuration */
+    if (DATATX_RFM69 == e32Config.baseCfg.dataTx)
+    {
+        sercomSetupSPI();
+        rfmPkt.node         = e32Config.baseCfg.nodeID;
+        rfmPkt.grp          = 210u; /* Fixed for OEM */
+        rfmPkt.rf_pwr       = 0u;
+        rfmPkt.threshold    = 0u;
+        rfmPkt.timeout      = 1000u;
+        rfm_init(RF12_868MHz);
+    }
+    else
+    {
+        UART_Cfg_t uart_dbg_cfg;
+        uart_dbg_cfg.sercom     = SERCOM_UART_DATA;
+        uart_dbg_cfg.baud       = UART_DBG_BAUD;
+        uart_dbg_cfg.glck_id    = SERCOM_UART_DBG_GCLK_ID;
+        uart_dbg_cfg.gclk_gen   = 3u;
+        uart_dbg_cfg.pad_tx     = UART_DBG_PAD_TX;
+        uart_dbg_cfg.pad_rx     = UART_DBG_PAD_TX;
+        uart_dbg_cfg.port_grp   = GRP_SERCOM_UART_DATA;
+        uart_dbg_cfg.pin_tx     = PIN_UART_DBG_TX;
+        uart_dbg_cfg.pin_rx     = PIN_UART_DBG_RX;
+        sercomSetupUART(&uart_dbg_cfg);
+    }
 
     /* Set up buffers for ADC data, and configure energy monitor */
     emon32StateSet(EMON_STATE_ACTIVE);
@@ -357,8 +417,8 @@ main()
                 {
                     uartPutsBlocking(SERCOM_UART_DBG, "\r\n> Cumulative energy overflowed counter!");
                 }
-
-                if (((latestWh - lastStoredWh) > e32Config.baseCfg.whDeltaStore) || energyOverflow)
+                deltaWh = latestWh - lastStoredWh;
+                if ((deltaWh > e32Config.baseCfg.whDeltaStore) || energyOverflow)
                 {
                     storeCumulative(&eepromPkt, &dataset);
                     lastStoredWh = latestWh;

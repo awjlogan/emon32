@@ -17,13 +17,41 @@ typedef enum {
     I2CM_ACK_CMD_STOP       = 3u
 } I2CM_AckCmd_t;
 
-typedef struct {
-    uint8_t addr;
-    uint8_t data;
-} spiPkt_t;
+typedef enum {
+    UART_BAUD_9600      = 9600,
+    UART_BAUD_19200     = 19200,
+    UART_BAUD_28800     = 28800,
+    UART_BAUD_38400     = 38400,
+    UART_BAUD_57600     = 57600,
+    UART_BAUD_76800     = 76800,
+    UART_BAUD_115200    = 115200
+} UART_BAUD_t;
 
-/* @brief configure the serial communication modules */
+typedef struct UART_Cfg_ {
+    Sercom          *sercom;
+    UART_BAUD_t     baud;
+    uint8_t         glck_id;
+    uint8_t         gclk_gen;
+    uint8_t         pad_tx;
+    uint8_t         pad_rx;
+    uint8_t         port_grp;
+    uint8_t         pin_tx;
+    uint8_t         pin_rx;
+} UART_Cfg_t;
+
+/* @brief configure the serial communication module. This function starts the
+ *        debug UART and I2C modules. Further SPI and UART modules are
+ *        configured separately
+ */
 void sercomSetup();
+
+/* @brief Configure a SERCOM module for UART functions.
+ * @param [in] pCfg : pointer to configuration struct
+ */
+void sercomSetupUART(const UART_Cfg_t *pCfg);
+
+/* @brief Configure a SERCOM module for SPI */
+void sercomSetupSPI();
 
 /*! @brief Send a single character (blocking) on UART
  *  @param [in] sercom : pointer to the SERCOM instance
