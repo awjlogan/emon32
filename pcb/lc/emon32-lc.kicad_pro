@@ -34,9 +34,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 0.762,
-          "height": 1.524,
-          "width": 1.524
+          "drill": 0.65,
+          "height": 1.05,
+          "width": 1.05
         },
         "silk_line_width": 0.12,
         "silk_text_italic": false,
@@ -56,7 +56,10 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        "courtyards_overlap|120600001|135299999|51c9c4ba-e52d-4ff5-935f-d5a43eecb2e1|f03e31eb-f45c-4f89-850c-f996f6878e8d",
+        "items_not_allowed|117000000|116450000|d1060278-317a-46cf-b0df-2afdffbb39d8|00000000-0000-0000-0000-000000000000"
+      ],
       "meta": {
         "filename": "board_design_settings.json",
         "version": 2
@@ -124,11 +127,11 @@
         "min_hole_to_hole": 0.25,
         "min_microvia_diameter": 0.19999999999999998,
         "min_microvia_drill": 0.09999999999999999,
-        "min_resolved_spokes": 2,
+        "min_resolved_spokes": 1,
         "min_silk_clearance": 0.0,
         "min_text_height": 0.7999999999999999,
         "min_text_thickness": 0.08,
-        "min_through_hole_diameter": 0.19999999999999998,
+        "min_through_hole_diameter": 0.09999999999999999,
         "min_track_width": 0.125,
         "min_via_annular_width": 0.19999999999999998,
         "min_via_diameter": 0.39999999999999997,
