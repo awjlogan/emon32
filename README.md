@@ -92,4 +92,4 @@ This project is licensed under [GPL v3.0](https://www.gnu.org/licenses/gpl-3.0-s
 ## Acknowledgements
 
   - Rob Wall of Open Energy Monitor for lots of in depth discussion around sampling strategies.
-  - The SAMD10 bare metal environment was taken from the excellent collection of [microcontroller starter projects](https://github.com/ataradov/mcu-starter-projects) by Alex Taradov
+  - The SAMD bare metal environment was taken from the excellent collection of [microcontroller starter projects](https://github.com/ataradov/mcu-starter-projects) by Alex Taradov
