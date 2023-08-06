@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "emonPi_v2.0.1")(type "KiCad")(uri "$(KIPRJMOD)/emonPi_v2.0.1.pretty")(options "")(descr ""))
+)
