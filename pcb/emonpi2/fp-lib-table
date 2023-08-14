@@ -1,4 +1,6 @@
 (fp_lib_table
   (version 7)
   (lib (name "emonPi_v2.0.1")(type "KiCad")(uri "$(KIPRJMOD)/emonPi_v2.0.1.pretty")(options "")(descr ""))
+  (lib (name "rfm69cw")(type "KiCad")(uri "/Users/awjlogan/Documents/Development/emon32/pcb/footprints/rfm69cw.pretty")(options "")(descr ""))
+  (lib (name "valcon-usb")(type "KiCad")(uri "/Users/awjlogan/Documents/Development/emon32/pcb/footprints/valcon-usb.pretty")(options "")(descr ""))
 )
