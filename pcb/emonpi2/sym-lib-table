@@ -1,5 +1,4 @@
 (sym_lib_table
   (version 7)
-  (lib (name "emonPi_v2.0.1-eagle-import")(type "KiCad")(uri "${KIPRJMOD}/emonPi_v2.0.1-eagle-import.kicad_sym")(options "")(descr ""))
-  (lib (name "rfm69cw")(type "KiCad")(uri "/Users/awjlogan/Documents/Development/emon32/pcb/parts/rfm69cw.kicad_sym")(options "")(descr ""))
+  (lib (name "rfm69cw")(type "KiCad")(uri "${KIPRJMOD}/../parts/rfm69cw.kicad_sym")(options "")(descr ""))
 )
