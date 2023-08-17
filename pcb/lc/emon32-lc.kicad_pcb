@@ -1814,7 +1814,7 @@
       (net 1 "GND") (pinfunction "Ext") (pintype "passive") (tstamp 4f0f822d-0bdf-45b8-ae89-830f2162ad1f))
     (pad "2" thru_hole circle (at 2.54 2.54 270) (size 2.25 2.25) (drill 1.7) (layers "*.Cu" "*.Mask")
       (net 1 "GND") (pinfunction "Ext") (pintype "passive") (tstamp c1ed603a-34de-42a1-95b3-daf62d124c67))
-    (model "/Users/awjlogan/Documents/Development/emon32/pcb/models/132136-12.stp"
+    (model "${KIPRJMOD}/../models/132136-12.stp"
       (offset (xyz 0 0 6.5))
       (scale (xyz 1 1 1))
       (rotate (xyz 90 0 -90))
