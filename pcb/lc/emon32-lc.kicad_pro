@@ -58,6 +58,7 @@
       ],
       "drc_exclusions": [
         "courtyards_overlap|120600001|135299999|51c9c4ba-e52d-4ff5-935f-d5a43eecb2e1|f03e31eb-f45c-4f89-850c-f996f6878e8d",
+        "courtyards_overlap|120640001|128299999|51c9c4ba-e52d-4ff5-935f-d5a43eecb2e1|f03e31eb-f45c-4f89-850c-f996f6878e8d",
         "items_not_allowed|117000000|116450000|d1060278-317a-46cf-b0df-2afdffbb39d8|00000000-0000-0000-0000-000000000000"
       ],
       "meta": {
