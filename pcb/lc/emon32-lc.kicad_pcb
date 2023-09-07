@@ -1637,6 +1637,11 @@
       (net 1 "GND") (pintype "passive") (tstamp 5716d6d7-20a4-4646-ab75-f6e3f017c076))
     (pad "8" thru_hole circle (at 8.89 -2.54 180) (size 1.5 1.5) (drill 0.76) (layers "*.Cu" "*.Mask")
       (net 1 "GND") (pintype "passive") (tstamp 4787f1da-25e0-4508-9ad5-aee08bc7c890))
+    (model "${KIPRJMOD}/../models/54602-908LFc.stp"
+      (offset (xyz 4.5 3.75 10.5))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 90 180 90))
+    )
   )
 
   (footprint "Resistor_SMD:R_0402_1005Metric" (layer "F.Cu")

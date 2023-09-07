@@ -3009,6 +3009,11 @@
       (net 1 "GND") (pinfunction "SHIELD") (pintype "passive") (tstamp 126f2b22-6442-4b07-8e15-5220d37d2853))
     (pad "S1" thru_hole oval locked (at 4.075 1.27 180) (size 2 1.1) (drill oval 1.4 0.6) (layers "*.Cu" "*.Mask")
       (net 1 "GND") (pinfunction "SHIELD") (pintype "passive") (tstamp afca8daf-6d1f-4d18-892b-9636df5d1e71))
+    (model "${KICAD7_3DMODEL_DIR}/Connector_USB.3dshapes/USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal.wrl"
+      (offset (xyz -0.25 -0.3 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (footprint "Resistor_SMD:R_1206_3216Metric" (layer "F.Cu")
