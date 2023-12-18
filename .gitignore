@@ -41,3 +41,5 @@ fp-info-cache
 *.xml
 *.csv
 TODO
+output-*/
+*.DS_Store
