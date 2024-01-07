@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
+import glob
 import os
 import platform
 import re
 import shlex
 import subprocess
+import zipfile
 
 
 def gitrev():
@@ -39,6 +41,10 @@ def render_document(doc, gitrev):
                 f_out.write(ln)
     print("Done!")
 
+
+def get_gerber_names(outdir):
+    """ Get the filenames of the gerber files """
+    return glob.glob(f"{outdir}/*.g*")
 
 if __name__ == "__main__":
     
@@ -98,4 +104,16 @@ if __name__ == "__main__":
                 
     # Make the BoM; first export XML then process with one of the KiCad scripts
     
+    # Export and zip the gerbers files
+    print("> Exporting Gerbers... ", end='')
+    gerber_cmd = f"{kicad_cli} pcb export gerbers -o {outdir}/ -l F.Cu,F.Paste,F.Silkscreen,F.Mask,B.Cu,B.Paste,B.Silkscreen,B.Mask,In1.Cu,In2.Cu --ev --subtract-soldermask {outdir}/emon32-Pi2.kicad_pcb"
+    zip_cmd = f"zip {outdir}/emon32-Pi2-gerbers.zip {outdir}/*.g*"
+    subprocess.run(shlex.split(gerber_cmd), capture_output=True)
+    gerbers = get_gerber_names(outdir)
+
+    with zipfile.ZipFile(f"{outdir}/emon32-Pi2-gerbers.zip", 'w') as z:
+        for gerber in gerbers:
+            z.write(gerber)
+            os.remove(gerber)
+    print("Done!")
 
