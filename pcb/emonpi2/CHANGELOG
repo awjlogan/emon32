@@ -1,6 +1,9 @@
 - v0.1-dev -> v0.1
   
-  - [ ] Move protection diodes closer to jacks
+  - [x] Move protection diodes closer to jacks
+  - [x] Add V-USB detection 
+  - [x] Add hardware zero crossing detection
+    - Added comparator and moved STATUS and PROG LED assignments
   - [ ] Mechanical support for expander board
   - [x] Add board version on [38, 41, 42]
     - Can't do any more routing with these pins, gives 8 revisions
