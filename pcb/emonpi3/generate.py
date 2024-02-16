@@ -30,8 +30,8 @@ def render_document(doc, gitrev):
     else:
         print("> Rendering PCB file... ", end='')
 
-    with open(f"emon32-Pi2.kicad_{doc}", 'r') as f_in:
-        with open(f"{outdir}/emon32-Pi2.kicad_{doc}", 'w') as f_out:
+    with open(f"emonPi3.kicad_{doc}", 'r') as f_in:
+        with open(f"{outdir}/emonPi3.kicad_{doc}", 'w') as f_out:
             found_gitrev = False
             for ln in f_in:
                 if not found_gitrev:
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     else:
         kicad_cli = "kicad-cli"
 
-    print("> Generating emon32-Pi2 manufacturing files...")
+    print("> Generating emonPi3 manufacturing files...")
 
     # Get the git revision
     gitrev = gitrev()
@@ -84,20 +84,20 @@ if __name__ == "__main__":
     # Render the schematics and PCB layout into PDFs
     # https://docs.kicad.org/7.0/en/cli/cli.html#schematic
     print("> Rendering schematic into PDF file... ", end='')
-    sch_pdf_cmd = f"{kicad_cli} sch export pdf -o {outdir}/emon32-Pi2-schematic.pdf {outdir}/emon32-Pi2.kicad_sch"
+    sch_pdf_cmd = f"{kicad_cli} sch export pdf -o {outdir}/emonPi3-schematic.pdf {outdir}/emonPi3.kicad_sch"
     subprocess.run(shlex.split(sch_pdf_cmd),
                    capture_output=True)
     print("Done!")
 
     print("> Rendering PCB floorplan into PDF file... ", end='')
-    pcb_pdf_cmd = f"{kicad_cli} pcb export pdf -o {outdir}/emon32-Pi2-floorplan.pdf -l F.Paste,F.Silkscreen,Edge.Cuts,F.Mask --black-and-white --ev {outdir}/emon32-Pi2.kicad_pcb"
+    pcb_pdf_cmd = f"{kicad_cli} pcb export pdf -o {outdir}/emonPi3-floorplan.pdf -l F.Paste,F.Silkscreen,Edge.Cuts,F.Mask --black-and-white --ev {outdir}/emonPi3.kicad_pcb"
     subprocess.run(shlex.split(pcb_pdf_cmd),
                    capture_output=True)
     print("Done!")
 
     # Render the 3D model of the board
     print("> Exporting 3D model... ", end='')
-    pcb_3d_cmd = f"{kicad_cli} pcb export step -f -o {outdir}/emon32-Pi2-3d-render.step {outdir}/emon32-Pi2.kicad_pcb"
+    pcb_3d_cmd = f"{kicad_cli} pcb export step -f -o {outdir}/emonPi3-3d-render.step {outdir}/emonPi3.kicad_pcb"
     subprocess.run(shlex.split(pcb_3d_cmd),
                    capture_output=True)
     print("Done!")
@@ -106,12 +106,12 @@ if __name__ == "__main__":
     
     # Export and zip the gerbers files
     print("> Exporting Gerbers... ", end='')
-    gerber_cmd = f"{kicad_cli} pcb export gerbers -o {outdir}/ -l F.Cu,F.Paste,F.Silkscreen,F.Mask,B.Cu,B.Paste,B.Silkscreen,B.Mask,In1.Cu,In2.Cu --ev --subtract-soldermask {outdir}/emon32-Pi2.kicad_pcb"
-    zip_cmd = f"zip {outdir}/emon32-Pi2-gerbers.zip {outdir}/*.g*"
+    gerber_cmd = f"{kicad_cli} pcb export gerbers -o {outdir}/ -l F.Cu,F.Paste,F.Silkscreen,F.Mask,B.Cu,B.Paste,B.Silkscreen,B.Mask,In1.Cu,In2.Cu --ev --subtract-soldermask {outdir}/emonPi3.kicad_pcb"
+    zip_cmd = f"zip {outdir}/emonPi3-gerbers.zip {outdir}/*.g*"
     subprocess.run(shlex.split(gerber_cmd), capture_output=True)
     gerbers = get_gerber_names(outdir)
 
-    with zipfile.ZipFile(f"{outdir}/emon32-Pi2-gerbers.zip", 'w') as z:
+    with zipfile.ZipFile(f"{outdir}/emonPi3-gerbers.zip", 'w') as z:
         for gerber in gerbers:
             z.write(gerber)
             os.remove(gerber)

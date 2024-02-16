@@ -1,10 +1,10 @@
-- v0.1-dev -> v0.1
+- v0.1-dev -> emonPi3 v0.1
   
   - [x] Move protection diodes closer to jacks
   - [x] Add V-USB detection 
   - [x] Add hardware zero crossing detection
     - Added comparator and moved STATUS and PROG LED assignments
-  - [ ] Mechanical support for expander board
+  - [x] Mechanical support for expander board
   - [x] Add board version on [38, 41, 42]
     - Can't do any more routing with these pins, gives 8 revisions
     - No need to change for non-s/w visible changes
@@ -37,6 +37,7 @@
   - [x] Add I2C header for INT
   - [x] RasPi present signal
   - [x] Swap labels for UART  Rx/Tx header
+  - [x] Rename to emonPi3
 
 - emonPi2 v2.0 -> emon32-Pi2 v0.1-dev
 

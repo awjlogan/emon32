@@ -87,9 +87,10 @@ Functions in the main loop are abstacted from the underlying hardware. Implement
 
 ## License
 
-This project is licensed under [GPL v3.0](https://www.gnu.org/licenses/gpl-3.0-standalone.html) or later. Any alterations must be made available immediately, or upon request.
+This project is licensed under the [Creative Commons Attribution Sharealike 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.en). Any alterations must be made available immediately, or upon request.
 
 ## Acknowledgements
 
-  - Rob Wall of Open Energy Monitor for lots of in depth discussion around sampling strategies.
-  - The SAMD bare metal environment was taken from the excellent collection of [microcontroller starter projects](https://github.com/ataradov/mcu-starter-projects) by Alex Taradov
+  - OpenEnergyMonitor
+  - Rob Wall of Open Energy Monitor forums for lots of in depth discussion around sampling strategies.
+
