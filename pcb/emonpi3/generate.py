@@ -9,6 +9,20 @@ import subprocess
 import zipfile
 
 
+def kicad_version(cli):
+    cmd = f"{cli} --version"
+    try:
+        out = subprocess.run(shlex.split(cmd),
+                             capture_output=True,
+                             check=True,
+                             text=True).stdout.strip()
+        rev = out[0]
+    except subprocess.CalledProcessError:
+        rev = None
+
+    return rev
+
+
 def gitrev():
     git_cmd = "git rev-parse --short HEAD"
     try:
@@ -51,8 +65,17 @@ if __name__ == "__main__":
     host_is_mac = re.match("macOS", platform.platform())
     if host_is_mac:
         kicad_cli = "/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli"
+        kicad_script = "/Applications/KiCad/KiCad.app/Contents/SharedSupport/plugins"
     else:
         kicad_cli = "kicad-cli"
+        kicad_script = "/usr/share/kicad/plugins"
+
+    kicad_version = kicad_version(kicad_cli)
+    if not kicad_version:
+        print("> Did not find kicad-cli. Exiting.")
+        exit(1)
+    elif kicad_version != '7':
+        print(f"> WARNING: Only tested with KiCad 7, found KiCad {kicad_version}.")
 
     print("> Generating emonPi3 manufacturing files...")
 
@@ -103,6 +126,15 @@ if __name__ == "__main__":
     print("Done!")
                 
     # Make the BoM; first export XML then process with one of the KiCad scripts
+    print("> Generating BoM... ", end='')
+    bom_xml_cmd = f"{kicad_cli} sch export python-bom -o {outdir}/bom-tmp.xml {outdir}/emonPi3.kicad_sch"
+    bom_csv_cmd = f"python3 {kicad_script}/bom_csv_grouped_by_value_with_fp.py {outdir}/bom-tmp.xml {outdir}/emonPi3-bom.csv"
+    subprocess.run(shlex.split(bom_xml_cmd),
+                   capture_output=True)
+    subprocess.run(shlex.split(bom_csv_cmd),
+                   capture_output=True)
+    os.remove(f"{outdir}/bom-tmp.xml")
+    print("Done!")
     
     # Export and zip the gerbers files
     print("> Exporting Gerbers... ", end='')
