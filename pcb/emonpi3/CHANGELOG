@@ -1,5 +1,7 @@
 - v0.1-dev -> emonPi3 v0.1
   
+  - [x] Change to SMD mount for RPi
+  - [x] Change Cortex-M header to SMD
   - [x] Move protection diodes closer to jacks
   - [x] Add V-USB detection 
   - [x] Add hardware zero crossing detection

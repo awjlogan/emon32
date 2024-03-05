@@ -851,59 +851,6 @@
         )
       )
     )
-    (symbol "Connector_Generic:Conn_01x03" (pin_names (offset 1.016) hide) (in_bom yes) (on_board yes)
-      (property "Reference" "J" (at 0 5.08 0)
-        (effects (font (size 1.27 1.27)))
-      )
-      (property "Value" "Conn_01x03" (at 0 -5.08 0)
-        (effects (font (size 1.27 1.27)))
-      )
-      (property "Footprint" "" (at 0 0 0)
-        (effects (font (size 1.27 1.27)) hide)
-      )
-      (property "Datasheet" "~" (at 0 0 0)
-        (effects (font (size 1.27 1.27)) hide)
-      )
-      (property "ki_keywords" "connector" (at 0 0 0)
-        (effects (font (size 1.27 1.27)) hide)
-      )
-      (property "ki_description" "Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)" (at 0 0 0)
-        (effects (font (size 1.27 1.27)) hide)
-      )
-      (property "ki_fp_filters" "Connector*:*_1x??_*" (at 0 0 0)
-        (effects (font (size 1.27 1.27)) hide)
-      )
-      (symbol "Conn_01x03_1_1"
-        (rectangle (start -1.27 -2.413) (end 0 -2.667)
-          (stroke (width 0.1524) (type default))
-          (fill (type none))
-        )
-        (rectangle (start -1.27 0.127) (end 0 -0.127)
-          (stroke (width 0.1524) (type default))
-          (fill (type none))
-        )
-        (rectangle (start -1.27 2.667) (end 0 2.413)
-          (stroke (width 0.1524) (type default))
-          (fill (type none))
-        )
-        (rectangle (start -1.27 3.81) (end 1.27 -3.81)
-          (stroke (width 0.254) (type default))
-          (fill (type background))
-        )
-        (pin passive line (at -5.08 2.54 0) (length 3.81)
-          (name "Pin_1" (effects (font (size 1.27 1.27))))
-          (number "1" (effects (font (size 1.27 1.27))))
-        )
-        (pin passive line (at -5.08 0 0) (length 3.81)
-          (name "Pin_2" (effects (font (size 1.27 1.27))))
-          (number "2" (effects (font (size 1.27 1.27))))
-        )
-        (pin passive line (at -5.08 -2.54 0) (length 3.81)
-          (name "Pin_3" (effects (font (size 1.27 1.27))))
-          (number "3" (effects (font (size 1.27 1.27))))
-        )
-      )
-    )
     (symbol "Connector_Generic:Conn_01x04" (pin_names (offset 1.016) hide) (in_bom yes) (on_board yes)
       (property "Reference" "J" (at 0 5.08 0)
         (effects (font (size 1.27 1.27)))
@@ -3174,6 +3121,9 @@
   (junction (at 255.27 162.56) (diameter 0) (color 0 0 0 0)
     (uuid 195fa27a-479e-4fac-9b92-301b3bf75f64)
   )
+  (junction (at 508 74.93) (diameter 0) (color 0 0 0 0)
+    (uuid 1b15f083-646c-4971-9139-aca829444356)
+  )
   (junction (at 421.64 67.31) (diameter 0) (color 0 0 0 0)
     (uuid 1d01b53e-ccc0-461e-8806-d7173cdea58f)
   )
@@ -3330,9 +3280,6 @@
   (junction (at 297.18 372.11) (diameter 0) (color 0 0 0 0)
     (uuid 7b916256-4d5b-4f95-9aaa-bb7a205c0869)
   )
-  (junction (at 508 74.93) (diameter 0) (color 0 0 0 0)
-    (uuid 7c209701-10a0-464f-86f6-34f966573956)
-  )
   (junction (at 48.26 234.95) (diameter 0) (color 0 0 0 0)
     (uuid 7d3a2794-78db-41a4-a6eb-8e5737fc2ec7)
   )
@@ -3482,9 +3429,6 @@
   )
   (junction (at 297.18 323.85) (diameter 0) (color 0 0 0 0)
     (uuid ce26aae0-f95d-4efe-9740-2cfb3ea58b63)
-  )
-  (junction (at 236.22 160.02) (diameter 0) (color 0 0 0 0)
-    (uuid ce28b138-39de-4bbb-a137-72160a38a533)
   )
   (junction (at 152.4 250.19) (diameter 0) (color 0 0 0 0)
     (uuid d5a204a7-fe89-4ee1-86bf-68e4922f615e)
@@ -3900,7 +3844,7 @@
     (stroke (width 0) (type default))
     (uuid 1ba6c263-a6c5-4cfb-b859-efdc291d46ec)
   )
-  (wire (pts (xy 513.08 74.93) (xy 514.35 74.93))
+  (wire (pts (xy 508 74.93) (xy 514.35 74.93))
     (stroke (width 0) (type default))
     (uuid 1c241b7f-8cba-4c01-968b-b171bbaa58c0)
   )
@@ -3987,10 +3931,6 @@
     (stroke (width 0) (type default))
     (uuid 23d7bdb3-4add-4ffc-a90d-dffdcbd1effb)
   )
-  (wire (pts (xy 217.17 48.26) (xy 219.71 48.26))
-    (stroke (width 0.1524) (type solid))
-    (uuid 24061f7a-90ba-4480-a25f-498f9ea1f259)
-  )
   (wire (pts (xy 83.82 157.48) (xy 83.82 158.75))
     (stroke (width 0) (type default))
     (uuid 2489459f-c792-48fa-85b6-8130e7ccf993)
@@ -4070,6 +4010,10 @@
   (wire (pts (xy 163.83 64.77) (xy 179.07 64.77))
     (stroke (width 0.1524) (type solid))
     (uuid 2a97eeda-d8e1-442b-8b78-6aa7abea0f7c)
+  )
+  (wire (pts (xy 487.68 251.46) (xy 487.68 254))
+    (stroke (width 0) (type default))
+    (uuid 2b367fca-1b57-43d0-8784-dd498b7cbf3f)
   )
   (wire (pts (xy 353.06 60.96) (xy 353.06 63.5))
     (stroke (width 0) (type default))
@@ -4235,10 +4179,6 @@
     (stroke (width 0) (type default))
     (uuid 387d1b60-73f0-4c87-86b5-84e0acd5e37c)
   )
-  (wire (pts (xy 508 74.93) (xy 514.35 74.93))
-    (stroke (width 0.1524) (type solid))
-    (uuid 38cd5e57-1ce5-43ef-9d0f-3586b8ace48f)
-  )
   (wire (pts (xy 48.26 330.2) (xy 43.18 330.2))
     (stroke (width 0.1524) (type solid))
     (uuid 39761e53-789f-41e1-9fc3-12f3dd53ebbe)
@@ -4270,6 +4210,10 @@
   (wire (pts (xy 45.72 52.07) (xy 45.72 54.61))
     (stroke (width 0) (type default))
     (uuid 3cb52ecb-2a1e-4a2d-80e2-fbd0143314d8)
+  )
+  (wire (pts (xy 487.68 261.62) (xy 487.68 264.16))
+    (stroke (width 0) (type default))
+    (uuid 3cf6a0e0-d46f-4847-971a-c82024d4e122)
   )
   (wire (pts (xy 331.47 88.9) (xy 331.47 87.63))
     (stroke (width 0.1524) (type solid))
@@ -4577,10 +4521,6 @@
     (stroke (width 0) (type default))
     (uuid 5536983e-e638-497c-9c4b-184f1a37299e)
   )
-  (wire (pts (xy 236.22 157.48) (xy 236.22 160.02))
-    (stroke (width 0) (type default))
-    (uuid 559d1e6c-9f8e-49bd-aab9-02f7e52f5535)
-  )
   (wire (pts (xy 73.66 364.49) (xy 73.66 367.03))
     (stroke (width 0) (type default))
     (uuid 57d70b3a-71d0-4f7f-a900-31edaabd0b07)
@@ -4744,10 +4684,6 @@
   (wire (pts (xy 83.82 147.32) (xy 83.82 149.86))
     (stroke (width 0) (type default))
     (uuid 694fdcbe-c34a-455f-948a-4bc05f9700a0)
-  )
-  (wire (pts (xy 217.17 43.18) (xy 229.87 43.18))
-    (stroke (width 0.1524) (type solid))
-    (uuid 69719b9b-726e-4220-a1a6-828cab7dc622)
   )
   (wire (pts (xy 158.75 279.4) (xy 168.91 279.4))
     (stroke (width 0) (type default))
@@ -4959,10 +4895,6 @@
   (wire (pts (xy 241.3 316.23) (xy 254 316.23))
     (stroke (width 0) (type default))
     (uuid 7b3a05a8-070b-4557-9dbe-1fa55a0e2981)
-  )
-  (wire (pts (xy 236.22 160.02) (xy 236.22 162.56))
-    (stroke (width 0) (type default))
-    (uuid 7b4bd020-28dd-484d-90bb-5d59a4888649)
   )
   (wire (pts (xy 482.6 356.87) (xy 482.6 359.41))
     (stroke (width 0) (type default))
@@ -5191,10 +5123,6 @@
   (wire (pts (xy 520.7 157.48) (xy 518.16 157.48))
     (stroke (width 0) (type default))
     (uuid 8fafe8ac-eee2-45c0-b0f6-e5b2d8cd49c2)
-  )
-  (wire (pts (xy 217.17 45.72) (xy 229.87 45.72))
-    (stroke (width 0.1524) (type solid))
-    (uuid 9003b73a-ea51-4ea7-af92-489da05e57d5)
   )
   (wire (pts (xy 372.11 341.63) (xy 372.11 349.25))
     (stroke (width 0) (type default))
@@ -5539,7 +5467,7 @@
     (stroke (width 0.1524) (type solid))
     (uuid aec6c763-e14d-4e1d-9a30-2d237a056d4a)
   )
-  (wire (pts (xy 500.38 69.85) (xy 502.92 69.85))
+  (wire (pts (xy 500.38 69.85) (xy 514.35 69.85))
     (stroke (width 0) (type default))
     (uuid af5363bb-57cf-4b31-8907-a1a08f0c4204)
   )
@@ -5579,10 +5507,6 @@
     (stroke (width 0) (type default))
     (uuid b1ee4c57-7a42-4dd9-aa75-e0c6c02d4c5b)
   )
-  (wire (pts (xy 219.71 48.26) (xy 219.71 50.8))
-    (stroke (width 0) (type default))
-    (uuid b25bee00-bb21-4788-a877-1925d75281c6)
-  )
   (wire (pts (xy 236.22 147.32) (xy 236.22 154.94))
     (stroke (width 0) (type default))
     (uuid b29eb542-6541-405a-a6a6-1c79f39319a2)
@@ -5598,10 +5522,6 @@
   (wire (pts (xy 185.42 290.83) (xy 185.42 293.37))
     (stroke (width 0) (type default))
     (uuid b3a4e738-257a-4898-9ac6-17949235c7d6)
-  )
-  (wire (pts (xy 500.38 69.85) (xy 504.19 69.85))
-    (stroke (width 0.1524) (type solid))
-    (uuid b3cd5951-fbfb-4ff3-a9c3-8636f490f3e8)
   )
   (wire (pts (xy 182.88 313.69) (xy 185.42 313.69))
     (stroke (width 0) (type default))
@@ -5936,6 +5856,10 @@
     (stroke (width 0.1524) (type solid))
     (uuid cdf05a8a-0c76-45f6-96b0-0df6ac1f2de5)
   )
+  (wire (pts (xy 236.22 162.56) (xy 236.22 165.1))
+    (stroke (width 0) (type default))
+    (uuid ce0866dc-8e80-44d2-9fa8-0a85c797db5f)
+  )
   (wire (pts (xy 223.52 236.22) (xy 240.03 236.22))
     (stroke (width 0) (type default))
     (uuid ce1f4afd-8433-4f73-bd2c-18d35a463d28)
@@ -6181,10 +6105,6 @@
   (wire (pts (xy 317.5 88.9) (xy 317.5 87.63))
     (stroke (width 0.1524) (type solid))
     (uuid e0353317-355c-40a4-bfea-cadf8d366bd5)
-  )
-  (wire (pts (xy 497.84 67.31) (xy 500.38 67.31))
-    (stroke (width 0) (type default))
-    (uuid e0476fca-90ef-4941-a941-555bb3095384)
   )
   (polyline (pts (xy 373.38 12.7) (xy 373.38 127))
     (stroke (width 0.1524) (type solid))
@@ -6478,10 +6398,6 @@
     (stroke (width 0) (type default))
     (uuid fe987ff3-7b9b-46ad-9228-791c4d2bd575)
   )
-  (wire (pts (xy 504.19 69.85) (xy 514.35 69.85))
-    (stroke (width 0) (type default))
-    (uuid fef431a6-75f8-4766-95e3-7e6e60e043db)
-  )
   (wire (pts (xy 162.56 234.95) (xy 162.56 237.49))
     (stroke (width 0.1524) (type solid))
     (uuid ff15a99d-b0af-4883-ab12-ebcda0a93a77)
@@ -6506,6 +6422,13 @@
     (effects (font (size 1.27 1.27)) (justify left top))
     (uuid 0cb758ab-49b4-4401-8752-589aa9e967c4)
   )
+  (text_box "Set ~{RPI_PRESENT} LOW on RasPi boot to indicate presence.\n\nThis will disable connected interfaces in the SAMD."
+    (at 377.19 97.79 0) (size 35.56 11.43)
+    (stroke (width 0) (type default))
+    (fill (type none))
+    (effects (font (size 1.27 1.27)) (justify left top))
+    (uuid 1c5df688-5843-481f-9b41-17dbbc58b0b8)
+  )
   (text_box "Hysteresis:\n575 mV L->H\n506 mV H->L\n\nRemoves positive edge on negative transition."
     (at 539.75 260.35 0) (size 24.13 13.97)
     (stroke (width 0) (type default))
@@ -6521,7 +6444,7 @@
     (uuid 89392ff7-9e00-4477-b928-559dbb33af52)
   )
   (text_box "1/4 and 3/4 V_{REF} for ADC calibration"
-    (at 114.3 48.26 0) (size 15.24 7.62)
+    (at 111.76 48.26 0) (size 21.59 6.35)
     (stroke (width 0) (type default))
     (fill (type none))
     (effects (font (size 1.27 1.27)) (justify left top))
@@ -6577,10 +6500,6 @@
   (text "SERCOM3" (at 219.71 228.6 0)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 67d2d662-35f7-4636-894f-6d80ffebe525)
-  )
-  (text "UART" (at 209.55 33.02 0)
-    (effects (font (size 1.65 1.65) (thickness 0.8636) bold) (justify left bottom))
-    (uuid 7287f9f0-348f-487b-86d8-a86974a1f2f0)
   )
   (text "USB and Protection" (at 203.2 300.99 0)
     (effects (font (size 2 2) (thickness 0.4) bold) (justify left bottom))
@@ -6658,10 +6577,6 @@
   (label "I2C_INT_SDA" (at 549.91 185.42 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 038d1327-e349-4c2e-b377-301fef340f00)
-  )
-  (label "UART_DBG_TX0" (at 229.87 43.18 180) (fields_autoplaced)
-    (effects (font (size 1.2446 1.2446)) (justify right bottom))
-    (uuid 04675e81-5fab-4f35-97d3-6ddbd7e76671)
   )
   (label "AIN_LPFILT" (at 223.52 193.04 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
@@ -7259,10 +7174,6 @@
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid f760fbe6-7983-496e-9c91-b3b26b1f1fb1)
   )
-  (label "UART_DBG_RX0" (at 229.87 45.72 180) (fields_autoplaced)
-    (effects (font (size 1.2446 1.2446)) (justify right bottom))
-    (uuid f90b2e28-7816-48a2-9a62-0557910f0417)
-  )
   (label "~{LED_USER1}" (at 331.47 113.03 0) (fields_autoplaced)
     (effects (font (size 1.2446 1.2446)) (justify left bottom))
     (uuid fabd3401-fe37-4f38-99f8-9094d1e0fa9e)
@@ -7291,7 +7202,7 @@
   (symbol (lib_id "Device:R") (at 171.45 285.75 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 01e53dab-62ca-4567-8d03-514bd51ab3a0)
-    (property "Reference" "R22" (at 170.18 284.48 0)
+    (property "Reference" "R34" (at 170.18 284.48 0)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "47K" (at 170.18 287.02 0)
@@ -7308,7 +7219,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R22") (unit 1)
+          (reference "R34") (unit 1)
         )
       )
     )
@@ -7317,7 +7228,7 @@
   (symbol (lib_id "Device:R") (at 302.26 93.98 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 02858527-dd8b-4b94-9b2a-d6a12e0abf1f)
-    (property "Reference" "R51" (at 303.53 92.71 0)
+    (property "Reference" "R49" (at 303.53 92.71 0)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "1K" (at 303.53 95.25 0)
@@ -7334,7 +7245,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R51") (unit 1)
+          (reference "R49") (unit 1)
         )
       )
     )
@@ -7375,7 +7286,7 @@
   (symbol (lib_id "power:+3V3") (at 175.26 147.32 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 02ab4703-f14d-4ca2-bb83-b716a062377d)
-    (property "Reference" "#PWR040" (at 175.26 151.13 0)
+    (property "Reference" "#PWR020" (at 175.26 151.13 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 175.26 143.51 0)
@@ -7391,7 +7302,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR040") (unit 1)
+          (reference "#PWR020") (unit 1)
         )
       )
     )
@@ -7400,7 +7311,7 @@
   (symbol (lib_id "power:GND") (at 100.33 341.63 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 02e7e554-ef5e-4e00-a527-977bb856b05a)
-    (property "Reference" "#PWR027" (at 100.33 347.98 0)
+    (property "Reference" "#PWR012" (at 100.33 347.98 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 100.33 346.71 0)
@@ -7416,7 +7327,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR027") (unit 1)
+          (reference "#PWR012") (unit 1)
         )
       )
     )
@@ -7457,7 +7368,7 @@
   (symbol (lib_id "Device:C") (at 100.33 335.28 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 068fd285-a34b-4661-9f1f-de2e923d4abb)
-    (property "Reference" "C30" (at 102.87 334.01 0)
+    (property "Reference" "C16" (at 102.87 334.01 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "10n" (at 102.87 336.55 0)
@@ -7474,7 +7385,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C30") (unit 1)
+          (reference "C16") (unit 1)
         )
       )
     )
@@ -7483,7 +7394,7 @@
   (symbol (lib_id "Device:C") (at 372.11 337.82 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 06b41271-45c6-4992-bf9c-241f6881d909)
-    (property "Reference" "C40" (at 369.57 336.55 0)
+    (property "Reference" "C35" (at 369.57 336.55 0)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "1uF" (at 369.57 339.09 0)
@@ -7503,7 +7414,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C40") (unit 1)
+          (reference "C35") (unit 1)
         )
       )
     )
@@ -7512,7 +7423,7 @@
   (symbol (lib_id "power:GND") (at 521.97 265.43 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 06f3ae83-7d3f-49e5-aa15-8b7e66272bf5)
-    (property "Reference" "#PWR072" (at 521.97 271.78 0)
+    (property "Reference" "#PWR073" (at 521.97 271.78 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 521.97 270.51 0)
@@ -7528,7 +7439,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR072") (unit 1)
+          (reference "#PWR073") (unit 1)
         )
       )
     )
@@ -7537,7 +7448,7 @@
   (symbol (lib_id "Connector:TestPoint") (at 450.85 147.32 0) (unit 1)
     (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 07135dde-6e82-4268-86db-a3a3340381ad)
-    (property "Reference" "TP13" (at 453.39 143.383 0)
+    (property "Reference" "TP11" (at 453.39 143.383 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "TestPoint" (at 453.39 145.923 0)
@@ -7553,7 +7464,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "TP13") (unit 1)
+          (reference "TP11") (unit 1)
         )
       )
     )
@@ -7562,7 +7473,7 @@
   (symbol (lib_id "Device:C") (at 360.68 232.41 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 07e3e9a1-51c1-4a70-9980-75f2d2548636)
-    (property "Reference" "C12" (at 363.22 231.14 0)
+    (property "Reference" "C34" (at 363.22 231.14 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "100nF" (at 363.22 233.68 0)
@@ -7579,7 +7490,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C12") (unit 1)
+          (reference "C34") (unit 1)
         )
       )
     )
@@ -7588,7 +7499,7 @@
   (symbol (lib_id "power:GND") (at 482.6 361.95 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 09c1494f-4b4a-406d-91ec-393b70ee481e)
-    (property "Reference" "#PWR053" (at 482.6 368.3 0)
+    (property "Reference" "#PWR064" (at 482.6 368.3 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 482.6 367.03 0)
@@ -7604,7 +7515,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR053") (unit 1)
+          (reference "#PWR064") (unit 1)
         )
       )
     )
@@ -7613,7 +7524,7 @@
   (symbol (lib_id "power:GND") (at 313.69 339.09 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 0b0cb89b-a76a-46ed-9d86-7ea6a2453a2d)
-    (property "Reference" "#PWR046" (at 313.69 345.44 0)
+    (property "Reference" "#PWR043" (at 313.69 345.44 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 313.69 344.17 0)
@@ -7629,32 +7540,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR046") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "power:GND") (at 219.71 50.8 0) (mirror y) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid 0b5cd618-adb8-451f-93fe-5c0c4e72d0c7)
-    (property "Reference" "#PWR067" (at 219.71 57.15 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Value" "GND" (at 219.71 55.88 0)
-      (effects (font (size 1.27 1.27)))
-    )
-    (property "Footprint" "" (at 219.71 50.8 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (at 219.71 50.8 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 911e8db3-de1e-4e2b-966e-a26ebd5077b2))
-    (instances
-      (project "emonPi3"
-        (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR067") (unit 1)
+          (reference "#PWR043") (unit 1)
         )
       )
     )
@@ -7663,7 +7549,7 @@
   (symbol (lib_id "Device:C") (at 82.55 83.82 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 0b860a97-615c-42e2-94c8-370afdbe05d7)
-    (property "Reference" "C35" (at 85.09 82.55 0)
+    (property "Reference" "C10" (at 85.09 82.55 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "1n" (at 85.09 85.09 0)
@@ -7680,7 +7566,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C35") (unit 1)
+          (reference "C10") (unit 1)
         )
       )
     )
@@ -7689,7 +7575,7 @@
   (symbol (lib_id "Connector:RJ45") (at 177.8 234.95 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 0bb73f8a-8c5a-4ee2-a279-177a26edf740)
-    (property "Reference" "RJ45" (at 185.42 248.158 0)
+    (property "Reference" "RJ1" (at 185.42 248.158 0)
       (effects (font (size 1.27 1.27)) (justify left bottom) hide)
     )
     (property "Value" "RJ45-8PTH" (at 185.42 222.25 0)
@@ -7712,7 +7598,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "RJ45") (unit 1)
+          (reference "RJ1") (unit 1)
         )
       )
     )
@@ -7721,7 +7607,7 @@
   (symbol (lib_id "power:+5V") (at 521.97 245.11 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 0d09e115-f74a-4cbc-b269-b028d538d821)
-    (property "Reference" "#PWR073" (at 521.97 248.92 0)
+    (property "Reference" "#PWR072" (at 521.97 248.92 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+5V" (at 521.97 241.3 0)
@@ -7737,7 +7623,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR073") (unit 1)
+          (reference "#PWR072") (unit 1)
         )
       )
     )
@@ -7778,7 +7664,7 @@
   (symbol (lib_id "Device:R") (at 74.93 68.58 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 0e95699e-340d-4800-9dd2-912d78539d53)
-    (property "Reference" "R37" (at 73.66 67.31 0)
+    (property "Reference" "R8" (at 73.66 67.31 0)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "10K" (at 73.66 69.85 0)
@@ -7795,7 +7681,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R37") (unit 1)
+          (reference "R8") (unit 1)
         )
       )
     )
@@ -7804,7 +7690,7 @@
   (symbol (lib_id "power:GND") (at 297.18 383.54 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 126f3c2e-59d0-4d1c-b601-0ad226f7fa94)
-    (property "Reference" "#PWR078" (at 297.18 389.89 0)
+    (property "Reference" "#PWR040" (at 297.18 389.89 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 297.18 388.62 0)
@@ -7820,7 +7706,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR078") (unit 1)
+          (reference "#PWR040") (unit 1)
         )
       )
     )
@@ -7861,7 +7747,7 @@
   (symbol (lib_id "Device:C") (at 72.39 158.75 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 134243d3-efac-43f9-9eac-636acda099ad)
-    (property "Reference" "C1" (at 71.12 157.48 90)
+    (property "Reference" "C3" (at 71.12 157.48 90)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "10uF" (at 71.12 161.29 90)
@@ -7881,7 +7767,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C1") (unit 1)
+          (reference "C3") (unit 1)
         )
       )
     )
@@ -7940,7 +7826,7 @@
   (symbol (lib_id "power:+3V3") (at 318.77 29.21 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 14a45e0c-3cc2-4191-aa1a-f15d96d48940)
-    (property "Reference" "#PWR025" (at 318.77 33.02 0)
+    (property "Reference" "#PWR044" (at 318.77 33.02 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 318.77 25.4 0)
@@ -7956,7 +7842,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR025") (unit 1)
+          (reference "#PWR044") (unit 1)
         )
       )
     )
@@ -7965,7 +7851,7 @@
   (symbol (lib_id "Device:C") (at 297.18 330.2 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 152c1e56-f33a-466e-a45f-61eff2af5003)
-    (property "Reference" "C14" (at 294.64 327.66 0)
+    (property "Reference" "C28" (at 294.64 327.66 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "1uF" (at 294.64 330.2 0)
@@ -7985,7 +7871,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C14") (unit 1)
+          (reference "C28") (unit 1)
         )
       )
     )
@@ -8045,13 +7931,13 @@
     )
   )
 
-  (symbol (lib_name "R_1") (lib_id "Device:R") (at 486.41 86.36 90) (unit 1)
+  (symbol (lib_name "R_1") (lib_id "Device:R") (at 486.41 86.36 270) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 166fe303-eb4e-450b-b2e8-aae0d25011b0)
-    (property "Reference" "R45" (at 483.87 85.09 90)
+    (property "Reference" "R60" (at 488.95 85.09 90)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
-    (property "Value" "22R" (at 483.87 87.63 90)
+    (property "Value" "22R" (at 488.95 87.63 90)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Footprint" "Resistor_SMD:R_0603_1608Metric" (at 486.41 88.138 90)
@@ -8065,7 +7951,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R45") (unit 1)
+          (reference "R60") (unit 1)
         )
       )
     )
@@ -8074,7 +7960,7 @@
   (symbol (lib_id "Power_Protection:USBLC6-2P6") (at 240.03 383.54 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 16875836-79d7-4467-8d93-22fec4f3675f)
-    (property "Reference" "U5" (at 241.6811 372.11 0)
+    (property "Reference" "U2" (at 241.6811 372.11 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "USBLC6-2P6" (at 241.6811 374.65 0)
@@ -8095,7 +7981,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "U5") (unit 1)
+          (reference "U2") (unit 1)
         )
       )
     )
@@ -8104,7 +7990,7 @@
   (symbol (lib_id "Device:R") (at 171.45 353.06 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 1759fe58-34e2-4b7f-b630-f5b5dfa5d7e5)
-    (property "Reference" "R24" (at 170.18 351.79 0)
+    (property "Reference" "R38" (at 170.18 351.79 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "47K" (at 170.18 354.33 0)
@@ -8121,7 +8007,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R24") (unit 1)
+          (reference "R38") (unit 1)
         )
       )
     )
@@ -8130,7 +8016,7 @@
   (symbol (lib_id "Device:C") (at 73.66 370.84 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 1b85fd57-1f4e-49c5-88a6-2a154e5f30f2)
-    (property "Reference" "C22" (at 76.2 369.57 0)
+    (property "Reference" "C9" (at 76.2 369.57 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "10n" (at 76.2 372.11 0)
@@ -8147,7 +8033,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C22") (unit 1)
+          (reference "C9") (unit 1)
         )
       )
     )
@@ -8156,7 +8042,7 @@
   (symbol (lib_id "Device:R") (at 83.82 325.12 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 1c49ecf8-cb8e-45b2-a159-08b62f86ff5e)
-    (property "Reference" "R12" (at 82.55 323.85 0)
+    (property "Reference" "R20" (at 82.55 323.85 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "47K" (at 82.55 326.39 0)
@@ -8173,7 +8059,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R12") (unit 1)
+          (reference "R20") (unit 1)
         )
       )
     )
@@ -8182,7 +8068,7 @@
   (symbol (lib_id "Device:R") (at 510.54 278.13 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 1ce3f80d-e38c-4aea-acd4-f6b1bfd18719)
-    (property "Reference" "R66" (at 511.81 276.86 0)
+    (property "Reference" "R65" (at 511.81 276.86 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "47K" (at 511.81 278.13 0)
@@ -8199,22 +8085,22 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R66") (unit 1)
+          (reference "R65") (unit 1)
         )
       )
     )
   )
 
   (symbol (lib_id "Connector:Conn_ARM_JTAG_SWD_10") (at 350.52 177.8 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (in_bom yes) (on_board yes) (dnp yes) (fields_autoplaced)
     (uuid 1fe8f817-a58a-4d52-844e-770f11732696)
-    (property "Reference" "J11" (at 339.09 177.165 0)
+    (property "Reference" "J10" (at 339.09 177.165 0)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "Conn_ARM_JTAG_SWD_10" (at 339.09 179.705 0)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Connector_PinHeader_1.27mm:PinHeader_2x05_P1.27mm_Vertical" (at 350.52 177.8 0)
+    (property "Footprint" "Connector_PinHeader_1.27mm:PinHeader_2x05_P1.27mm_Vertical_SMD" (at 350.52 177.8 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "http://infocenter.arm.com/help/topic/com.arm.doc.ddi0314h/DDI0314H_coresight_components_trm.pdf" (at 341.63 209.55 90)
@@ -8233,7 +8119,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "J11") (unit 1)
+          (reference "J10") (unit 1)
         )
       )
     )
@@ -8242,7 +8128,7 @@
   (symbol (lib_id "Device:C") (at 100.33 229.87 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 223328ba-f36f-47c7-aa76-58a25a6d4148)
-    (property "Reference" "C25" (at 102.87 228.6 0)
+    (property "Reference" "C13" (at 102.87 228.6 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "10n" (at 102.87 231.14 0)
@@ -8259,7 +8145,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C25") (unit 1)
+          (reference "C13") (unit 1)
         )
       )
     )
@@ -8295,7 +8181,7 @@
   (symbol (lib_id "power:GND") (at 398.78 336.55 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 24f247cd-5c78-4f43-89f2-84057e5e646c)
-    (property "Reference" "#PWR019" (at 398.78 342.9 0)
+    (property "Reference" "#PWR056" (at 398.78 342.9 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 398.78 341.63 0)
@@ -8311,7 +8197,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR019") (unit 1)
+          (reference "#PWR056") (unit 1)
         )
       )
     )
@@ -8320,7 +8206,7 @@
   (symbol (lib_id "Connector:TestPoint") (at 431.8 147.32 0) (unit 1)
     (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 2701003e-3e42-4dad-9db4-be52df3a18ff)
-    (property "Reference" "TP12" (at 434.34 143.383 0)
+    (property "Reference" "TP10" (at 434.34 143.383 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "TestPoint" (at 434.34 145.923 0)
@@ -8336,7 +8222,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "TP12") (unit 1)
+          (reference "TP10") (unit 1)
         )
       )
     )
@@ -8345,7 +8231,7 @@
   (symbol (lib_id "Device:R") (at 171.45 307.34 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 272e4bd0-85a5-4609-bb57-f4ee287684e1)
-    (property "Reference" "R14" (at 170.18 306.07 0)
+    (property "Reference" "R35" (at 170.18 306.07 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "47K" (at 170.18 308.61 0)
@@ -8362,7 +8248,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R14") (unit 1)
+          (reference "R35") (unit 1)
         )
       )
     )
@@ -8371,7 +8257,7 @@
   (symbol (lib_id "power:GND") (at 283.21 63.5 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 2b49c38a-4378-43eb-bbc5-a358a313ec1f)
-    (property "Reference" "#PWR047" (at 283.21 69.85 0)
+    (property "Reference" "#PWR035" (at 283.21 69.85 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 283.21 68.58 0)
@@ -8387,7 +8273,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR047") (unit 1)
+          (reference "#PWR035") (unit 1)
         )
       )
     )
@@ -8396,7 +8282,7 @@
   (symbol (lib_id "power:GND") (at 403.86 85.09 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 2b5dded7-5888-407c-93de-9d4fccc5adbf)
-    (property "Reference" "#PWR049" (at 403.86 91.44 0)
+    (property "Reference" "#PWR057" (at 403.86 91.44 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 403.86 90.17 0)
@@ -8412,7 +8298,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR049") (unit 1)
+          (reference "#PWR057") (unit 1)
         )
       )
     )
@@ -8421,7 +8307,7 @@
   (symbol (lib_name "R_1") (lib_id "Device:R") (at 486.41 93.98 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 2c4f131b-7054-43d0-a8a5-1bf4626f695b)
-    (property "Reference" "R46" (at 483.87 92.71 90)
+    (property "Reference" "R61" (at 483.87 92.71 90)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "22R" (at 483.87 95.25 90)
@@ -8438,7 +8324,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R46") (unit 1)
+          (reference "R61") (unit 1)
         )
       )
     )
@@ -8447,7 +8333,7 @@
   (symbol (lib_id "power:GND") (at 73.66 377.19 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 2e149910-9f91-4758-9b7d-1326ee44a6fe)
-    (property "Reference" "#PWR052" (at 73.66 383.54 0)
+    (property "Reference" "#PWR06" (at 73.66 383.54 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 73.66 382.27 0)
@@ -8463,7 +8349,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR052") (unit 1)
+          (reference "#PWR06") (unit 1)
         )
       )
     )
@@ -8472,7 +8358,7 @@
   (symbol (lib_id "power:GND") (at 185.42 327.66 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 2e7d31b5-cc13-4cff-81d5-5973d24f9bc9)
-    (property "Reference" "#PWR010" (at 185.42 334.01 0)
+    (property "Reference" "#PWR023" (at 185.42 334.01 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 185.42 332.74 0)
@@ -8488,7 +8374,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR010") (unit 1)
+          (reference "#PWR023") (unit 1)
         )
       )
     )
@@ -8497,7 +8383,7 @@
   (symbol (lib_id "power:GND") (at 331.47 339.09 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 2e9af855-6663-4f09-82e2-ca453cdf0e76)
-    (property "Reference" "#PWR013" (at 331.47 345.44 0)
+    (property "Reference" "#PWR046" (at 331.47 345.44 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 331.47 344.17 0)
@@ -8513,7 +8399,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR013") (unit 1)
+          (reference "#PWR046") (unit 1)
         )
       )
     )
@@ -8522,7 +8408,7 @@
   (symbol (lib_id "power:GND") (at 251.46 346.71 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 345440ff-4c1c-410e-99d8-cbce8be1ba04)
-    (property "Reference" "#PWR057" (at 251.46 353.06 0)
+    (property "Reference" "#PWR031" (at 251.46 353.06 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 251.46 351.79 0)
@@ -8538,7 +8424,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR057") (unit 1)
+          (reference "#PWR031") (unit 1)
         )
       )
     )
@@ -8547,7 +8433,7 @@
   (symbol (lib_id "Connector:TestPoint") (at 379.73 156.21 0) (unit 1)
     (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 357138be-7593-494e-bdd6-ba5d50e9425e)
-    (property "Reference" "TP11" (at 382.27 152.273 0)
+    (property "Reference" "TP8" (at 382.27 152.273 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "TestPoint" (at 382.27 154.813 0)
@@ -8563,7 +8449,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "TP11") (unit 1)
+          (reference "TP8") (unit 1)
         )
       )
     )
@@ -8599,7 +8485,7 @@
   (symbol (lib_id "Device:C") (at 154.94 279.4 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 3633b22b-3643-49d2-93f3-e18070d9f547)
-    (property "Reference" "C7" (at 153.67 278.13 90)
+    (property "Reference" "C19" (at 153.67 278.13 90)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "10uF" (at 153.67 281.94 90)
@@ -8619,7 +8505,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C7") (unit 1)
+          (reference "C19") (unit 1)
         )
       )
     )
@@ -8628,7 +8514,7 @@
   (symbol (lib_id "power:GND") (at 510.54 284.48 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 3713152c-5d20-46c6-b6bd-3da5591ebaf1)
-    (property "Reference" "#PWR077" (at 510.54 290.83 0)
+    (property "Reference" "#PWR070" (at 510.54 290.83 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 510.54 289.56 0)
@@ -8644,7 +8530,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR077") (unit 1)
+          (reference "#PWR070") (unit 1)
         )
       )
     )
@@ -8711,7 +8597,7 @@
   (symbol (lib_id "Device:C") (at 482.6 49.53 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 38f1e693-3c2a-448c-8d3a-e9690921f287)
-    (property "Reference" "C10" (at 480.06 48.26 0)
+    (property "Reference" "C38" (at 480.06 48.26 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "10uF" (at 480.06 50.8 0)
@@ -8731,7 +8617,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C10") (unit 1)
+          (reference "C38") (unit 1)
         )
       )
     )
@@ -8764,7 +8650,7 @@
   (symbol (lib_id "Device:C") (at 300.99 153.67 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 39e5ca3f-45b6-459e-9047-433b6b64c9b7)
-    (property "Reference" "C16" (at 303.53 152.4 0)
+    (property "Reference" "C29" (at 303.53 152.4 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "10uF" (at 303.53 154.94 0)
@@ -8784,7 +8670,32 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C16") (unit 1)
+          (reference "C29") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:+5V") (at 487.68 251.46 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 3a649bde-adb7-4c38-9588-7484983d2387)
+    (property "Reference" "#PWR065" (at 487.68 255.27 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "+5V" (at 487.68 247.65 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 487.68 251.46 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 487.68 251.46 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 79b5537f-1b85-4eac-8473-2b264e917899))
+    (instances
+      (project "emonPi3"
+        (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
+          (reference "#PWR065") (unit 1)
         )
       )
     )
@@ -8793,7 +8704,7 @@
   (symbol (lib_id "Device:R") (at 171.45 273.05 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 3c34b431-95ca-4376-891b-0da439cb2541)
-    (property "Reference" "R13" (at 170.18 271.78 0)
+    (property "Reference" "R33" (at 170.18 271.78 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "47K" (at 170.18 274.32 0)
@@ -8810,7 +8721,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R13") (unit 1)
+          (reference "R33") (unit 1)
         )
       )
     )
@@ -8819,7 +8730,7 @@
   (symbol (lib_id "Device:R") (at 297.18 367.03 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 3d72528a-e7a1-4d1d-b807-9f611b2d8ae9)
-    (property "Reference" "R68" (at 298.45 364.49 0)
+    (property "Reference" "R47" (at 298.45 364.49 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "10K" (at 298.45 367.03 0)
@@ -8836,7 +8747,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R68") (unit 1)
+          (reference "R47") (unit 1)
         )
       )
     )
@@ -8845,7 +8756,7 @@
   (symbol (lib_id "Device:C") (at 72.39 294.64 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 3f4d5d2d-05d8-42e7-ae37-7ade2af56a16)
-    (property "Reference" "C5" (at 71.12 293.37 90)
+    (property "Reference" "C7" (at 71.12 293.37 90)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "10uF" (at 71.12 297.18 90)
@@ -8865,7 +8776,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C5") (unit 1)
+          (reference "C7") (unit 1)
         )
       )
     )
@@ -8874,7 +8785,7 @@
   (symbol (lib_id "Device:R") (at 101.6 91.44 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 403f3447-7581-4506-9f85-37f4e045f222)
-    (property "Reference" "R50" (at 100.33 90.17 0)
+    (property "Reference" "R31" (at 100.33 90.17 0)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "5K1" (at 100.33 92.71 0)
@@ -8894,7 +8805,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R50") (unit 1)
+          (reference "R31") (unit 1)
         )
       )
     )
@@ -8903,7 +8814,7 @@
   (symbol (lib_id "power:GND") (at 100.33 237.49 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 40a12080-9d11-4e92-92fa-863608249098)
-    (property "Reference" "#PWR033" (at 100.33 243.84 0)
+    (property "Reference" "#PWR09" (at 100.33 243.84 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 100.33 242.57 0)
@@ -8919,7 +8830,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR033") (unit 1)
+          (reference "#PWR09") (unit 1)
         )
       )
     )
@@ -8928,7 +8839,7 @@
   (symbol (lib_id "power:GND") (at 524.51 87.63 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 4100102a-fab3-4a3a-b2a6-f96c512c5323)
-    (property "Reference" "#PWR028" (at 524.51 93.98 0)
+    (property "Reference" "#PWR074" (at 524.51 93.98 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 524.51 92.71 0)
@@ -8944,7 +8855,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR028") (unit 1)
+          (reference "#PWR074") (unit 1)
         )
       )
     )
@@ -8953,7 +8864,7 @@
   (symbol (lib_id "Device:C") (at 156.21 346.71 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 4146fb55-64e9-45a0-b6b2-088e0f9d1bdb)
-    (property "Reference" "C9" (at 154.94 345.44 90)
+    (property "Reference" "C21" (at 154.94 345.44 90)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "10uF" (at 154.94 349.25 90)
@@ -8973,7 +8884,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C9") (unit 1)
+          (reference "C21") (unit 1)
         )
       )
     )
@@ -8982,7 +8893,7 @@
   (symbol (lib_id "Device:C") (at 236.22 158.75 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 414acb99-ffa0-4a6e-adeb-bf3b78f2ed1b)
-    (property "Reference" "C11" (at 233.68 152.4 0)
+    (property "Reference" "C25" (at 233.68 152.4 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "1uF" (at 233.68 154.94 0)
@@ -9002,7 +8913,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C11") (unit 1)
+          (reference "C25") (unit 1)
         )
       )
     )
@@ -9011,7 +8922,7 @@
   (symbol (lib_id "power:+3V3") (at 501.65 182.88 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 428f0ccd-eadc-40d6-bb3f-895eadc2a52e)
-    (property "Reference" "#PWR043" (at 501.65 186.69 0)
+    (property "Reference" "#PWR068" (at 501.65 186.69 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 501.65 179.07 0)
@@ -9027,7 +8938,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR043") (unit 1)
+          (reference "#PWR068") (unit 1)
         )
       )
     )
@@ -9036,7 +8947,7 @@
   (symbol (lib_id "Jumper:SolderJumper_2_Open") (at 152.4 245.11 90) (unit 1)
     (in_bom no) (on_board yes) (dnp no)
     (uuid 45e05285-3ec1-4b73-80e5-579d2c148e18)
-    (property "Reference" "GND_LINK0" (at 149.86 252.73 0)
+    (property "Reference" "GND_LINK1" (at 149.86 252.73 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "SOLDERJUMPERNC" (at 157.48 247.65 0)
@@ -9053,7 +8964,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "GND_LINK0") (unit 1)
+          (reference "GND_LINK1") (unit 1)
         )
       )
     )
@@ -9088,7 +8999,7 @@
   (symbol (lib_id "power:GND") (at 100.33 307.34 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 486d8eb9-62e4-4972-923a-21f7ebb0e453)
-    (property "Reference" "#PWR029" (at 100.33 313.69 0)
+    (property "Reference" "#PWR011" (at 100.33 313.69 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 100.33 312.42 0)
@@ -9104,7 +9015,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR029") (unit 1)
+          (reference "#PWR011") (unit 1)
         )
       )
     )
@@ -9113,7 +9024,7 @@
   (symbol (lib_id "Device:C") (at 339.09 330.2 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 48f9c43d-be8a-43da-9510-c0c75857477f)
-    (property "Reference" "C21" (at 341.63 327.66 0)
+    (property "Reference" "C31" (at 341.63 327.66 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "100nF" (at 341.63 330.2 0)
@@ -9130,7 +9041,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C21") (unit 1)
+          (reference "C31") (unit 1)
         )
       )
     )
@@ -9163,7 +9074,7 @@
   (symbol (lib_id "Memory_EEPROM:24AA02-OT") (at 527.05 187.96 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 4994b00a-602e-4a0e-a510-504d36504527)
-    (property "Reference" "U6" (at 529.0059 179.07 0)
+    (property "Reference" "U8" (at 529.0059 179.07 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "24AA02-OT" (at 529.0059 181.61 0)
@@ -9183,7 +9094,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "U6") (unit 1)
+          (reference "U8") (unit 1)
         )
       )
     )
@@ -9192,7 +9103,7 @@
   (symbol (lib_id "power:+3V3") (at 222.25 91.44 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 4a7d30d6-ea12-4c76-8fba-ab4755d9cb02)
-    (property "Reference" "#PWR051" (at 222.25 95.25 0)
+    (property "Reference" "#PWR027" (at 222.25 95.25 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 222.25 87.63 0)
@@ -9208,7 +9119,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR051") (unit 1)
+          (reference "#PWR027") (unit 1)
         )
       )
     )
@@ -9217,7 +9128,7 @@
   (symbol (lib_id "power:GND") (at 353.06 63.5 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 4bc9ffe1-df7b-4c4b-a8b8-dcd9f07f0a19)
-    (property "Reference" "#PWR066" (at 353.06 69.85 0)
+    (property "Reference" "#PWR053" (at 353.06 69.85 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 353.06 68.58 0)
@@ -9233,7 +9144,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR066") (unit 1)
+          (reference "#PWR053") (unit 1)
         )
       )
     )
@@ -9242,7 +9153,7 @@
   (symbol (lib_id "power:+5V") (at 440.69 49.53 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 4c2efbfb-05f2-40bb-8a8b-13d5327c1503)
-    (property "Reference" "#PWR020" (at 440.69 53.34 0)
+    (property "Reference" "#PWR060" (at 440.69 53.34 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+5V" (at 440.69 45.72 0)
@@ -9258,7 +9169,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR020") (unit 1)
+          (reference "#PWR060") (unit 1)
         )
       )
     )
@@ -9267,7 +9178,7 @@
   (symbol (lib_id "power:GND") (at 218.44 356.87 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 4d82aa48-16d2-4eb0-bbfd-0ebc8fc76f20)
-    (property "Reference" "#PWR038" (at 218.44 363.22 0)
+    (property "Reference" "#PWR025" (at 218.44 363.22 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 218.44 361.95 0)
@@ -9283,7 +9194,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR038") (unit 1)
+          (reference "#PWR025") (unit 1)
         )
       )
     )
@@ -9292,7 +9203,7 @@
   (symbol (lib_id "Device:C") (at 185.42 285.75 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 4fcfaaf8-08d3-4733-a5e1-05ca812d3b5d)
-    (property "Reference" "C31" (at 187.96 284.48 0)
+    (property "Reference" "C22" (at 187.96 284.48 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "10n" (at 187.96 287.02 0)
@@ -9309,7 +9220,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C31") (unit 1)
+          (reference "C22") (unit 1)
         )
       )
     )
@@ -9318,7 +9229,7 @@
   (symbol (lib_id "Device:C") (at 72.39 224.79 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 4fcfb792-9a93-4e1d-a747-e190e4d838bb)
-    (property "Reference" "C3" (at 71.12 223.52 90)
+    (property "Reference" "C5" (at 71.12 223.52 90)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "10uF" (at 71.12 227.33 90)
@@ -9338,7 +9249,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C3") (unit 1)
+          (reference "C5") (unit 1)
         )
       )
     )
@@ -9347,7 +9258,7 @@
   (symbol (lib_id "Device:C") (at 100.33 299.72 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 4ffa5f3f-3436-44a1-ad38-b5619d0bcc04)
-    (property "Reference" "C29" (at 102.87 298.45 0)
+    (property "Reference" "C15" (at 102.87 298.45 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "10n" (at 102.87 300.99 0)
@@ -9364,7 +9275,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C29") (unit 1)
+          (reference "C15") (unit 1)
         )
       )
     )
@@ -9405,7 +9316,7 @@
   (symbol (lib_id "Device:R") (at 83.82 299.72 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 51ba65f3-0f9e-450f-99ae-ca3785f00ae8)
-    (property "Reference" "R20" (at 82.55 298.45 0)
+    (property "Reference" "R19" (at 82.55 298.45 0)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "47K" (at 82.55 300.99 0)
@@ -9422,7 +9333,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R20") (unit 1)
+          (reference "R19") (unit 1)
         )
       )
     )
@@ -9431,7 +9342,7 @@
   (symbol (lib_id "power:+3V3") (at 300.99 144.78 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 51d24c77-3ac8-4f08-a2bd-b0417087a7c8)
-    (property "Reference" "#PWR017" (at 300.99 148.59 0)
+    (property "Reference" "#PWR041" (at 300.99 148.59 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 300.99 140.97 0)
@@ -9447,7 +9358,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR017") (unit 1)
+          (reference "#PWR041") (unit 1)
         )
       )
     )
@@ -9456,7 +9367,7 @@
   (symbol (lib_id "Device:R") (at 90.17 191.77 270) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 52879025-9f5a-4716-8e19-d8afe3db3a99)
-    (property "Reference" "R26" (at 87.63 190.5 90)
+    (property "Reference" "R23" (at 87.63 190.5 90)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "3K3" (at 87.63 193.04 90)
@@ -9473,7 +9384,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R26") (unit 1)
+          (reference "R23") (unit 1)
         )
       )
     )
@@ -9482,7 +9393,7 @@
   (symbol (lib_id "Device:C") (at 72.39 259.08 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 540ff9b0-38dd-48ea-a944-fe3d207be000)
-    (property "Reference" "C4" (at 71.12 257.81 90)
+    (property "Reference" "C6" (at 71.12 257.81 90)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "10uF" (at 71.12 261.62 90)
@@ -9502,7 +9413,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C4") (unit 1)
+          (reference "C6") (unit 1)
         )
       )
     )
@@ -9511,7 +9422,7 @@
   (symbol (lib_id "Device:R") (at 317.5 93.98 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 54aa5a14-7e6c-4a79-b6df-bf2a72558072)
-    (property "Reference" "R57" (at 318.77 92.71 0)
+    (property "Reference" "R51" (at 318.77 92.71 0)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "1K" (at 318.77 95.25 0)
@@ -9528,7 +9439,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R57") (unit 1)
+          (reference "R51") (unit 1)
         )
       )
     )
@@ -9563,7 +9474,7 @@
   (symbol (lib_id "Device:R") (at 331.47 93.98 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 57d8a227-0722-4c6c-9340-48bc0a2d6329)
-    (property "Reference" "R58" (at 332.74 92.71 0)
+    (property "Reference" "R53" (at 332.74 92.71 0)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "1K" (at 332.74 95.25 0)
@@ -9580,7 +9491,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R58") (unit 1)
+          (reference "R53") (unit 1)
         )
       )
     )
@@ -9589,7 +9500,7 @@
   (symbol (lib_id "Device:R") (at 530.86 271.78 90) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 58bb4139-e603-4c94-9fce-bec073144283)
-    (property "Reference" "R67" (at 528.32 270.51 90)
+    (property "Reference" "R68" (at 528.32 270.51 90)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "1M" (at 528.32 274.32 90)
@@ -9606,7 +9517,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R67") (unit 1)
+          (reference "R68") (unit 1)
         )
       )
     )
@@ -9615,7 +9526,7 @@
   (symbol (lib_id "Switch:SW_Push") (at 318.77 55.88 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 5a417fcd-961c-4304-976a-19a987296058)
-    (property "Reference" "SW3" (at 320.04 55.245 90)
+    (property "Reference" "SW2" (at 320.04 55.245 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "SW_Push" (at 320.04 57.785 90)
@@ -9632,7 +9543,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "SW3") (unit 1)
+          (reference "SW2") (unit 1)
         )
       )
     )
@@ -9641,7 +9552,7 @@
   (symbol (lib_id "power:GND") (at 381 351.79 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 5a79ba05-ce10-4229-b36d-1d62d5a7ba72)
-    (property "Reference" "#PWR016" (at 381 358.14 0)
+    (property "Reference" "#PWR055" (at 381 358.14 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 381 356.87 0)
@@ -9657,7 +9568,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR016") (unit 1)
+          (reference "#PWR055") (unit 1)
         )
       )
     )
@@ -9690,7 +9601,7 @@
   (symbol (lib_id "Device:R") (at 83.82 229.87 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 5d8ef61d-f40c-4ae6-9990-b09dea8e5879)
-    (property "Reference" "R18" (at 82.55 228.6 0)
+    (property "Reference" "R15" (at 82.55 228.6 0)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "47K" (at 82.55 231.14 0)
@@ -9707,7 +9618,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R18") (unit 1)
+          (reference "R15") (unit 1)
         )
       )
     )
@@ -9716,7 +9627,7 @@
   (symbol (lib_id "power:GND") (at 63.5 92.71 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 5e0afd12-7f90-4bb2-85c2-6db91c6d7b5a)
-    (property "Reference" "#PWR06" (at 63.5 99.06 0)
+    (property "Reference" "#PWR05" (at 63.5 99.06 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 63.5 97.79 0)
@@ -9732,7 +9643,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR06") (unit 1)
+          (reference "#PWR05") (unit 1)
         )
       )
     )
@@ -9741,7 +9652,7 @@
   (symbol (lib_id "Device:C") (at 63.5 72.39 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 5e9161dc-4d5a-4dd9-9e02-7bf16d076b54)
-    (property "Reference" "C28" (at 60.96 71.12 0)
+    (property "Reference" "C2" (at 60.96 71.12 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "1n" (at 60.96 73.66 0)
@@ -9758,7 +9669,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C28") (unit 1)
+          (reference "C2") (unit 1)
         )
       )
     )
@@ -9767,7 +9678,7 @@
   (symbol (lib_id "Switch:SW_Push") (at 353.06 55.88 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 5f65f06c-3317-475d-948c-3c5f2a0218a9)
-    (property "Reference" "SW2" (at 356.87 55.245 90)
+    (property "Reference" "SW3" (at 356.87 55.245 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "SW_Push" (at 356.87 57.785 90)
@@ -9784,7 +9695,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "SW2") (unit 1)
+          (reference "SW3") (unit 1)
         )
       )
     )
@@ -9817,7 +9728,7 @@
   (symbol (lib_id "power:GND") (at 340.36 63.5 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 5faabedb-39d9-470a-a5e1-4b5c553ec615)
-    (property "Reference" "#PWR063" (at 340.36 69.85 0)
+    (property "Reference" "#PWR047" (at 340.36 69.85 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 340.36 68.58 0)
@@ -9833,7 +9744,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR063") (unit 1)
+          (reference "#PWR047") (unit 1)
         )
       )
     )
@@ -9842,7 +9753,7 @@
   (symbol (lib_id "Reference_Voltage:MCP1501-10xCH") (at 45.72 62.23 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 605f6163-6b54-41d1-b6f1-ce127c55571b)
-    (property "Reference" "U4" (at 46.99 53.34 0)
+    (property "Reference" "U1" (at 46.99 53.34 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "MCP1501-10xCH" (at 46.99 55.88 0)
@@ -9863,7 +9774,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "U4") (unit 1)
+          (reference "U1") (unit 1)
         )
       )
     )
@@ -9872,7 +9783,7 @@
   (symbol (lib_id "power:GND") (at 152.4 252.73 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 60687d48-9935-484a-afd7-942099e29a2f)
-    (property "Reference" "#PWR042" (at 152.4 259.08 0)
+    (property "Reference" "#PWR015" (at 152.4 259.08 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 152.4 257.81 0)
@@ -9888,7 +9799,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR042") (unit 1)
+          (reference "#PWR015") (unit 1)
         )
       )
     )
@@ -9923,7 +9834,7 @@
   (symbol (lib_id "Device:R") (at 90.17 294.64 90) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 6173b071-e50a-406b-aaaa-dfa9b2fc0846)
-    (property "Reference" "R29" (at 87.63 293.37 90)
+    (property "Reference" "R26" (at 87.63 293.37 90)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "3K3" (at 91.44 295.91 90)
@@ -9940,7 +9851,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R29") (unit 1)
+          (reference "R26") (unit 1)
         )
       )
     )
@@ -10008,7 +9919,7 @@
   (symbol (lib_id "Device:R") (at 90.17 259.08 90) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 6704e15a-ba0d-487b-b34c-347d9feb3912)
-    (property "Reference" "R28" (at 87.63 257.81 90)
+    (property "Reference" "R25" (at 87.63 257.81 90)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "3K3" (at 87.63 260.35 90)
@@ -10025,7 +9936,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R28") (unit 1)
+          (reference "R25") (unit 1)
         )
       )
     )
@@ -10034,7 +9945,7 @@
   (symbol (lib_id "power:GND") (at 495.3 55.88 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 670a7580-d323-4d44-8630-cf3dd9b374b1)
-    (property "Reference" "#PWR058" (at 495.3 62.23 0)
+    (property "Reference" "#PWR067" (at 495.3 62.23 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 495.3 60.96 0)
@@ -10050,7 +9961,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR058") (unit 1)
+          (reference "#PWR067") (unit 1)
         )
       )
     )
@@ -10059,7 +9970,7 @@
   (symbol (lib_id "power:GND") (at 171.45 67.31 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 67309cb0-fb09-4809-a76f-d72211a4608e)
-    (property "Reference" "#PWR076" (at 171.45 73.66 0)
+    (property "Reference" "#PWR019" (at 171.45 73.66 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 171.45 72.39 0)
@@ -10075,7 +9986,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR076") (unit 1)
+          (reference "#PWR019") (unit 1)
         )
       )
     )
@@ -10084,13 +9995,13 @@
   (symbol (lib_id "Connector_Generic:Conn_02x13_Odd_Even") (at 411.48 67.31 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 674578dd-1201-4f01-80ee-198bae1a3b1f)
-    (property "Reference" "J10" (at 412.75 46.99 0)
+    (property "Reference" "J11" (at 412.75 46.99 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "Conn_02x13_Odd_Even" (at 412.75 49.53 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_2x13_P2.54mm_Vertical" (at 411.48 67.31 0)
+    (property "Footprint" "RPi-SMD:REF-182688" (at 411.48 67.31 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at 411.48 67.31 0)
@@ -10125,7 +10036,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "J10") (unit 1)
+          (reference "J11") (unit 1)
         )
       )
     )
@@ -10134,7 +10045,7 @@
   (symbol (lib_id "power:+3V3") (at 350.52 160.02 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 67fa6b6d-2690-4981-9a80-2fcb33efc2dd)
-    (property "Reference" "#PWR035" (at 350.52 163.83 0)
+    (property "Reference" "#PWR052" (at 350.52 163.83 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 350.52 156.21 0)
@@ -10150,7 +10061,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR035") (unit 1)
+          (reference "#PWR052") (unit 1)
         )
       )
     )
@@ -10159,7 +10070,7 @@
   (symbol (lib_id "Device:R") (at 83.82 254 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 6861cf6d-a481-4399-b971-346e12788466)
-    (property "Reference" "R10" (at 82.55 252.73 0)
+    (property "Reference" "R16" (at 82.55 252.73 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "47K" (at 82.55 255.27 0)
@@ -10176,7 +10087,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R10") (unit 1)
+          (reference "R16") (unit 1)
         )
       )
     )
@@ -10185,7 +10096,7 @@
   (symbol (lib_id "Device:C") (at 340.36 54.61 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 6a2dd8d2-e18a-4bba-a54c-c2afff0133c9)
-    (property "Reference" "C34" (at 337.82 53.34 0)
+    (property "Reference" "C32" (at 337.82 53.34 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "10n" (at 337.82 55.88 0)
@@ -10202,7 +10113,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C34") (unit 1)
+          (reference "C32") (unit 1)
         )
       )
     )
@@ -10211,7 +10122,7 @@
   (symbol (lib_id "Device:R") (at 171.45 340.36 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 6a9b595b-ab18-43a2-b08b-87e1a9b6ee61)
-    (property "Reference" "R15" (at 170.18 339.09 0)
+    (property "Reference" "R37" (at 170.18 339.09 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "47K" (at 170.18 341.63 0)
@@ -10228,7 +10139,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R15") (unit 1)
+          (reference "R37") (unit 1)
         )
       )
     )
@@ -10289,7 +10200,7 @@
   (symbol (lib_id "Device:R") (at 318.77 38.1 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 6cac316b-5e74-4f0f-875e-2bfb68db010e)
-    (property "Reference" "R60" (at 320.04 36.83 0)
+    (property "Reference" "R52" (at 320.04 36.83 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "10K" (at 320.04 39.37 0)
@@ -10306,7 +10217,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R60") (unit 1)
+          (reference "R52") (unit 1)
         )
       )
     )
@@ -10315,7 +10226,7 @@
   (symbol (lib_id "Device:C") (at 185.42 320.04 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 6e2c2a78-3824-4b2f-a260-a23a2f068330)
-    (property "Reference" "C32" (at 187.96 318.77 0)
+    (property "Reference" "C23" (at 187.96 318.77 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "10n" (at 187.96 321.31 0)
@@ -10332,7 +10243,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C32") (unit 1)
+          (reference "C23") (unit 1)
         )
       )
     )
@@ -10341,7 +10252,7 @@
   (symbol (lib_id "power:GND") (at 100.33 204.47 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 6e9649c5-4474-4c6c-9ae3-09948d79ab37)
-    (property "Reference" "#PWR036" (at 100.33 210.82 0)
+    (property "Reference" "#PWR08" (at 100.33 210.82 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 100.33 209.55 0)
@@ -10357,7 +10268,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR036") (unit 1)
+          (reference "#PWR08") (unit 1)
         )
       )
     )
@@ -10366,7 +10277,7 @@
   (symbol (lib_id "Device:R") (at 508 60.96 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 71912dff-c52a-4e8b-9880-8b8daebcf906)
-    (property "Reference" "R41" (at 506.73 59.69 0)
+    (property "Reference" "R63" (at 506.73 59.69 0)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "47K" (at 506.73 62.23 0)
@@ -10383,7 +10294,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R41") (unit 1)
+          (reference "R63") (unit 1)
         )
       )
     )
@@ -10392,7 +10303,7 @@
   (symbol (lib_id "Device:R") (at 381 342.9 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 721059f3-ddcb-48b3-a7e4-adc5ddca9971)
-    (property "Reference" "R53" (at 382.27 340.36 0)
+    (property "Reference" "R57" (at 382.27 340.36 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "10K" (at 382.27 342.9 0)
@@ -10409,7 +10320,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R53") (unit 1)
+          (reference "R57") (unit 1)
         )
       )
     )
@@ -10418,7 +10329,7 @@
   (symbol (lib_id "Device:R") (at 67.31 364.49 270) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 7224bb46-7498-43ed-bb71-17f615f6d4f3)
-    (property "Reference" "R62" (at 64.77 363.22 90)
+    (property "Reference" "R7" (at 64.77 363.22 90)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "3K3" (at 64.77 365.76 90)
@@ -10435,7 +10346,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R62") (unit 1)
+          (reference "R7") (unit 1)
         )
       )
     )
@@ -10444,7 +10355,7 @@
   (symbol (lib_id "Device:R") (at 524.51 157.48 90) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 754d7305-e246-49d2-bc2b-55411f54fb72)
-    (property "Reference" "R49" (at 521.97 156.21 90)
+    (property "Reference" "R66" (at 521.97 156.21 90)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "3K3" (at 521.97 158.75 90)
@@ -10461,7 +10372,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R49") (unit 1)
+          (reference "R66") (unit 1)
         )
       )
     )
@@ -10502,7 +10413,7 @@
   (symbol (lib_id "power:GND") (at 100.33 271.78 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 77065e31-5987-4201-9b04-f54de7f5480f)
-    (property "Reference" "#PWR031" (at 100.33 278.13 0)
+    (property "Reference" "#PWR010" (at 100.33 278.13 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 100.33 276.86 0)
@@ -10518,7 +10429,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR031") (unit 1)
+          (reference "#PWR010") (unit 1)
         )
       )
     )
@@ -10527,7 +10438,7 @@
   (symbol (lib_id "Device:C") (at 331.47 330.2 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 77c1cc87-aa90-49c5-948e-afb7852dbc8d)
-    (property "Reference" "C15" (at 328.93 327.66 0)
+    (property "Reference" "C30" (at 328.93 327.66 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "1uF" (at 328.93 330.2 0)
@@ -10547,7 +10458,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C15") (unit 1)
+          (reference "C30") (unit 1)
         )
       )
     )
@@ -10556,7 +10467,7 @@
   (symbol (lib_id "power:+3V3") (at 367.03 157.48 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 78da4df1-645b-4d90-827f-8a5cc358d6e4)
-    (property "Reference" "#PWR022" (at 367.03 161.29 0)
+    (property "Reference" "#PWR054" (at 367.03 161.29 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 367.03 153.67 0)
@@ -10572,7 +10483,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR022") (unit 1)
+          (reference "#PWR054") (unit 1)
         )
       )
     )
@@ -10581,7 +10492,7 @@
   (symbol (lib_id "Device:R") (at 510.54 246.38 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 7a1c697e-7ae4-4bf1-a1e2-a715bd736de7)
-    (property "Reference" "R65" (at 511.81 245.11 0)
+    (property "Reference" "R64" (at 511.81 245.11 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "47K" (at 511.81 246.38 0)
@@ -10598,7 +10509,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R65") (unit 1)
+          (reference "R64") (unit 1)
         )
       )
     )
@@ -10607,7 +10518,7 @@
   (symbol (lib_id "Device:C") (at 118.11 91.44 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 7a58061a-a594-428c-9b18-76bde4f87e6f)
-    (property "Reference" "C37" (at 120.65 90.17 0)
+    (property "Reference" "C18" (at 120.65 90.17 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "1n" (at 120.65 92.71 0)
@@ -10624,7 +10535,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C37") (unit 1)
+          (reference "C18") (unit 1)
         )
       )
     )
@@ -10633,7 +10544,7 @@
   (symbol (lib_id "Device:R") (at 83.82 163.83 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 7c28ef69-302d-4b4a-a728-63b3f9abded3)
-    (property "Reference" "R16" (at 82.55 162.56 0)
+    (property "Reference" "R11" (at 82.55 162.56 0)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "47K" (at 82.55 165.1 0)
@@ -10650,7 +10561,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R16") (unit 1)
+          (reference "R11") (unit 1)
         )
       )
     )
@@ -10659,7 +10570,7 @@
   (symbol (lib_id "power:GND") (at 421.64 85.09 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 7c9ac626-1dcb-4bdc-b3aa-16d3cbd49e37)
-    (property "Reference" "#PWR048" (at 421.64 91.44 0)
+    (property "Reference" "#PWR058" (at 421.64 91.44 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 421.64 90.17 0)
@@ -10675,7 +10586,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR048") (unit 1)
+          (reference "#PWR058") (unit 1)
         )
       )
     )
@@ -10736,7 +10647,7 @@
   (symbol (lib_id "Device:R") (at 90.17 330.2 90) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 7f8719b1-31a1-4a52-baa7-2279477f925e)
-    (property "Reference" "R30" (at 87.63 328.93 90)
+    (property "Reference" "R27" (at 87.63 328.93 90)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "3K3" (at 87.63 331.47 90)
@@ -10753,7 +10664,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R30") (unit 1)
+          (reference "R27") (unit 1)
         )
       )
     )
@@ -10762,7 +10673,7 @@
   (symbol (lib_id "Device:C") (at 501.65 189.23 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 7fa419f6-b77c-4bc2-a6c7-b98b7da3352d)
-    (property "Reference" "C38" (at 499.11 187.96 0)
+    (property "Reference" "C41" (at 499.11 187.96 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "100nF" (at 499.11 190.5 0)
@@ -10779,7 +10690,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C38") (unit 1)
+          (reference "C41") (unit 1)
         )
       )
     )
@@ -10788,7 +10699,7 @@
   (symbol (lib_id "Device:R") (at 90.17 158.75 270) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 7fa6e65c-3b1c-43cb-b6e2-fabe9f7beb37)
-    (property "Reference" "R25" (at 87.63 157.48 90)
+    (property "Reference" "R22" (at 87.63 157.48 90)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "3K3" (at 87.63 160.02 90)
@@ -10805,7 +10716,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R25") (unit 1)
+          (reference "R22") (unit 1)
         )
       )
     )
@@ -10814,7 +10725,7 @@
   (symbol (lib_id "power:+3V3") (at 539.75 240.03 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 80cbf3d2-afa0-4bfd-a9ec-1a0799bdf407)
-    (property "Reference" "#PWR071" (at 539.75 243.84 0)
+    (property "Reference" "#PWR077" (at 539.75 243.84 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 539.75 236.22 0)
@@ -10830,7 +10741,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR071") (unit 1)
+          (reference "#PWR077") (unit 1)
         )
       )
     )
@@ -10839,7 +10750,7 @@
   (symbol (lib_id "Device:R") (at 297.18 377.19 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 824d74a9-53b8-4cb5-ade3-b5a9979a0fa7)
-    (property "Reference" "R69" (at 298.45 374.65 0)
+    (property "Reference" "R48" (at 298.45 374.65 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "10K" (at 298.45 377.19 0)
@@ -10856,7 +10767,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R69") (unit 1)
+          (reference "R48") (unit 1)
         )
       )
     )
@@ -10865,7 +10776,7 @@
   (symbol (lib_id "power:GND") (at 544.83 317.5 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 8345c8d4-8aab-4028-a75a-27181d74b906)
-    (property "Reference" "#PWR021" (at 544.83 323.85 0)
+    (property "Reference" "#PWR078" (at 544.83 323.85 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 544.83 322.58 0)
@@ -10881,7 +10792,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR021") (unit 1)
+          (reference "#PWR078") (unit 1)
         )
       )
     )
@@ -10890,7 +10801,7 @@
   (symbol (lib_id "Device:C") (at 100.33 196.85 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 841db360-6b1f-4d79-b8e5-abd23e1688f9)
-    (property "Reference" "C24" (at 102.87 195.58 0)
+    (property "Reference" "C12" (at 102.87 195.58 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "10n" (at 102.87 198.12 0)
@@ -10907,7 +10818,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C24") (unit 1)
+          (reference "C12") (unit 1)
         )
       )
     )
@@ -10916,7 +10827,7 @@
   (symbol (lib_id "Device:C") (at 72.39 330.2 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 86ea0768-8588-4959-ab49-db926eb28ffa)
-    (property "Reference" "C6" (at 71.12 328.93 90)
+    (property "Reference" "C8" (at 71.12 328.93 90)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "10uF" (at 71.12 332.74 90)
@@ -10936,7 +10847,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C6") (unit 1)
+          (reference "C8") (unit 1)
         )
       )
     )
@@ -10945,7 +10856,7 @@
   (symbol (lib_id "Connector_Generic:Conn_01x04") (at 214.63 99.06 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp yes)
     (uuid 87ca6ff6-d0f2-4501-8122-4acabb4c3fe6)
-    (property "Reference" "J7" (at 215.9 90.17 0)
+    (property "Reference" "J8" (at 215.9 90.17 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "CONN_04PTH" (at 219.71 91.694 0)
@@ -10964,7 +10875,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "J7") (unit 1)
+          (reference "J8") (unit 1)
         )
       )
     )
@@ -10973,7 +10884,7 @@
   (symbol (lib_name "R_1") (lib_id "Device:R") (at 486.41 101.6 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 89976b4f-30f5-4425-8f37-2fe9d6308ae1)
-    (property "Reference" "R63" (at 483.87 100.33 90)
+    (property "Reference" "R62" (at 483.87 100.33 90)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "22R" (at 483.87 102.87 90)
@@ -10990,7 +10901,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R63") (unit 1)
+          (reference "R62") (unit 1)
         )
       )
     )
@@ -10999,7 +10910,7 @@
   (symbol (lib_id "Device:R") (at 381 330.2 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 89bcc458-de75-4261-9453-ff46f98c3fea)
-    (property "Reference" "R54" (at 382.27 327.66 0)
+    (property "Reference" "R56" (at 382.27 327.66 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "10K" (at 382.27 330.2 0)
@@ -11016,7 +10927,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R54") (unit 1)
+          (reference "R56") (unit 1)
         )
       )
     )
@@ -11052,7 +10963,7 @@
   (symbol (lib_id "Device:R") (at 83.82 196.85 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 8cac0d0b-f0b1-46ff-b800-549d11a52884)
-    (property "Reference" "R17" (at 82.55 195.58 0)
+    (property "Reference" "R13" (at 82.55 195.58 0)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "47K" (at 82.55 198.12 0)
@@ -11069,7 +10980,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R17") (unit 1)
+          (reference "R13") (unit 1)
         )
       )
     )
@@ -11129,7 +11040,7 @@
   (symbol (lib_id "power:+3V3") (at 168.91 41.91 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 8e82bede-59ef-4bba-b200-0ccf37dfa9ad)
-    (property "Reference" "#PWR075" (at 168.91 45.72 0)
+    (property "Reference" "#PWR018" (at 168.91 45.72 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 168.91 38.1 0)
@@ -11145,7 +11056,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR075") (unit 1)
+          (reference "#PWR018") (unit 1)
         )
       )
     )
@@ -11154,7 +11065,7 @@
   (symbol (lib_id "Device:R") (at 539.75 246.38 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 91981b95-7143-4bbb-a91a-206832c77aa3)
-    (property "Reference" "R64" (at 541.02 245.11 0)
+    (property "Reference" "R69" (at 541.02 245.11 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "10K" (at 541.02 246.38 0)
@@ -11171,7 +11082,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R64") (unit 1)
+          (reference "R69") (unit 1)
         )
       )
     )
@@ -11180,7 +11091,7 @@
   (symbol (lib_id "power:+3V3") (at 166.37 91.44 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 91c4c38f-34f0-4eaa-beb5-ee54781bca6d)
-    (property "Reference" "#PWR024" (at 166.37 95.25 0)
+    (property "Reference" "#PWR017" (at 166.37 95.25 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 166.37 87.63 0)
@@ -11196,7 +11107,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR024") (unit 1)
+          (reference "#PWR017") (unit 1)
         )
       )
     )
@@ -11205,7 +11116,7 @@
   (symbol (lib_id "Device:C") (at 100.33 264.16 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 91cda3d6-c2a3-4c42-9277-abe172f8ef96)
-    (property "Reference" "C26" (at 102.87 262.89 0)
+    (property "Reference" "C14" (at 102.87 262.89 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "10n" (at 102.87 265.43 0)
@@ -11222,7 +11133,33 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C26") (unit 1)
+          (reference "C14") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "Device:C") (at 487.68 257.81 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid 937ba4db-41db-4976-8724-2c4d8e6dee12)
+    (property "Reference" "C39" (at 485.14 256.54 0)
+      (effects (font (size 1.27 1.27)) (justify right bottom))
+    )
+    (property "Value" "100nF" (at 485.14 259.08 0)
+      (effects (font (size 1.27 1.27)) (justify right bottom))
+    )
+    (property "Footprint" "Capacitor_SMD:C_0603_1608Metric" (at 488.6452 261.62 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 487.68 257.81 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 905feab9-487b-460a-af41-40224ec80b75))
+    (pin "2" (uuid 4888ec5a-b0b0-4f7e-8ff6-2c1e640d8e69))
+    (instances
+      (project "emonPi3"
+        (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
+          (reference "C39") (unit 1)
         )
       )
     )
@@ -11255,7 +11192,7 @@
   (symbol (lib_id "power:+3V3") (at 527.05 177.8 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 93dcd097-79c8-467c-8a51-ce9e69aa0406)
-    (property "Reference" "#PWR064" (at 527.05 181.61 0)
+    (property "Reference" "#PWR075" (at 527.05 181.61 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 527.05 173.99 0)
@@ -11271,7 +11208,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR064") (unit 1)
+          (reference "#PWR075") (unit 1)
         )
       )
     )
@@ -11280,7 +11217,7 @@
   (symbol (lib_id "Device:R") (at 101.6 68.58 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 94ee746e-2aff-437c-95bf-7164d12547ad)
-    (property "Reference" "R56" (at 102.87 67.31 0)
+    (property "Reference" "R29" (at 102.87 67.31 0)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "5K1" (at 102.87 69.85 0)
@@ -11300,7 +11237,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R56") (unit 1)
+          (reference "R29") (unit 1)
         )
       )
     )
@@ -11309,7 +11246,7 @@
   (symbol (lib_id "power:GND") (at 318.77 63.5 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 96d5ad8c-7878-45b9-bfac-f73f9ee21de2)
-    (property "Reference" "#PWR026" (at 318.77 69.85 0)
+    (property "Reference" "#PWR045" (at 318.77 69.85 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 318.77 68.58 0)
@@ -11325,7 +11262,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR026") (unit 1)
+          (reference "#PWR045") (unit 1)
         )
       )
     )
@@ -11334,7 +11271,7 @@
   (symbol (lib_id "tps2116:TPS2116") (at 410.21 330.2 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 96fd9070-0d2d-4858-a052-09497cf2b1bd)
-    (property "Reference" "U7" (at 410.21 323.85 0)
+    (property "Reference" "U5" (at 410.21 323.85 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "~" (at 410.21 330.2 0)
@@ -11357,7 +11294,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "U7") (unit 1)
+          (reference "U5") (unit 1)
         )
       )
     )
@@ -11366,7 +11303,7 @@
   (symbol (lib_id "Device:R") (at 346.71 44.45 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 970ac21c-8f77-4868-ae90-01bc584b3daa)
-    (property "Reference" "R47" (at 344.17 43.18 90)
+    (property "Reference" "R54" (at 344.17 43.18 90)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "1K" (at 344.17 45.72 90)
@@ -11383,7 +11320,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R47") (unit 1)
+          (reference "R54") (unit 1)
         )
       )
     )
@@ -11392,7 +11329,7 @@
   (symbol (lib_id "Connector:TestPoint") (at 560.07 312.42 0) (unit 1)
     (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 97536ccf-1339-4960-89c4-eaac48db980d)
-    (property "Reference" "TP8" (at 562.61 308.483 0)
+    (property "Reference" "TP13" (at 562.61 308.483 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "TestPoint" (at 562.61 311.023 0)
@@ -11408,7 +11345,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "TP8") (unit 1)
+          (reference "TP13") (unit 1)
         )
       )
     )
@@ -11417,7 +11354,7 @@
   (symbol (lib_id "power:+3V3") (at 284.48 86.36 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 98f5ec87-fd4b-4545-a163-2e35b838713b)
-    (property "Reference" "#PWR014" (at 284.48 90.17 0)
+    (property "Reference" "#PWR036" (at 284.48 90.17 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 284.48 82.55 0)
@@ -11433,7 +11370,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR014") (unit 1)
+          (reference "#PWR036") (unit 1)
         )
       )
     )
@@ -11442,7 +11379,7 @@
   (symbol (lib_id "Connector:TestPoint") (at 325.12 316.23 0) (unit 1)
     (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 990c7168-793f-44bc-ac4b-20093ca55627)
-    (property "Reference" "TP4" (at 327.66 312.293 0)
+    (property "Reference" "TP5" (at 327.66 312.293 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "TestPoint" (at 327.66 314.833 0)
@@ -11458,7 +11395,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "TP4") (unit 1)
+          (reference "TP5") (unit 1)
         )
       )
     )
@@ -11493,7 +11430,7 @@
   (symbol (lib_id "Connector:TestPoint") (at 416.56 147.32 0) (unit 1)
     (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 99a2e6b2-d7ad-4ae8-baa2-6885d0ad5e93)
-    (property "Reference" "TP6" (at 419.1 143.383 0)
+    (property "Reference" "TP9" (at 419.1 143.383 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "TestPoint" (at 419.1 145.923 0)
@@ -11509,7 +11446,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "TP6") (unit 1)
+          (reference "TP9") (unit 1)
         )
       )
     )
@@ -11518,7 +11455,7 @@
   (symbol (lib_id "Connector:TestPoint") (at 300.99 316.23 0) (unit 1)
     (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 9bb83ede-c6ce-4033-a07e-1088baa9b8ac)
-    (property "Reference" "TP3" (at 303.53 312.293 0)
+    (property "Reference" "TP4" (at 303.53 312.293 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "TestPoint" (at 303.53 314.833 0)
@@ -11534,7 +11471,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "TP3") (unit 1)
+          (reference "TP4") (unit 1)
         )
       )
     )
@@ -11543,7 +11480,7 @@
   (symbol (lib_id "power:GND") (at 560.07 67.31 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 9bd2b3b6-58b6-4c72-8052-ad2fa85bc120)
-    (property "Reference" "#PWR02" (at 560.07 73.66 0)
+    (property "Reference" "#PWR079" (at 560.07 73.66 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 560.07 72.39 0)
@@ -11559,7 +11496,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR02") (unit 1)
+          (reference "#PWR079") (unit 1)
         )
       )
     )
@@ -11568,7 +11505,7 @@
   (symbol (lib_id "power:+3V3") (at 255.27 160.02 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 9c260d4a-7665-42d8-955f-9ea7b246e592)
-    (property "Reference" "#PWR062" (at 255.27 163.83 0)
+    (property "Reference" "#PWR032" (at 255.27 163.83 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 255.27 156.21 0)
@@ -11584,7 +11521,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR062") (unit 1)
+          (reference "#PWR032") (unit 1)
         )
       )
     )
@@ -11593,7 +11530,7 @@
   (symbol (lib_id "Device:R") (at 154.94 191.77 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 9f66e369-7e55-4eea-9314-96376c8b708b)
-    (property "Reference" "R43" (at 152.4 190.5 90)
+    (property "Reference" "R32" (at 152.4 190.5 90)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "3K3" (at 152.4 193.04 90)
@@ -11610,7 +11547,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R43") (unit 1)
+          (reference "R32") (unit 1)
         )
       )
     )
@@ -11619,7 +11556,7 @@
   (symbol (lib_id "power:+5V") (at 421.64 323.85 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 9ff1dcb6-da67-48e8-ba32-ed2058b4e665)
-    (property "Reference" "#PWR018" (at 421.64 327.66 0)
+    (property "Reference" "#PWR059" (at 421.64 327.66 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+5V" (at 421.64 320.04 0)
@@ -11635,7 +11572,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR018") (unit 1)
+          (reference "#PWR059") (unit 1)
         )
       )
     )
@@ -11644,7 +11581,7 @@
   (symbol (lib_id "Device:C") (at 388.62 232.41 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid a0684cc6-e469-41b4-ad79-3e38de8b21a0)
-    (property "Reference" "C20" (at 391.16 231.14 0)
+    (property "Reference" "C37" (at 391.16 231.14 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "100nF" (at 391.16 233.68 0)
@@ -11661,7 +11598,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C20") (unit 1)
+          (reference "C37") (unit 1)
         )
       )
     )
@@ -11759,7 +11696,7 @@
   (symbol (lib_id "power:GND") (at 226.06 356.87 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid a2c834ed-8a85-431f-91b5-a454eb2a4596)
-    (property "Reference" "#PWR056" (at 226.06 363.22 0)
+    (property "Reference" "#PWR028" (at 226.06 363.22 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 226.06 361.95 0)
@@ -11775,7 +11712,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR056") (unit 1)
+          (reference "#PWR028") (unit 1)
         )
       )
     )
@@ -11784,7 +11721,7 @@
   (symbol (lib_id "Connector_Generic:Conn_01x04") (at 158.75 99.06 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp yes)
     (uuid a30eaf30-fba9-47f0-bf09-84ef6bf67d36)
-    (property "Reference" "J12" (at 160.02 90.17 0)
+    (property "Reference" "J7" (at 160.02 90.17 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "CONN_04PTH" (at 163.83 91.694 0)
@@ -11803,7 +11740,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "J12") (unit 1)
+          (reference "J7") (unit 1)
         )
       )
     )
@@ -11889,7 +11826,7 @@
   (symbol (lib_id "power:GND") (at 185.42 360.68 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid a414c371-98b0-41d7-93f1-08eb13321b79)
-    (property "Reference" "#PWR012" (at 185.42 367.03 0)
+    (property "Reference" "#PWR024" (at 185.42 367.03 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 185.42 365.76 0)
@@ -11905,7 +11842,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR012") (unit 1)
+          (reference "#PWR024") (unit 1)
         )
       )
     )
@@ -11914,7 +11851,7 @@
   (symbol (lib_id "Device:R") (at 90.17 224.79 90) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid a4add38d-4b71-4757-bfdf-442e5f7f84af)
-    (property "Reference" "R27" (at 87.63 223.52 90)
+    (property "Reference" "R24" (at 87.63 223.52 90)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "3K3" (at 87.63 226.06 90)
@@ -11931,7 +11868,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R27") (unit 1)
+          (reference "R24") (unit 1)
         )
       )
     )
@@ -11940,7 +11877,7 @@
   (symbol (lib_id "power:GND") (at 482.6 55.88 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid a616e98e-4b48-4a3f-bdc8-6ca1b9538b80)
-    (property "Reference" "#PWR015" (at 482.6 62.23 0)
+    (property "Reference" "#PWR063" (at 482.6 62.23 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 482.6 60.96 0)
@@ -11956,7 +11893,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR015") (unit 1)
+          (reference "#PWR063") (unit 1)
         )
       )
     )
@@ -11965,7 +11902,7 @@
   (symbol (lib_id "power:+3V3") (at 518.16 154.94 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid a65a7c16-3ca4-49ea-8605-f6ac356c9c5c)
-    (property "Reference" "#PWR068" (at 518.16 158.75 0)
+    (property "Reference" "#PWR071" (at 518.16 158.75 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 518.16 151.13 0)
@@ -11981,7 +11918,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR068") (unit 1)
+          (reference "#PWR071") (unit 1)
         )
       )
     )
@@ -11990,7 +11927,7 @@
   (symbol (lib_id "Device:R") (at 312.42 44.45 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid a8f329ec-bd11-4ac3-86d1-88a7586a7432)
-    (property "Reference" "R59" (at 309.88 43.18 90)
+    (property "Reference" "R50" (at 309.88 43.18 90)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "1K" (at 309.88 45.72 90)
@@ -12007,7 +11944,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R59") (unit 1)
+          (reference "R50") (unit 1)
         )
       )
     )
@@ -12016,7 +11953,7 @@
   (symbol (lib_id "Device:R") (at 284.48 93.98 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid a9726079-019a-44d7-86bf-a18278674b33)
-    (property "Reference" "R34" (at 285.75 92.71 0)
+    (property "Reference" "R46" (at 285.75 92.71 0)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "1K" (at 285.75 95.25 0)
@@ -12033,7 +11970,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R34") (unit 1)
+          (reference "R46") (unit 1)
         )
       )
     )
@@ -12042,7 +11979,7 @@
   (symbol (lib_id "Device:R") (at 276.86 44.45 270) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid aa04514a-5b24-477b-b0dc-edd88057d7cb)
-    (property "Reference" "R52" (at 274.32 43.18 90)
+    (property "Reference" "R44" (at 274.32 43.18 90)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "1K" (at 274.32 45.72 90)
@@ -12059,7 +11996,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R52") (unit 1)
+          (reference "R44") (unit 1)
         )
       )
     )
@@ -12094,7 +12031,7 @@
   (symbol (lib_id "Device:LED") (at 284.48 105.41 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid aa8050ec-da8a-405a-8a8a-4504ef5fc14e)
-    (property "Reference" "LED0" (at 289.56 101.6 90)
+    (property "Reference" "LED1" (at 289.56 101.6 90)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "Red 1.85V" (at 295.91 105.41 90)
@@ -12111,7 +12048,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "LED0") (unit 1)
+          (reference "LED1") (unit 1)
         )
       )
     )
@@ -12120,7 +12057,7 @@
   (symbol (lib_id "power:GND") (at 45.72 72.39 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid aa9096e0-9eb6-4cca-a977-584b60fda4cf)
-    (property "Reference" "#PWR069" (at 45.72 78.74 0)
+    (property "Reference" "#PWR04" (at 45.72 78.74 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 45.72 77.47 0)
@@ -12136,7 +12073,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR069") (unit 1)
+          (reference "#PWR04") (unit 1)
         )
       )
     )
@@ -12145,7 +12082,7 @@
   (symbol (lib_id "Comparator:LMV331") (at 524.51 255.27 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid aa9fcf42-e858-42be-ba1e-eb127815a8d0)
-    (property "Reference" "U8" (at 524.51 248.92 0)
+    (property "Reference" "U6" (at 524.51 248.92 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "LMV331" (at 524.51 251.46 0)
@@ -12165,7 +12102,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "U8") (unit 1)
+          (reference "U6") (unit 1)
         )
       )
     )
@@ -12174,7 +12111,7 @@
   (symbol (lib_id "Device:R") (at 283.21 38.1 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid aad886d8-7768-499c-84eb-32f4f6166b89)
-    (property "Reference" "R39" (at 284.48 36.83 0)
+    (property "Reference" "R45" (at 284.48 36.83 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "10K" (at 284.48 39.37 0)
@@ -12191,7 +12128,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R39") (unit 1)
+          (reference "R45") (unit 1)
         )
       )
     )
@@ -12200,7 +12137,7 @@
   (symbol (lib_id "Connector:Conn_Coaxial") (at 560.07 59.69 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid ab9b0310-a441-4460-98cb-32948232bae7)
-    (property "Reference" "SMA0" (at 563.88 57.15 0)
+    (property "Reference" "SMA1" (at 563.88 57.15 0)
       (effects (font (size 1.27 1.0795)) (justify left bottom))
     )
     (property "Value" "SMACONNECTOR" (at 567.69 59.69 0)
@@ -12217,7 +12154,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "SMA0") (unit 1)
+          (reference "SMA1") (unit 1)
         )
       )
     )
@@ -12226,7 +12163,7 @@
   (symbol (lib_id "Device:R") (at 251.46 337.82 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid ac87445c-436b-442f-9e3b-0682c2a38966)
-    (property "Reference" "R35" (at 250.19 335.28 0)
+    (property "Reference" "R42" (at 250.19 335.28 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "5K1" (at 250.19 337.82 0)
@@ -12246,7 +12183,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R35") (unit 1)
+          (reference "R42") (unit 1)
         )
       )
     )
@@ -12255,7 +12192,7 @@
   (symbol (lib_id "Device:R") (at 179.07 346.71 90) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid ac8edd05-7a3a-4cd4-81c5-f068ed474f57)
-    (property "Reference" "R33" (at 176.53 345.44 90)
+    (property "Reference" "R41" (at 176.53 345.44 90)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "3K3" (at 176.53 347.98 90)
@@ -12272,7 +12209,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R33") (unit 1)
+          (reference "R41") (unit 1)
         )
       )
     )
@@ -12281,7 +12218,7 @@
   (symbol (lib_id "Device:R") (at 179.07 313.69 90) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid aebe09cd-3a50-4ce8-a6f2-792f1f21bb31)
-    (property "Reference" "R32" (at 176.53 312.42 90)
+    (property "Reference" "R40" (at 176.53 312.42 90)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "3K3" (at 176.53 314.96 90)
@@ -12298,7 +12235,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R32") (unit 1)
+          (reference "R40") (unit 1)
         )
       )
     )
@@ -12307,7 +12244,7 @@
   (symbol (lib_id "Device:R") (at 83.82 219.71 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid aefcc9ee-6bc3-43d8-9b6e-a7857f9c7d1d)
-    (property "Reference" "R9" (at 82.55 218.44 0)
+    (property "Reference" "R14" (at 82.55 218.44 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "47K" (at 82.55 220.98 0)
@@ -12324,7 +12261,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R9") (unit 1)
+          (reference "R14") (unit 1)
         )
       )
     )
@@ -12333,7 +12270,7 @@
   (symbol (lib_id "power:+5V") (at 297.18 321.31 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid af77cdff-cf0a-4325-9c9c-6b80809dec31)
-    (property "Reference" "#PWR030" (at 297.18 325.12 0)
+    (property "Reference" "#PWR038" (at 297.18 325.12 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+5V" (at 297.18 317.5 0)
@@ -12349,7 +12286,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR030") (unit 1)
+          (reference "#PWR038") (unit 1)
         )
       )
     )
@@ -12358,7 +12295,7 @@
   (symbol (lib_id "Device:R") (at 101.6 57.15 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid af843886-6498-4751-8369-9535060b292c)
-    (property "Reference" "R36" (at 102.87 55.88 0)
+    (property "Reference" "R28" (at 102.87 55.88 0)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "5K1" (at 102.87 58.42 0)
@@ -12378,7 +12315,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R36") (unit 1)
+          (reference "R28") (unit 1)
         )
       )
     )
@@ -12387,7 +12324,7 @@
   (symbol (lib_id "power:GND") (at 347.98 198.12 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid b15096e3-e97a-43fb-b396-f1a162121753)
-    (property "Reference" "#PWR034" (at 347.98 204.47 0)
+    (property "Reference" "#PWR051" (at 347.98 204.47 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 347.98 203.2 0)
@@ -12403,7 +12340,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR034") (unit 1)
+          (reference "#PWR051") (unit 1)
         )
       )
     )
@@ -12412,7 +12349,7 @@
   (symbol (lib_id "Device:R") (at 171.45 320.04 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b1b0ce77-e22a-447a-82da-86cb24ce4876)
-    (property "Reference" "R23" (at 170.18 318.77 0)
+    (property "Reference" "R36" (at 170.18 318.77 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "47K" (at 170.18 321.31 0)
@@ -12429,7 +12366,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R23") (unit 1)
+          (reference "R36") (unit 1)
         )
       )
     )
@@ -12438,7 +12375,7 @@
   (symbol (lib_id "Connector:TestPoint") (at 262.89 313.69 0) (unit 1)
     (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid b228ac5d-8175-432f-b91d-f836fea5d563)
-    (property "Reference" "TP5" (at 265.43 309.753 0)
+    (property "Reference" "TP3" (at 265.43 309.753 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "TestPoint" (at 265.43 312.293 0)
@@ -12454,7 +12391,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "TP5") (unit 1)
+          (reference "TP3") (unit 1)
         )
       )
     )
@@ -12463,7 +12400,7 @@
   (symbol (lib_id "Device:C") (at 100.33 163.83 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b2b28bdc-63f6-4e2d-8678-90cc10d18ea7)
-    (property "Reference" "C17" (at 102.87 162.56 0)
+    (property "Reference" "C11" (at 102.87 162.56 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "10n" (at 102.87 165.1 0)
@@ -12480,7 +12417,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C17") (unit 1)
+          (reference "C11") (unit 1)
         )
       )
     )
@@ -12489,7 +12426,7 @@
   (symbol (lib_id "Device:C") (at 346.71 232.41 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b3202f03-5084-46b7-a1f9-5f8728f3d548)
-    (property "Reference" "C18" (at 349.25 231.14 0)
+    (property "Reference" "C33" (at 349.25 231.14 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "100nF" (at 349.25 233.68 0)
@@ -12506,7 +12443,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C18") (unit 1)
+          (reference "C33") (unit 1)
         )
       )
     )
@@ -12515,7 +12452,7 @@
   (symbol (lib_id "Device:R") (at 179.07 279.4 90) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b32c13aa-c437-4b51-8c61-ffcf6eda844a)
-    (property "Reference" "R31" (at 176.53 278.13 90)
+    (property "Reference" "R39" (at 176.53 278.13 90)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "3K3" (at 176.53 280.67 90)
@@ -12532,7 +12469,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R31") (unit 1)
+          (reference "R39") (unit 1)
         )
       )
     )
@@ -12541,7 +12478,7 @@
   (symbol (lib_id "Device:R") (at 101.6 78.74 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b53350bd-1a07-45cc-9eef-146d5fca1273)
-    (property "Reference" "R42" (at 102.87 77.47 0)
+    (property "Reference" "R30" (at 102.87 77.47 0)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "5K1" (at 102.87 80.01 0)
@@ -12561,7 +12498,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R42") (unit 1)
+          (reference "R30") (unit 1)
         )
       )
     )
@@ -12570,7 +12507,7 @@
   (symbol (lib_id "Device:LED") (at 331.47 105.41 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b537a689-c1eb-4e79-bd32-6b5083b8c970)
-    (property "Reference" "LED3" (at 336.55 101.6 90)
+    (property "Reference" "LED4" (at 336.55 101.6 90)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "Red 1.85V" (at 342.9 105.41 90)
@@ -12587,7 +12524,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "LED3") (unit 1)
+          (reference "LED4") (unit 1)
         )
       )
     )
@@ -12596,7 +12533,7 @@
   (symbol (lib_id "Device:C") (at 185.42 353.06 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid b74c84e5-625f-4a5e-91aa-e75adac64b31)
-    (property "Reference" "C33" (at 187.96 351.79 0)
+    (property "Reference" "C24" (at 187.96 351.79 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "10n" (at 187.96 354.33 0)
@@ -12613,7 +12550,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C33") (unit 1)
+          (reference "C24") (unit 1)
         )
       )
     )
@@ -12622,7 +12559,7 @@
   (symbol (lib_id "Connector:USB_C_Receptacle_USB2.0") (at 226.06 331.47 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid b94edbb1-e3c5-4e37-b134-dad55fb261cf)
-    (property "Reference" "J8" (at 226.06 309.88 0)
+    (property "Reference" "J9" (at 226.06 309.88 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "USB_C_Receptacle_USB2.0" (at 226.06 312.42 0)
@@ -12654,7 +12591,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "J8") (unit 1)
+          (reference "J9") (unit 1)
         )
       )
     )
@@ -12663,7 +12600,7 @@
   (symbol (lib_id "power:+3V3") (at 346.71 321.31 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid b9c9884d-f4df-46f5-8749-ed7773649f88)
-    (property "Reference" "#PWR044" (at 346.71 325.12 0)
+    (property "Reference" "#PWR050" (at 346.71 325.12 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 346.71 317.5 0)
@@ -12679,7 +12616,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR044") (unit 1)
+          (reference "#PWR050") (unit 1)
         )
       )
     )
@@ -12688,7 +12625,7 @@
   (symbol (lib_id "Device:LED") (at 302.26 105.41 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid bad60763-ad9e-47a9-9b60-c9089b5b8aa3)
-    (property "Reference" "LED1" (at 307.34 101.6 90)
+    (property "Reference" "LED2" (at 307.34 101.6 90)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "Red 1.85V" (at 313.69 105.41 90)
@@ -12705,7 +12642,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "LED1") (unit 1)
+          (reference "LED2") (unit 1)
         )
       )
     )
@@ -12714,7 +12651,7 @@
   (symbol (lib_id "power:+3V3") (at 147.32 189.23 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid bae9de47-7bbd-4770-afa3-f91854fe834c)
-    (property "Reference" "#PWR041" (at 147.32 193.04 0)
+    (property "Reference" "#PWR014" (at 147.32 193.04 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 147.32 185.42 0)
@@ -12730,7 +12667,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR041") (unit 1)
+          (reference "#PWR014") (unit 1)
         )
       )
     )
@@ -12739,7 +12676,7 @@
   (symbol (lib_id "power:GND") (at 20.32 68.58 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid bb697964-7013-4bc0-9bb0-82a5967f197e)
-    (property "Reference" "#PWR05" (at 20.32 74.93 0)
+    (property "Reference" "#PWR02" (at 20.32 74.93 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 20.32 73.66 0)
@@ -12755,7 +12692,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR05") (unit 1)
+          (reference "#PWR02") (unit 1)
         )
       )
     )
@@ -12764,7 +12701,7 @@
   (symbol (lib_id "power:GND") (at 101.6 100.33 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid bbae2ebc-7c90-4b38-b50d-757daf585802)
-    (property "Reference" "#PWR070" (at 101.6 106.68 0)
+    (property "Reference" "#PWR013" (at 101.6 106.68 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 101.6 105.41 0)
@@ -12780,7 +12717,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR070") (unit 1)
+          (reference "#PWR013") (unit 1)
         )
       )
     )
@@ -12789,7 +12726,7 @@
   (symbol (lib_id "power:GND") (at 255.27 266.7 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid bdd33898-7137-4c43-8fcb-d1ad5c05b33f)
-    (property "Reference" "#PWR032" (at 255.27 273.05 0)
+    (property "Reference" "#PWR033" (at 255.27 273.05 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 255.27 271.78 0)
@@ -12805,7 +12742,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR032") (unit 1)
+          (reference "#PWR033") (unit 1)
         )
       )
     )
@@ -12814,7 +12751,7 @@
   (symbol (lib_id "power:+3V3") (at 346.71 223.52 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid bf23d174-b444-4475-bb13-0d739e708c86)
-    (property "Reference" "#PWR09" (at 346.71 227.33 0)
+    (property "Reference" "#PWR048" (at 346.71 227.33 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 346.71 219.71 0)
@@ -12830,7 +12767,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR09") (unit 1)
+          (reference "#PWR048") (unit 1)
         )
       )
     )
@@ -12839,7 +12776,7 @@
   (symbol (lib_id "power:+3V3") (at 20.32 57.15 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid c0440229-ff01-4e4e-8079-679b45e0088c)
-    (property "Reference" "#PWR04" (at 20.32 60.96 0)
+    (property "Reference" "#PWR01" (at 20.32 60.96 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 20.32 53.34 0)
@@ -12855,7 +12792,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR04") (unit 1)
+          (reference "#PWR01") (unit 1)
         )
       )
     )
@@ -12864,7 +12801,7 @@
   (symbol (lib_id "Device:R") (at 450.85 156.21 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid c2bc79f5-c40a-4687-831d-fd95fe41f097)
-    (property "Reference" "R61" (at 452.12 154.94 0)
+    (property "Reference" "R58" (at 452.12 154.94 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "10K" (at 452.12 157.48 0)
@@ -12881,7 +12818,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R61") (unit 1)
+          (reference "R58") (unit 1)
         )
       )
     )
@@ -12914,7 +12851,7 @@
   (symbol (lib_id "Connector_Generic:Conn_01x09") (at 158.75 54.61 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp yes)
     (uuid c5b256df-16b6-49e9-8e95-14651eb2905e)
-    (property "Reference" "ANALOG_EXPANDER0" (at 154.94 64.77 90)
+    (property "Reference" "J12" (at 154.94 64.77 90)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "PINHD-1X9" (at 165.1 69.85 0)
@@ -12938,7 +12875,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "ANALOG_EXPANDER0") (unit 1)
+          (reference "J12") (unit 1)
         )
       )
     )
@@ -12979,7 +12916,7 @@
   (symbol (lib_id "power:+3V3") (at 283.21 29.21 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid c7e5f774-7b7d-450b-85d9-c90ec217fe23)
-    (property "Reference" "#PWR050" (at 283.21 33.02 0)
+    (property "Reference" "#PWR034" (at 283.21 33.02 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 283.21 25.4 0)
@@ -12995,7 +12932,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR050") (unit 1)
+          (reference "#PWR034") (unit 1)
         )
       )
     )
@@ -13004,7 +12941,7 @@
   (symbol (lib_id "power:GND") (at 288.29 160.02 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid caf0c442-44f5-4a5b-a1d2-5590fa837955)
-    (property "Reference" "#PWR059" (at 288.29 166.37 0)
+    (property "Reference" "#PWR037" (at 288.29 166.37 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 288.29 165.1 0)
@@ -13020,7 +12957,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR059") (unit 1)
+          (reference "#PWR037") (unit 1)
         )
       )
     )
@@ -13029,7 +12966,7 @@
   (symbol (lib_id "Device:LED") (at 317.5 105.41 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid cbde5b9f-042a-4366-b783-9debe2b101e5)
-    (property "Reference" "LED2" (at 322.58 101.6 90)
+    (property "Reference" "LED3" (at 322.58 101.6 90)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "Red 1.85V" (at 328.93 105.41 90)
@@ -13046,7 +12983,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "LED2") (unit 1)
+          (reference "LED3") (unit 1)
         )
       )
     )
@@ -13055,7 +12992,7 @@
   (symbol (lib_id "Device:C") (at 156.21 313.69 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid cc9620dd-2e47-455e-99e5-b948c9e65c52)
-    (property "Reference" "C8" (at 154.94 312.42 90)
+    (property "Reference" "C20" (at 154.94 312.42 90)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "10uF" (at 154.94 316.23 90)
@@ -13075,7 +13012,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C8") (unit 1)
+          (reference "C20") (unit 1)
         )
       )
     )
@@ -13084,7 +13021,7 @@
   (symbol (lib_id "Device:C") (at 495.3 49.53 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid cd3cc488-927a-45ea-a6e0-18e86454f4cc)
-    (property "Reference" "C23" (at 497.84 48.26 0)
+    (property "Reference" "C40" (at 497.84 48.26 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "100nF" (at 497.84 50.8 0)
@@ -13101,7 +13038,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C23") (unit 1)
+          (reference "C40") (unit 1)
         )
       )
     )
@@ -13110,7 +13047,7 @@
   (symbol (lib_id "Device:R") (at 83.82 289.56 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid cd66a334-abd2-41dc-8313-08b7ec138463)
-    (property "Reference" "R11" (at 82.55 288.29 0)
+    (property "Reference" "R18" (at 82.55 288.29 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "47K" (at 82.55 290.83 0)
@@ -13127,7 +13064,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R11") (unit 1)
+          (reference "R18") (unit 1)
         )
       )
     )
@@ -13136,7 +13073,7 @@
   (symbol (lib_id "Device:R") (at 74.93 83.82 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid cdbef474-bbe0-4f0e-b93d-ef54f2069d0a)
-    (property "Reference" "R38" (at 73.66 82.55 0)
+    (property "Reference" "R9" (at 73.66 82.55 0)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "10K" (at 73.66 85.09 0)
@@ -13153,7 +13090,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R38") (unit 1)
+          (reference "R9") (unit 1)
         )
       )
     )
@@ -13162,7 +13099,7 @@
   (symbol (lib_id "Device:C") (at 288.29 153.67 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid ce2c5f7a-71fc-4451-b3d4-97d2f6c96b0e)
-    (property "Reference" "C19" (at 285.75 152.4 0)
+    (property "Reference" "C27" (at 285.75 152.4 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "100nF" (at 285.75 154.94 0)
@@ -13179,7 +13116,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C19") (unit 1)
+          (reference "C27") (unit 1)
         )
       )
     )
@@ -13188,7 +13125,7 @@
   (symbol (lib_id "power:+3V3") (at 482.6 40.64 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid ce3736b4-b54d-46b3-a177-e3dc698c52ad)
-    (property "Reference" "#PWR08" (at 482.6 44.45 0)
+    (property "Reference" "#PWR062" (at 482.6 44.45 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "+3V3" (at 482.6 36.83 0)
@@ -13204,7 +13141,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR08") (unit 1)
+          (reference "#PWR062") (unit 1)
         )
       )
     )
@@ -13240,7 +13177,7 @@
   (symbol (lib_name "R_1") (lib_id "Device:R") (at 486.41 78.74 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid d05893dc-a4ca-4585-b982-e37add63a9af)
-    (property "Reference" "R44" (at 483.87 77.47 90)
+    (property "Reference" "R59" (at 483.87 77.47 90)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "22R" (at 483.87 80.01 90)
@@ -13257,7 +13194,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R44") (unit 1)
+          (reference "R59") (unit 1)
         )
       )
     )
@@ -13266,7 +13203,7 @@
   (symbol (lib_id "Device:R") (at 524.51 165.1 90) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid d08d2e53-dc83-4171-84ef-1a670b70cad8)
-    (property "Reference" "R48" (at 521.97 163.83 90)
+    (property "Reference" "R67" (at 521.97 163.83 90)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "3K3" (at 521.97 166.37 90)
@@ -13283,7 +13220,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R48") (unit 1)
+          (reference "R67") (unit 1)
         )
       )
     )
@@ -13318,7 +13255,7 @@
   (symbol (lib_id "power:GND") (at 220.98 104.14 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid d14e715b-7779-4d8b-b88b-dd0330a670df)
-    (property "Reference" "#PWR054" (at 220.98 110.49 0)
+    (property "Reference" "#PWR026" (at 220.98 110.49 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 220.98 109.22 0)
@@ -13334,7 +13271,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR054") (unit 1)
+          (reference "#PWR026") (unit 1)
         )
       )
     )
@@ -13343,7 +13280,7 @@
   (symbol (lib_id "Device:R") (at 83.82 153.67 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid d17e2eea-71e4-453d-a3d4-c54f11590688)
-    (property "Reference" "R7" (at 82.55 152.4 0)
+    (property "Reference" "R10" (at 82.55 152.4 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "47K" (at 82.55 154.94 0)
@@ -13360,7 +13297,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R7") (unit 1)
+          (reference "R10") (unit 1)
         )
       )
     )
@@ -13369,7 +13306,7 @@
   (symbol (lib_id "power:GND") (at 100.33 171.45 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid d3367d20-d08c-47d2-a9a4-87322ddb6d10)
-    (property "Reference" "#PWR037" (at 100.33 177.8 0)
+    (property "Reference" "#PWR07" (at 100.33 177.8 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 100.33 176.53 0)
@@ -13385,7 +13322,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR037") (unit 1)
+          (reference "#PWR07") (unit 1)
         )
       )
     )
@@ -13420,7 +13357,7 @@
   (symbol (lib_id "power:GND") (at 297.18 336.55 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid d570d004-e328-445a-8688-e48bf9038b2a)
-    (property "Reference" "#PWR045" (at 297.18 342.9 0)
+    (property "Reference" "#PWR039" (at 297.18 342.9 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 297.18 341.63 0)
@@ -13436,7 +13373,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR045") (unit 1)
+          (reference "#PWR039") (unit 1)
         )
       )
     )
@@ -13445,7 +13382,7 @@
   (symbol (lib_id "Device:C") (at 72.39 191.77 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid d624477f-4d5b-4eb9-972c-baf23ef3d6fb)
-    (property "Reference" "C2" (at 71.12 190.5 90)
+    (property "Reference" "C4" (at 71.12 190.5 90)
       (effects (font (size 1.27 1.27)) (justify left top))
     )
     (property "Value" "10uF" (at 71.12 194.31 90)
@@ -13465,7 +13402,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C2") (unit 1)
+          (reference "C4") (unit 1)
         )
       )
     )
@@ -13474,7 +13411,7 @@
   (symbol (lib_id "power:GND") (at 240.03 396.24 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid d82d598e-70b8-4fbd-8de8-3051c9f9aef5)
-    (property "Reference" "#PWR01" (at 240.03 402.59 0)
+    (property "Reference" "#PWR030" (at 240.03 402.59 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 240.03 401.32 0)
@@ -13490,7 +13427,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR01") (unit 1)
+          (reference "#PWR030") (unit 1)
         )
       )
     )
@@ -13499,7 +13436,7 @@
   (symbol (lib_id "Device:R") (at 254 337.82 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid d87c2f73-d535-4a69-a453-cc0cdb8d5dd1)
-    (property "Reference" "R40" (at 255.27 335.28 0)
+    (property "Reference" "R43" (at 255.27 335.28 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "5K1" (at 255.27 337.82 0)
@@ -13519,7 +13456,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R40") (unit 1)
+          (reference "R43") (unit 1)
         )
       )
     )
@@ -13528,7 +13465,7 @@
   (symbol (lib_id "power:GND") (at 177.8 184.15 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid d971fb0e-4dfa-433c-8d47-f38edd3d6119)
-    (property "Reference" "#PWR039" (at 177.8 190.5 0)
+    (property "Reference" "#PWR021" (at 177.8 190.5 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 177.8 189.23 0)
@@ -13544,7 +13481,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR039") (unit 1)
+          (reference "#PWR021") (unit 1)
         )
       )
     )
@@ -13553,7 +13490,7 @@
   (symbol (lib_id "Device:C") (at 111.76 91.44 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid d9746f94-8d9c-4811-bad4-507e9fedde4a)
-    (property "Reference" "C36" (at 109.22 90.17 0)
+    (property "Reference" "C17" (at 109.22 90.17 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "1n" (at 109.22 92.71 0)
@@ -13570,7 +13507,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C36") (unit 1)
+          (reference "C17") (unit 1)
         )
       )
     )
@@ -13605,7 +13542,7 @@
   (symbol (lib_id "Connector:TestPoint") (at 370.84 168.91 0) (unit 1)
     (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid dac9abb7-b8a7-44bc-b3bf-438cf6b0e20c)
-    (property "Reference" "TP9" (at 373.38 164.973 0)
+    (property "Reference" "TP6" (at 373.38 164.973 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "TestPoint" (at 373.38 167.513 0)
@@ -13621,7 +13558,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "TP9") (unit 1)
+          (reference "TP6") (unit 1)
         )
       )
     )
@@ -13630,7 +13567,7 @@
   (symbol (lib_id "Regulator_Linear:AP2112K-3.3") (at 313.69 326.39 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid dae038a9-b07c-40e9-909a-cec55abb1364)
-    (property "Reference" "U1" (at 313.69 317.5 0)
+    (property "Reference" "U4" (at 313.69 317.5 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "AP2112K-3.3" (at 313.69 320.04 0)
@@ -13650,7 +13587,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "U1") (unit 1)
+          (reference "U4") (unit 1)
         )
       )
     )
@@ -13683,7 +13620,7 @@
   (symbol (lib_id "power:GND") (at 450.85 162.56 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid dfced54f-ed44-49fc-b95c-9d73b7a9a41d)
-    (property "Reference" "#PWR055" (at 450.85 168.91 0)
+    (property "Reference" "#PWR061" (at 450.85 168.91 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 450.85 167.64 0)
@@ -13699,7 +13636,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR055") (unit 1)
+          (reference "#PWR061") (unit 1)
         )
       )
     )
@@ -13708,7 +13645,7 @@
   (symbol (lib_id "Device:R") (at 83.82 264.16 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid e04fab31-1447-4801-b6f4-fa8c85c305a9)
-    (property "Reference" "R19" (at 82.55 262.89 0)
+    (property "Reference" "R17" (at 82.55 262.89 0)
       (effects (font (size 1.27 1.27)) (justify right top))
     )
     (property "Value" "47K" (at 82.55 265.43 0)
@@ -13725,34 +13662,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R19") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "Connector_Generic:Conn_01x03") (at 212.09 45.72 0) (mirror y) (unit 1)
-    (in_bom yes) (on_board yes) (dnp yes) (fields_autoplaced)
-    (uuid e128fa9c-d51f-438d-b504-8dbc7191ef58)
-    (property "Reference" "J13" (at 209.55 44.45 0)
-      (effects (font (size 1.27 1.27)) (justify left))
-    )
-    (property "Value" "Conn_01x03" (at 209.55 46.99 0)
-      (effects (font (size 1.27 1.27)) (justify left))
-    )
-    (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" (at 212.09 45.72 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 212.09 45.72 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 27e1f2d3-4f45-40e4-be4c-c44e683199cb))
-    (pin "2" (uuid c49254ba-43c0-47a1-a670-a1512aebece9))
-    (pin "3" (uuid 213733ba-8ce8-4a7f-82a1-49172ed3c64d))
-    (instances
-      (project "emonPi3"
-        (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "J13") (unit 1)
+          (reference "R17") (unit 1)
         )
       )
     )
@@ -13761,7 +13671,7 @@
   (symbol (lib_id "Connector:TestPoint") (at 544.83 312.42 0) (unit 1)
     (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid e31a159e-83b5-4f33-a0dc-d9830eea5e9b)
-    (property "Reference" "TP7" (at 547.37 308.483 0)
+    (property "Reference" "TP12" (at 547.37 308.483 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "TestPoint" (at 547.37 311.023 0)
@@ -13777,7 +13687,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "TP7") (unit 1)
+          (reference "TP12") (unit 1)
         )
       )
     )
@@ -13786,7 +13696,7 @@
   (symbol (lib_id "Device:C") (at 262.89 337.82 180) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid e5007587-1e4f-45e4-9025-b22e857f4aa6)
-    (property "Reference" "C39" (at 265.43 335.28 0)
+    (property "Reference" "C26" (at 265.43 335.28 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
     )
     (property "Value" "1uF" (at 269.24 337.82 0)
@@ -13806,7 +13716,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C39") (unit 1)
+          (reference "C26") (unit 1)
         )
       )
     )
@@ -13815,7 +13725,7 @@
   (symbol (lib_id "Connector:TestPoint") (at 374.65 162.56 0) (unit 1)
     (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid e53fb33d-e46e-4bec-a361-97170987a7be)
-    (property "Reference" "TP10" (at 377.19 158.623 0)
+    (property "Reference" "TP7" (at 377.19 158.623 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "TestPoint" (at 377.19 161.163 0)
@@ -13831,7 +13741,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "TP10") (unit 1)
+          (reference "TP7") (unit 1)
         )
       )
     )
@@ -13840,7 +13750,7 @@
   (symbol (lib_id "rfm69cw:RFM69CW") (at 525.78 68.58 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid e58e4189-abb2-4a2c-ae06-e11db8e86a0d)
-    (property "Reference" "U2" (at 525.78 53.34 0)
+    (property "Reference" "U7" (at 525.78 53.34 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "RFM69CW" (at 525.78 55.88 0)
@@ -13869,7 +13779,32 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "U2") (unit 1)
+          (reference "U7") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:GND") (at 487.68 264.16 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid ea8e36f1-a554-434a-b50d-a24dd2f148c9)
+    (property "Reference" "#PWR066" (at 487.68 270.51 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "GND" (at 487.68 269.24 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 487.68 264.16 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 487.68 264.16 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 6f1959ce-0253-468e-a0f0-c634fb21b437))
+    (instances
+      (project "emonPi3"
+        (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
+          (reference "#PWR066") (unit 1)
         )
       )
     )
@@ -13878,7 +13813,7 @@
   (symbol (lib_id "Device:C") (at 20.32 62.23 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid ebadc25c-2d20-4732-84fc-e1f3272793b4)
-    (property "Reference" "C27" (at 22.86 60.96 0)
+    (property "Reference" "C1" (at 22.86 60.96 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "10uF" (at 22.86 63.5 0)
@@ -13895,7 +13830,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C27") (unit 1)
+          (reference "C1") (unit 1)
         )
       )
     )
@@ -13904,7 +13839,7 @@
   (symbol (lib_id "power:GND") (at 165.1 104.14 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid ed6d561a-d8fa-4c23-8cf4-73b02f61cc32)
-    (property "Reference" "#PWR023" (at 165.1 110.49 0)
+    (property "Reference" "#PWR016" (at 165.1 110.49 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 165.1 109.22 0)
@@ -13920,7 +13855,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR023") (unit 1)
+          (reference "#PWR016") (unit 1)
         )
       )
     )
@@ -13929,7 +13864,7 @@
   (symbol (lib_id "Device:R") (at 83.82 186.69 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid ef497de5-62a1-42d9-911d-372898be6622)
-    (property "Reference" "R8" (at 82.55 185.42 0)
+    (property "Reference" "R12" (at 82.55 185.42 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "47K" (at 82.55 187.96 0)
@@ -13946,7 +13881,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R8") (unit 1)
+          (reference "R12") (unit 1)
         )
       )
     )
@@ -13955,7 +13890,7 @@
   (symbol (lib_id "power:GND") (at 300.99 160.02 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid f11ab216-ca66-4b2b-9615-53dffe82f997)
-    (property "Reference" "#PWR060" (at 300.99 166.37 0)
+    (property "Reference" "#PWR042" (at 300.99 166.37 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 300.99 165.1 0)
@@ -13971,7 +13906,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR060") (unit 1)
+          (reference "#PWR042") (unit 1)
         )
       )
     )
@@ -13980,7 +13915,7 @@
   (symbol (lib_id "power:GND") (at 185.42 293.37 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid f143c1ed-4a37-4418-9d12-45f89e3551c3)
-    (property "Reference" "#PWR011" (at 185.42 299.72 0)
+    (property "Reference" "#PWR022" (at 185.42 299.72 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 185.42 298.45 0)
@@ -13996,7 +13931,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR011") (unit 1)
+          (reference "#PWR022") (unit 1)
         )
       )
     )
@@ -14005,7 +13940,7 @@
   (symbol (lib_id "power:GND") (at 346.71 241.3 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid f1bfa46f-45d1-426a-9423-1f3da6516a7a)
-    (property "Reference" "#PWR07" (at 346.71 247.65 0)
+    (property "Reference" "#PWR049" (at 346.71 247.65 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 346.71 246.38 0)
@@ -14021,7 +13956,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR07") (unit 1)
+          (reference "#PWR049") (unit 1)
         )
       )
     )
@@ -14030,7 +13965,7 @@
   (symbol (lib_id "Device:C") (at 374.65 232.41 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid f2f0ca2d-1c92-4d5a-af8b-4b4ecce37c83)
-    (property "Reference" "C13" (at 377.19 231.14 0)
+    (property "Reference" "C36" (at 377.19 231.14 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
     )
     (property "Value" "100nF" (at 377.19 233.68 0)
@@ -14047,7 +13982,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C13") (unit 1)
+          (reference "C36") (unit 1)
         )
       )
     )
@@ -14081,7 +14016,7 @@
   (symbol (lib_id "power:GND") (at 501.65 195.58 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid f68f28ce-0853-4891-903e-de6fd226e1ba)
-    (property "Reference" "#PWR074" (at 501.65 201.93 0)
+    (property "Reference" "#PWR069" (at 501.65 201.93 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 501.65 200.66 0)
@@ -14097,7 +14032,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR074") (unit 1)
+          (reference "#PWR069") (unit 1)
         )
       )
     )
@@ -14156,26 +14091,26 @@
     )
   )
 
-  (symbol (lib_id "power:GND") (at 236.22 160.02 0) (unit 1)
+  (symbol (lib_id "power:GND") (at 236.22 165.1 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid fee88019-aed4-4d67-afd8-d79edd146604)
-    (property "Reference" "#PWR061" (at 236.22 166.37 0)
+    (property "Reference" "#PWR029" (at 236.22 171.45 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Value" "GND" (at 236.22 165.1 0)
+    (property "Value" "GND" (at 236.22 170.18 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Footprint" "" (at 236.22 160.02 0)
+    (property "Footprint" "" (at 236.22 165.1 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "" (at 236.22 160.02 0)
+    (property "Datasheet" "" (at 236.22 165.1 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 55857df7-8dfe-48f3-8a1f-0f73d76ea9bf))
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR061") (unit 1)
+          (reference "#PWR029") (unit 1)
         )
       )
     )
@@ -14184,7 +14119,7 @@
   (symbol (lib_id "power:GND") (at 527.05 198.12 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid ffaee497-ea37-4d3c-9378-a12c8fc30ffe)
-    (property "Reference" "#PWR065" (at 527.05 204.47 0)
+    (property "Reference" "#PWR076" (at 527.05 204.47 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Value" "GND" (at 527.05 203.2 0)
@@ -14200,7 +14135,7 @@
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR065") (unit 1)
+          (reference "#PWR076") (unit 1)
         )
       )
     )
