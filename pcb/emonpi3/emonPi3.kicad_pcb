@@ -11604,6 +11604,11 @@
       (net 64 "unconnected-(J11-Pin_26-Pad26)") (pinfunction "Pin_26") (pintype "passive+no_connect") (thermal_bridge_angle 45) (tstamp 4f8a89bf-a64e-4e75-9a5b-3c11e9644b64))
     (pad "27" thru_hole circle (at -13.97 0 90) (size 2.2 2.2) (drill 1.8) (layers "*.Cu" "*.Mask") (tstamp 97246e22-646b-47ee-b619-b2d6297cf3ef))
     (pad "27" thru_hole circle (at 13.97 0 90) (size 2.2 2.2) (drill 1.8) (layers "*.Cu" "*.Mask") (tstamp 47445270-bc28-4683-9461-a6f2f77bc12b))
+    (model "${KIPRJMOD}/../models/HLE-113-02-F-DV-BE-A.stp"
+      (offset (xyz 0 0 0.25))
+      (scale (xyz 1 1 1))
+      (rotate (xyz -90 0 0))
+    )
   )
 
   (footprint "TestPoint:TestPoint_Pad_D1.0mm" (layer "B.Cu")
