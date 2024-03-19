@@ -1,3 +1,10 @@
+- v0.1 -> v0.2
+
+- [ ] Retouch silkscreen boxes to avoid overlap
+- [ ] Labels on 26 pin header for debug
+- [x] Make OneWire pull up selectable in software
+- [ ] Mounting support for OLED
+
 - v0.1-dev -> emonPi3 v0.1
   
   - [x] Change to SMD mount for RPi
