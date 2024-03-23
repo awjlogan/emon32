@@ -6947,6 +6947,30 @@
     )
   )
 
+  (symbol (lib_id "Mechanical:MountingHole") (at 497.84 320.04 0) (unit 1)
+    (in_bom no) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid 174c7d1e-323d-45fb-b592-276851f9ba1b)
+    (property "Reference" "H7" (at 500.38 319.405 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "MountingHole" (at 500.38 321.945 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "MountingHole:MountingHole_2.1mm" (at 497.84 320.04 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 497.84 320.04 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (instances
+      (project "emonPi3"
+        (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
+          (reference "H7") (unit 1)
+        )
+      )
+    )
+  )
+
   (symbol (lib_id "Device:R") (at 171.45 353.06 0) (mirror y) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 1759fe58-34e2-4b7f-b630-f5b5dfa5d7e5)
