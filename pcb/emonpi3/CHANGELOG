@@ -1,5 +1,6 @@
 - v0.1 -> v0.2
 
+- [x] Swap SPI MOSI and !SS, incorrect in v0.1
 - [x] Retouch silkscreen boxes to avoid overlap
 - [x] Labels on 26 pin header for debug
 - [x] Make OneWire pull up selectable in software
