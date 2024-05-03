@@ -603,7 +603,7 @@
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp a549c14c-eb80-48c6-97ba-c068d6e78c12)
     )
-    (fp_text value "LMV331" (at 0 2.4 90) (layer "F.Fab")
+    (fp_text value "MCP6456U" (at 0 2.4 90) (layer "F.Fab")
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 5715f976-e45a-4d73-877e-2e91a322573e)
     )
