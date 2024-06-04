@@ -10,6 +10,8 @@ The emonTx energy monitors are currently based around the ATMega328, as made pop
   - Provide a scalable and modular system.
   - Provide an architecture agnostic library to handle energy monitoring functions.
 
+There is also [firmware available](https://github.com/awjlogan/emon32-fw) to enable a complete energy monitoring system.
+
 ## Getting started
 
 There are currently two implementations:
