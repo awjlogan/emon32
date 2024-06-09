@@ -22,20 +22,29 @@ This has been tested on Linux and macOS.
 
 ## Changelog
 
+### 0.2
+
+First production candidate
+
+- Correct SPI connection
+- Move LED to front panel
+- ESD protection on all inputs and buttons
+- Expose reset to Pi connection
+
 ### 0.1
 
 First public limited manufacturing run.
 
-  - Add hardware zero crossing detector.
-  - Add ADC calibration hardware.
-  - Add more testpoints.
-  - Move EEPROM and reassign serial modules.
-  - Add user button, LEDs, and external I2C header.
+- Add hardware zero crossing detector.
+- Add ADC calibration hardware.
+- Add more testpoints.
+- Move EEPROM and reassign serial modules.
+- Add user button, LEDs, and external I2C header.
 
 ### 0.1-dev
 
-  - First bring up of the emonPi3. 
-    - Directly physically compatible with the existing emonPi2. 
-  - Change to 4-layer board
-  - Add extra filters and power protection
+- First bring up of the emonPi3. 
+  - Directly physically compatible with the existing emonPi2. 
+- Change to 4-layer board
+- Add extra filters and power protection
 

@@ -49,6 +49,7 @@ This project is licensed under the [Creative Commons Attribution Sharealike 4.0]
 
 ## Acknowledgements
 
-  - OpenEnergyMonitor
+  - [OpenEnergyMonitor](https://openenergymonitor.org)
   - Rob Wall of Open Energy Monitor forums for lots of in depth discussion around sampling strategies.
+  - Rupert on OEM forums for PCB improvements.
 

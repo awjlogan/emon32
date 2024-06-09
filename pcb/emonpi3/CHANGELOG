@@ -1,5 +1,6 @@
 - v0.1 -> v0.2
 
+- [x] Add ESD protection for buttons and pulse/analog inputs
 - [x] Split ANALOG_INPUT and CT12 inputs
 - [x] Remove USER LED0 to allow split analog inputs
 - [x] Move STATUS and PROG LEDs to combined front panel
