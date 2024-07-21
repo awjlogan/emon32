@@ -7278,7 +7278,7 @@
   )
 
   (symbol (lib_id "Device:R") (at 510.54 278.13 0) (mirror y) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 1ce3f80d-e38c-4aea-acd4-f6b1bfd18719)
     (property "Reference" "R65" (at 511.81 276.86 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
@@ -8369,7 +8369,7 @@
   )
 
   (symbol (lib_id "Device:R") (at 530.86 271.78 90) (mirror x) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 58bb4139-e603-4c94-9fce-bec073144283)
     (property "Reference" "R68" (at 528.32 270.51 90)
       (effects (font (size 1.27 1.27)) (justify right bottom))
@@ -9152,7 +9152,7 @@
   )
 
   (symbol (lib_id "Device:R") (at 510.54 246.38 0) (mirror y) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 7a1c697e-7ae4-4bf1-a1e2-a715bd736de7)
     (property "Reference" "R64" (at 511.81 245.11 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
@@ -9470,7 +9470,7 @@
   )
 
   (symbol (lib_id "Device:R") (at 539.75 246.38 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 91981b95-7143-4bbb-a91a-206832c77aa3)
     (property "Reference" "R69" (at 541.02 245.11 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
@@ -9521,7 +9521,7 @@
   )
 
   (symbol (lib_id "Device:C") (at 487.68 257.81 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 937ba4db-41db-4976-8724-2c4d8e6dee12)
     (property "Reference" "C39" (at 485.14 256.54 0)
       (effects (font (size 1.27 1.27)) (justify right bottom))
@@ -10409,7 +10409,7 @@
   )
 
   (symbol (lib_id "Comparator:LMV331") (at 524.51 255.27 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid aa9fcf42-e858-42be-ba1e-eb127815a8d0)
     (property "Reference" "U6" (at 524.51 248.92 0)
       (effects (font (size 1.27 1.27)) (justify left))
