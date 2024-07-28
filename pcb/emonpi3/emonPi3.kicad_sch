@@ -8565,8 +8565,8 @@
     (property "Datasheet" "~" (at 346.71 105.41 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid d953e3b9-f02a-45de-88fc-d9e5941fe24c))
-    (pin "2" (uuid 6aa5a2b4-ec73-4bc2-9b3c-33370004b2aa))
+    (pin "1" (uuid 3d48269c-4aae-4c72-8e6e-b6551d16c106))
+    (pin "2" (uuid 84655054-7e15-435e-a01e-e337d4a84075))
     (instances
       (project "emonPi3"
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
