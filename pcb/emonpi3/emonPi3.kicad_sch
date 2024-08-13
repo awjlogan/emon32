@@ -8559,7 +8559,7 @@
     (property "Value" "SW_Push" (at 345.44 107.315 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "Button_Switch_THT:SW_PUSH_6mm" (at 346.71 105.41 0)
+    (property "Footprint" "Button_Switch_SMD:SW_Tactile_SPST_NO_Straight_CK_PTS636Sx25SMTRLFS" (at 346.71 105.41 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at 346.71 105.41 0)
