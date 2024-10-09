@@ -1,18 +1,20 @@
 - v0.1 -> v0.2
 
+- [x] Change to 40 pin RasPi header
 - [x] Add ESD protection for buttons and pulse/analog inputs
 - [x] Split ANALOG_INPUT and CT12 inputs
-- [x] Remove USER LED0 to allow split analog inputs
 - [x] Move STATUS and PROG LEDs to combined front panel
-- [x] Mark USER LEDs and switch as DNP
+- [x] Remove USER LEDs and switch
 - [x] Swap SPI MOSI and !SS, incorrect in v0.1
 - [x] Retouch silkscreen boxes to avoid overlap
-- [x] Labels on 26 pin header for debug
 - [x] Make OneWire pull up selectable in software
 - [x] Mounting support for OLED
 - [x] Disable external interfaces from Pi
 - [x] Add support to reset from Pi
-- [x] Correct designation for comparator
+- [x] Remove hardware zero crossing detection
+- [x] Change expander board header for 2x5
+- [x] Teardrops on all traces
+- [x] Revise routing, particularly on inner 1
 
 - v0.1-dev -> emonPi3 v0.1
   
