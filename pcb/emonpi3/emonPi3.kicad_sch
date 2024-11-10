@@ -6578,7 +6578,7 @@
     (property "Value" "LED_Dual_KAK" (at 297.18 98.4885 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "LED_SMD:LED_LiteOn_LTST-S326" (at 289.56 97.79 0)
+    (property "Footprint" "ltst-s326:LTST-S326" (at 289.56 97.79 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "https://www.mouser.co.uk/datasheet/2/239/LTST-S326KGJRKT-1141687.pdf" (at 289.56 97.79 0)

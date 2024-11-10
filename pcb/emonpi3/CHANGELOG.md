@@ -4,6 +4,7 @@
 
 First production run.
 
+- [x] Fix footprint for LED
 - [x] Update design rules for Aisler 4-layer
 - [x] Minor revisions to footprints
 - [x] Tidy silkscreen
