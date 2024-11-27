@@ -5,6 +5,7 @@ import os
 import platform
 import re
 import shlex
+import shutil
 import subprocess
 import zipfile
 
@@ -89,15 +90,6 @@ if __name__ == "__main__":
     outdir = f"./output-{gitrev}"
     print(f">   - outputs are in {outdir}")
 
-    if os.path.exists(outdir):
-        while True:
-            r = input(">   - output folder already exists. Continue? (Y/N) ")
-            r = r.upper()
-            if r == 'N':
-                exit(0)
-            elif r == 'Y':
-                break
-
     os.makedirs(outdir, exist_ok=True)
 
     # Copy the schematic and PCB files, replacing the <gitrev> tag
@@ -110,12 +102,14 @@ if __name__ == "__main__":
     sch_pdf_cmd = f"{kicad_cli} sch export pdf -o {outdir}/emonPi3-schematic.pdf {outdir}/emonPi3.kicad_sch"
     subprocess.run(shlex.split(sch_pdf_cmd),
                    capture_output=True)
+    shutil.copy(f"{outdir}/emonPi3-schematic.pdf", "emonPi3-schematic.pdf")
     print("Done!")
 
     print("> Rendering PCB floorplan into PDF file... ", end='')
-    pcb_pdf_cmd = f"{kicad_cli} pcb export pdf -o {outdir}/emonPi3-floorplan.pdf -l F.Paste,F.Silkscreen,Edge.Cuts,F.Mask --black-and-white --ev {outdir}/emonPi3.kicad_pcb"
+    pcb_pdf_cmd = f"{kicad_cli} pcb export pdf -o {outdir}/emonPi3-floorplan.pdf -l F.Paste,F.Silkscreen,Edge.Cuts,F.Mask,User.Comments --black-and-white --ev {outdir}/emonPi3.kicad_pcb"
     subprocess.run(shlex.split(pcb_pdf_cmd),
                    capture_output=True)
+    shutil.copy(f"{outdir}/emonPi3-floorplan.pdf", "emonPi3-floorplan.pdf")
     print("Done!")
 
     # Render the 3D model of the board
