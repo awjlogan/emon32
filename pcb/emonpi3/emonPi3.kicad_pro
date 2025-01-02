@@ -55,7 +55,22 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        "courtyards_overlap|110125001|104603599|a08cf3f4-5492-4b80-896b-54610183b6ee|c7e3cd7d-4063-4dd3-8c60-8fce5321b271",
+        "courtyards_overlap|110125001|118603599|29428d10-675c-420d-b711-0255d64c72d9|7fbb0dea-56c4-4b17-b012-ac34951d8de7",
+        "courtyards_overlap|110125001|131603599|901f2182-16ae-4967-b3b6-c2d9dc15d795|b9a95027-96ee-4c68-bb5f-e4fe2d12973c",
+        "courtyards_overlap|110125001|144603599|98531c01-73ea-42f0-adc9-0ca4aa78469b|9ff6132e-8a50-455e-8c0b-bc1ea3d84b25",
+        "courtyards_overlap|110125001|78603599|933ed970-9988-4f42-b217-d5ca13e96cd5|ef41b6f2-d962-4b8b-8e47-162c731a0a9d",
+        "courtyards_overlap|110125001|91603599|8a878c8d-fb74-4e07-affa-02142c5b6e03|8f5c256a-9d6c-4adf-9a61-c75a68f443db",
+        "courtyards_overlap|113720001|121119999|6b4861e8-464e-4b40-a981-009377e70801|b9a95027-96ee-4c68-bb5f-e4fe2d12973c",
+        "courtyards_overlap|113720001|134119999|8b451335-ef01-4e8e-b3c5-bc0b2585d6f1|9ff6132e-8a50-455e-8c0b-bc1ea3d84b25",
+        "courtyards_overlap|113720001|81119999|8f5c256a-9d6c-4adf-9a61-c75a68f443db|9063963f-d5e1-4a39-8b8b-b26f33aed90f",
+        "courtyards_overlap|113720001|94119999|7d50eeb0-4a73-4c44-a32c-4c801b110b0a|a08cf3f4-5492-4b80-896b-54610183b6ee",
+        "courtyards_overlap|118800001|121249999|b9a95027-96ee-4c68-bb5f-e4fe2d12973c|d5babb43-daaa-4a6e-aa0f-a270f4e921d6",
+        "courtyards_overlap|118800001|134249999|9ff6132e-8a50-455e-8c0b-bc1ea3d84b25|cbf5aef6-7489-4892-816d-7b4b67149e8c",
+        "courtyards_overlap|118800001|81249999|8f5c256a-9d6c-4adf-9a61-c75a68f443db|c2f7f167-f0ea-419c-9aa1-de390011c840",
+        "courtyards_overlap|118800001|94249999|6544b774-7160-421f-a6d9-86bbf6e6db36|a08cf3f4-5492-4b80-896b-54610183b6ee"
+      ],
       "meta": {
         "filename": "board_design_settings.json",
         "version": 2
@@ -82,7 +97,7 @@
         "items_not_allowed": "error",
         "length_out_of_range": "error",
         "lib_footprint_issues": "warning",
-        "lib_footprint_mismatch": "warning",
+        "lib_footprint_mismatch": "ignore",
         "malformed_courtyard": "error",
         "microvia_drill_out_of_range": "error",
         "missing_courtyard": "ignore",
@@ -92,7 +107,7 @@
         "padstack": "warning",
         "pth_inside_courtyard": "ignore",
         "shorting_items": "error",
-        "silk_edge_clearance": "warning",
+        "silk_edge_clearance": "ignore",
         "silk_over_copper": "warning",
         "silk_overlap": "warning",
         "skew_out_of_range": "error",

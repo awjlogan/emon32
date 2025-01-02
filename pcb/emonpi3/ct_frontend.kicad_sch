@@ -2,12 +2,12 @@
 
   (uuid 324f0fbd-ce43-4137-a3d5-2e162ecba8f0)
 
-  (paper "A4")
+  (paper "A2")
 
   (title_block
     (title "emonPi3")
-    (date "2024-03-21")
-    (rev "v0.2")
+    (date "2024-12-28")
+    (rev "v1.0")
     (company "OpenEnergyMonitor / Tilt Ltd (Angus Logan)")
     (comment 1 "Original design: Trystan Lea & Glynn Hudson")
     (comment 2 "Commit hash: gitrev")
