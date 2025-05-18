@@ -3,4 +3,5 @@
   (lib (name "rfm69cw")(type "KiCad")(uri "${KIPRJMOD}/../footprints/rfm69cw.pretty")(options "")(descr ""))
   (lib (name "valcon-usb")(type "KiCad")(uri "${KIPRJMOD}/../footprints/valcon-usb.pretty")(options "")(descr ""))
   (lib (name "RPi-SMD")(type "KiCad")(uri "${KIPRJMOD}/../footprints/RPi-SMD.pretty")(options "")(descr ""))
+  (lib (name "ltst-s326")(type "KiCad")(uri "${KIPRJMOD}/../footprints/ltst-s326.pretty")(options "")(descr ""))
 )
