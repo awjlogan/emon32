@@ -6,7 +6,7 @@
 
   (title_block
     (title "emonPi3")
-    (date "2024-12-28")
+    (date "2025-05-18")
     (rev "v1.0")
     (company "OpenEnergyMonitor / Tilt Ltd (Angus Logan)")
     (comment 1 "Original design: Trystan Lea & Glynn Hudson")
@@ -533,9 +533,6 @@
     (pin "T" (uuid cef5737a-c0fb-48c6-8703-15d0a30debfc))
     (instances
       (project "emonPi3"
-        (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "J1") (unit 1)
-        )
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366/d70e4664-3b09-489f-91b5-f7b96a995bad"
           (reference "J1") (unit 1)
         )
@@ -577,9 +574,6 @@
     (pin "2" (uuid a0aabde8-eaac-4ac7-a29a-24a50f238103))
     (instances
       (project "emonPi3"
-        (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R22") (unit 1)
-        )
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366/d70e4664-3b09-489f-91b5-f7b96a995bad"
           (reference "R22") (unit 1)
         )
@@ -620,9 +614,6 @@
     (pin "1" (uuid 80b0ff80-f50e-4b68-8298-321caba9bf4f))
     (instances
       (project "emonPi3"
-        (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "#PWR07") (unit 1)
-        )
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366/d70e4664-3b09-489f-91b5-f7b96a995bad"
           (reference "#PWR07") (unit 1)
         )
@@ -664,9 +655,6 @@
     (pin "2" (uuid d4fdbb68-d36d-4393-bab1-a23002fcd327))
     (instances
       (project "emonPi3"
-        (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R1") (unit 1)
-        )
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366/d70e4664-3b09-489f-91b5-f7b96a995bad"
           (reference "R1") (unit 1)
         )
@@ -692,7 +680,7 @@
   (symbol (lib_id "Device:D_TVS") (at 128.27 96.52 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 68575f87-1144-41dd-9070-3e1447b18928)
-    (property "Reference" "D9" (at 130.81 95.885 90)
+    (property "Reference" "D1" (at 130.81 95.885 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "5V" (at 130.81 98.425 90)
@@ -717,9 +705,6 @@
     (pin "2" (uuid 71dec576-987b-4bfb-ba2c-c9257e8db036))
     (instances
       (project "emonPi3"
-        (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "D9") (unit 1)
-        )
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366/d70e4664-3b09-489f-91b5-f7b96a995bad"
           (reference "D1") (unit 1)
         )
@@ -761,9 +746,6 @@
     (pin "2" (uuid f324dd7d-2fbf-4d0c-b852-2b6e231b17b1))
     (instances
       (project "emonPi3"
-        (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R10") (unit 1)
-        )
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366/d70e4664-3b09-489f-91b5-f7b96a995bad"
           (reference "R10") (unit 1)
         )
@@ -805,9 +787,6 @@
     (pin "2" (uuid 5b5cac86-389a-4c3f-8542-8c64a82fe8f8))
     (instances
       (project "emonPi3"
-        (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C11") (unit 1)
-        )
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366/d70e4664-3b09-489f-91b5-f7b96a995bad"
           (reference "C11") (unit 1)
         )
@@ -890,9 +869,6 @@
     (pin "2" (uuid d38e0a6b-1939-47c3-82f3-a0016ec3943b))
     (instances
       (project "emonPi3"
-        (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "R11") (unit 1)
-        )
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366/d70e4664-3b09-489f-91b5-f7b96a995bad"
           (reference "R11") (unit 1)
         )
@@ -937,9 +913,6 @@
     (pin "2" (uuid 91ad7726-4b00-4dcf-b7d4-45a487ec67df))
     (instances
       (project "emonPi3"
-        (path "/3a5f1087-1abe-4575-9313-bd86a5e03366"
-          (reference "C3") (unit 1)
-        )
         (path "/3a5f1087-1abe-4575-9313-bd86a5e03366/d70e4664-3b09-489f-91b5-f7b96a995bad"
           (reference "C3") (unit 1)
         )
