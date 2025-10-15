@@ -22,6 +22,13 @@ This has been tested on Linux and macOS.
 
 ## Changelog
 
+### 1.0
+
+Production
+
+- Correct front panel LED footprint
+- Routing tweaks
+
 ### 0.2
 
 First production candidate
