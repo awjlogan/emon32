@@ -16,14 +16,12 @@ There is also [firmware available](https://github.com/awjlogan/emon32-fw) to ena
 
 ## Getting started
 
-There are currently two implementations:
+There is currently one implementation:
 
 - [emonPi3](pcb/emonpi3/README.md)
-- [Low Cost](pcb/lc/README.md)
-  - Not actively maintained as of Feb 2024.
 
 > [!NOTE]
-> The emonPi3 will be available full assembled from the OpenEnergyMonitor shop in 2025.
+> The emonPi3 will be available full assembled from the OpenEnergyMonitor shop in 2025/2026.
 
 ## Microcontroller Selection
 

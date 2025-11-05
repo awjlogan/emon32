@@ -1,3 +1,0 @@
-(sym_lib_table
-  (lib (name "rfm69cw")(type "KiCad")(uri "${KIPRJMOD}/../parts/rfm69cw.kicad_sym")(options "")(descr ""))
-)
