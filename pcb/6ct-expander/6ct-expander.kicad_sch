@@ -6,8 +6,8 @@
 	(paper "A4")
 	(title_block
 		(title "CT Expander")
-		(date "2026-05-06")
-		(rev "v1.0")
+		(date "2026-07-20")
+		(rev "v1.1")
 		(company "OpenEnergyMonitor / Tilt Ltd")
 	)
 	(lib_symbols
